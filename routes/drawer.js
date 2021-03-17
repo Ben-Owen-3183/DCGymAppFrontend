@@ -4,10 +4,10 @@ import {
 import {
   createAppContainer
 } from 'react-navigation';
-import FeedStack from './feedStack';
-import GymMembershipStack from './gymMembershipStack';
-import TimeTableStack from './timeTableStack';
-import LoginStack from './loginStack';
+import { FeedStack } from './feedStack';
+import { GymMembershipStack } from './gymMembershipStack';
+import { TimeTableStack } from './timeTableStack';
+import { LoginStack } from './loginStack';
 
 const RootDrawerNavigator = createDrawerNavigator({
   Login: {

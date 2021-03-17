@@ -4,24 +4,16 @@ import Login from '../screens/login';
 import CMSignup from '../screens/CMSignup';
 import AppSignup from '../screens/appSignup';
 import {DefaultNavigationOptions} from '../styles/dcstyles';
+import Header from '../shared/header';
+import React from 'react';
 
 const screens = {
   Login : {
     screen : Login,
-    navigationOptions : {
-      title : 'Login',
-    }
-  },
-  CMSignup : {
-    screen : CMSignup,
-    navigationOptions : {
-      title : 'Club Manager Sign up',
-    }
-  },
-  AppSignup : {
-    screen : AppSignup,
-    navigationOptions : {
-      title : 'Sign up',
+    navigationOptions : ({ navigation }) => {
+      return {
+        headerTitle : () => <Header navigation={navigation} title='Login'/>,
+      }
     }
   }
 };
