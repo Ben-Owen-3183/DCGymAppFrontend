@@ -1,0 +1,43 @@
+{
+  "days" : [
+    {
+      "name" : "monday",
+      "classes"
+    },
+    {
+
+    }
+
+
+
+
+    "monday" : {
+      "time" : "7.00AM-8.00AM",
+      "name" : "TOTAL FITNESS",
+      "live" : "false",
+      "trainer" :
+    },
+    "tuesday" : {
+
+    },
+    "wednesday" : {
+
+    },
+    "thursday" : {
+
+    },
+    "friday" : {
+
+    },
+    "saturday" : {
+
+    },
+    "sunday" : {
+
+    },
+  ]
+
+
+
+
+}

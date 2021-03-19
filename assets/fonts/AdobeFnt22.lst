@@ -1,0 +1,63 @@
+%!Adobe-FontList 1.22
+%Locale:0x409
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:Invalid
+OutlineFileName:/Users/KennyAndrews/Desktop/DC Timetable 2020 2 Folder/Document fonts/AdobeFnt22.lst
+FileLength:1229
+FileModTime:636300068
+%EndFont
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:Type1
+FontName:BebasNeueBold
+FamilyName:Bebas Neue
+StyleName:Bold
+MenuName:Bebas Neue Bold
+StyleBits:0
+WeightClass:700
+WidthClass:5
+AngleClass:0
+FullName:Bebas Neue Bold
+WritingScript:Roman
+OutlineFileName:/Users/KennyAndrews/Desktop/DC Timetable 2020 2 Folder/Document fonts/BebasNeue Bold.otf
+DataFormat:sfntData
+UsesStandardEncoding:yes
+isCFF:yes
+hasSVG:no
+VariableFontType:NonVariableFont
+FileLength:101772
+FileModTime:483507638
+NameArray:0,Mac,4,Bebas Neue Bold
+NameArray:0,Win,1,Bebas Neue Bold
+NameArray:0,Win,16,Bebas Neue
+%EndFont
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:Type1
+FontName:BebasNeueRegular
+FamilyName:Bebas Neue
+StyleName:Regular
+MenuName:Bebas Neue Regular
+StyleBits:0
+WeightClass:400
+WidthClass:5
+AngleClass:0
+FullName:Bebas Neue Regular
+WritingScript:Roman
+OutlineFileName:/Users/KennyAndrews/Desktop/DC Timetable 2020 2 Folder/Document fonts/BebasNeue Regular.otf
+DataFormat:sfntData
+UsesStandardEncoding:yes
+isCFF:yes
+hasSVG:no
+VariableFontType:NonVariableFont
+FileLength:70364
+FileModTime:483507638
+NameArray:0,Mac,4,Bebas Neue Regular
+NameArray:0,Win,1,Bebas Neue Regular
+NameArray:0,Win,16,Bebas Neue
+%EndFont
+
