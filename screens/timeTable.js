@@ -87,8 +87,7 @@ const DayView = () => {
     return GenerateData().map( (day, i) => {
       return(
         <View key={i} style={styles.dayView}>
-          <View style={styles.line}>
-          </View>
+          <View style={styles.line}></View>
 
           <Text style={styles.dayText}>{day.name} </Text>
 
