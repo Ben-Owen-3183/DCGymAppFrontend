@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   TextInput
 } from 'react-native';
-import { Icon, Avatar} from 'react-native-elements';
+import {Icon, Avatar} from 'react-native-elements';
 import {globalStyles} from '../styles/dcstyles';
 
 var loremIpsum = require('lorem-ipsum-react-native');
@@ -23,25 +23,31 @@ const imageList = [
 
 const names = [
   'Jane Doe',
-  'Joe blogs',
+  'Joe Blogs',
   'Sarah Smith',
   'Greg Smith',
   'Will Jones',
   'Sarah Jones'
 ];
 
-function Post(name, postText, image, comments){
+function Post(name, text, image, comments){
   this.name = name;
-  this.postText = postText;
+  this.initials = GetInitials(name);
+  this.text = text;
   this.image = image;
   this.comments = comments;
   this.likes = RandomNumber(12);
 }
 
+function GetInitials(name){
+  return name.split(" ")[0].split("")[0] + name.split(" ")[1].split("")[0];
+}
+
 function Comment(name, text){
   this.name = name;
-  this.name = text;
-  this.likes = RandomNumber(12);
+  this.initials = GetInitials(name);
+  this.text = text;
+  this.likes = RandomNumber(2) == 1 ? RandomNumber(12) : 0;
   this.replies = Array();
 }
 
@@ -57,17 +63,27 @@ function GenerateComments(){
   var comments = Array();
 
   for(let i = 0; i < RandomNumber(4); i++){
-    var comment = new Comment(RandomName(), loremIpsum({count : RandomNumber(3) + 1, units : 'sentences', format : 'plain'}));
+    var comment = new Comment(RandomName(), GenerateCommentText());
 
     if(RandomNumber(10) < 2){
       for(let j = 0; j < RandomNumber(2) + 1; j++){
-        comment.replies.push(new Comment(RandomName(), loremIpsum({count : RandomNumber(2) + 1, units : 'sentences', format : 'plain'})));
+        comment.replies.push(new Comment(RandomName(), GenerateCommentText));
       }
     }
 
     comments.push(comment);
   }
   return comments;
+}
+
+function GenerateCommentText(){
+  return loremIpsum({
+    count : RandomNumber(3) + 1,
+    units : 'sentences',
+    format : 'plain',
+    sentenceLowerBound: 2,
+    sentenceUpperBound: 8
+  })
 }
 
 
@@ -78,12 +94,11 @@ function GeneratePosts(){
     posts.push(
       new Post(
         RandomName(),
-        loremIpsum({count : RandomNumber(5) + 1, units : 'sentences', format : 'plain'}),
+        loremIpsum({count : RandomNumber(4) + 1, units : 'sentences', format : 'plain'}),
         RandomNumber(10) > 4 ? imageList[0] : null,
         GenerateComments()
     ));
   }
-  console.log("posts generated: " + posts.length);
   return posts;
 }
 
@@ -94,6 +109,7 @@ const Feed = () => {
 
         <View style={styles.newPostView}>
           <Text> New Post Here </Text>
+
         </View>
 
         <View style={styles.postSection}>
@@ -106,19 +122,18 @@ const Feed = () => {
 }
 
 const Posts = () => {
-  console.log(GeneratePosts().length);
-  return GeneratePosts().map( (post, i) =>{
+  return GeneratePosts().map((post, i) =>{
     return(
       <View style={styles.post}>
         <View style={styles.postHeader}>
           <View style={styles.postUserHeader}>
-            <CustomAvatar/>
-            <Text style={styles.orginalPosterText}> Joe Blogs </Text>
+            <CustomAvatar initials={post.initials}/>
+            <Text style={styles.orginalPosterText}>   {post.name}</Text>
           </View>
 
           <View style={styles.postTextView}>
             <Text style={styles.postText}>
-              Post Text
+              {post.text}
             </Text>
           </View>
 
@@ -127,61 +142,87 @@ const Posts = () => {
           <Image source={imageList[0]} style={styles.postImage}/>
         </View>
 
-        {/* post footer */}
-        <PostFooter/>
+        <PostFooter post={post}/>
 
-        {/* comment section */}
-        <View style={styles.commentSection}>
-          <View style={commentSectionStyles.commentInputView}>
-            <CustomAvatar/>
-            <CommentInputText placeholder={"Write a comment..."}/>
-          </View>
-          {/* comments  */}
-          <Comments/>
-        </View>
+        {post.comments.length > 0 ? <CommentSection comments={post.comments}/> : null}
+
+
       </View>
   )})
 }
 
-
-
-const Comments = () => {
-  return(
-    <View >
-      <View style={commentSectionStyles.commentView}>
+const CommentSection = ({comments}) => {
+  return (
+    <View style={styles.commentSection}>
+      <View style={commentSectionStyles.commentInputView}>
         <CustomAvatar/>
-        <View style={commentSectionStyles.commentTextView}>
-          <Text numberOfLines={2} style={commentSectionStyles.commentText}>
-            <Text style={[commentSectionStyles.commentText, { fontSize : 14, fontWeight: "bold"}]}>Sarah Smith{'\n'}</Text>
-            Hello, this is a comment
-          </Text>
-        </View>
+        <CommentInputText placeholder={"Write a comment..."}/>
+      </View>
+      {/* comments  */}
+      <Comments comments={comments}/>
 
-      </View>
-      <View style={commentSectionStyles.commentButtons}>
-        <TouchableOpacity>
-          <Text style={postFooterStyles.likeCommentText}>Like</Text>
-        </TouchableOpacity>
-        <Text style={postFooterStyles.likeCommentText}>
-          {'  -  '}
-        </Text>
-        <TouchableOpacity>
-          <Text style={postFooterStyles.likeCommentText}>Reply</Text>
-        </TouchableOpacity>
-      </View>
     </View>
-  );
+  )
 }
 
-const CustomAvatar = ({name}) => {
+
+const Comments = ({comments}) => {
+  return comments.map((comment, i) => {
+    return(
+      <View key={i}>
+        <View style={commentSectionStyles.commentView}>
+          <CustomAvatar initials={comment.initials} style={{alignSelf : 'flex-start'}}/>
+          <View>
+            <View style={commentSectionStyles.commentTextView}>
+              <Text numberOfLines={4} style={commentSectionStyles.commentText}>
+                <Text style={[commentSectionStyles.commentText, { fontSize : 14, fontWeight: "bold"}]}>{comment.name}{'\n'}</Text>
+                {comment.text}
+              </Text>
+            </View>
+            {
+              comment.likes > 0 ?
+                <View style={comment.text.length < 20 ? commentSectionStyles.commentBadgeViewShort : commentSectionStyles.commentBadgeView}>
+                  <Icon name='thumb-up' size={15} color='#FFC300'/>
+                  <Text style={commentSectionStyles.commentBadgeText}> {comment.likes > 99 ? '99+' : comment.likes}</Text>
+                </View>
+                :
+                null
+            }
+          </View>
+        </View>
+
+        <View style={commentSectionStyles.commentButtons}>
+          <TouchableOpacity>
+            <Text style={postFooterStyles.likeCommentText}>Like</Text>
+          </TouchableOpacity>
+          <Text style={postFooterStyles.likeCommentText}>
+            {'  -  '}
+          </Text>
+          <TouchableOpacity>
+            <Text style={postFooterStyles.likeCommentText}>Reply</Text>
+          </TouchableOpacity>
+          {/*only render like badge if likes are greater than 0*/}
+
+        </View>
+        {comment.replies > 0 ? <CommentReplies replies={replies}/> : null}
+      </View>
+    )
+  })
+}
+
+const CommentReplies = ({replies}) => {
+
+}
+
+const CustomAvatar = ({initials, style}) => {
   return (
     <Avatar
       rounded
       size="medium"
       size={38}
       icon={{name: 'user', type: 'font-awesome'}}
-      title="MD"
-      containerStyle={styles.avatar}/>
+      title={initials}
+      containerStyle={[styles.avatar, style]}/>
   )
 }
 
@@ -198,12 +239,12 @@ const CommentInputText = ({placeholder}) => {
   )
 }
 
-const PostFooter = () => {
+const PostFooter = ({post}) => {
   return (
     <View>
       <View style={postFooterStyles.likeCommentBar}>
-        <Text style={postFooterStyles.likeCommentText}>0 likes</Text>
-        <Text style={postFooterStyles.likeCommentText}>0 comments</Text>
+        <Text style={postFooterStyles.likeCommentText}>{post.likes} likes</Text>
+        <Text style={postFooterStyles.likeCommentText}>{post.comments.length} comments</Text>
       </View>
 
       <View style={styles.line}></View>
@@ -247,6 +288,7 @@ const CommentButton = () => {
 }
 
 export default Feed;
+
 
 
 const footButtonStyles = StyleSheet.create({
@@ -302,30 +344,67 @@ const commentSectionStyles = StyleSheet.create({
     backgroundColor : '#494949',
     borderRadius : 30,
     marginHorizontal : 10,
-    width : '86%',
+    marginRight : 40,
     paddingHorizontal : 20,
     paddingVertical : 8,
   },
   commentText : {
     color : 'white',
     fontSize : 16,
-
   },
   commentButtons : {
     marginLeft : 75,
     padding : 5,
     flexDirection : 'row'
-  }
+  },
+  commentBadgeView : {
+    //position : 'absolute',
+    borderRadius : 30,
+    backgroundColor : '#494949',
+    flexDirection : 'row',
+    paddingHorizontal : 7,
+    alignItems : 'center',
+    alignSelf : 'flex-end',
+    marginRight : 40,
+    marginBottom : -25,
+    bottom : 10
+    //marginLeft : '54%',
+    //marginTop : '10%',
+    //bottom : 16
+  },
+  commentBadgeViewShort : {
+    //position : 'absolute',
+    borderRadius : 30,
+    backgroundColor : '#494949',
+    flexDirection : 'row',
+    paddingHorizontal : 7,
+    alignItems : 'center',
+    alignSelf : 'flex-end',
+    marginRight : 20,
+    marginBottom : -25,
+    bottom : 18
+    //marginLeft : '54%',
+    //marginTop : '10%',
+    //bottom : 16
+  },
+  commentBadgeText : {
+    color : '#afafaf',
+    fontSize : 16
+  },
+
 });
 
 const postFooterStyles = StyleSheet.create({
   likeCommentBar : {
     flexDirection : 'row',
     justifyContent : 'space-between',
-    margin : 9
+    marginVertical : 9,
+    marginHorizontal : 15
+
   },
   likeCommentText : {
     color : '#afafaf',
+    fontWeight : 'bold',
     fontSize : 16
   },
   postFooter : {
@@ -395,7 +474,7 @@ const styles = StyleSheet.create({
     fontSize : 16
   },
   postTextView : {
-
+    margin : 3
   },
   postText : {
     color : '#FFFFFF',

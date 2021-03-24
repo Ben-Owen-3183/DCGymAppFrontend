@@ -124,7 +124,7 @@ const TimeView = ({day}) => {
                 <View key={i} style={styles.rowStyle}>
                   <Text style={styles.classText} >{fitnessClass.time}</Text>
                 </View>
-                )
+              )
             }
         })
       }
