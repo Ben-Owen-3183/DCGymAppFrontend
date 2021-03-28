@@ -14,7 +14,7 @@ export default function Header({ navigation, title }) {
     <View style={styles.header}>
 
       <View style={styles.iconView}>
-        <TouchableOpacity onPress={openMenu}>
+        <TouchableOpacity onPress={openMenu} style={{padding : 10}}>
           <Icon
             name='menu'
             type='simple-line-icon'
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     flex : 1,
     flexDirection : 'row',
     justifyContent : 'center',
-    margin : 'auto'
+    alignItems : 'center',
     //height : 60,
   },
   headerText : {
