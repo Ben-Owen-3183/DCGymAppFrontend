@@ -8,6 +8,9 @@ import { FeedStack } from './feedStack';
 import { GymMembershipStack } from './gymMembershipStack';
 import { TimeTableStack } from './timeTableStack';
 import { LoginStack } from './loginStack';
+import { MessengerStack } from './messengerStack';
+import { PastStreamStack } from './videosStack';
+import { LiveStreamStack } from './liveStreamStack';
 
 const RootDrawerNavigator = createDrawerNavigator({
   Login: {
@@ -22,6 +25,15 @@ const RootDrawerNavigator = createDrawerNavigator({
   TimeTable: {
     screen: TimeTableStack,
   },
+  Messenger: {
+    screen: MessengerStack,
+  },
+  PastStream: {
+    screen: PastStreamStack,
+  },
+  LiveStream: {
+    screen: LiveStreamStack,
+  }
 });
 
 export default createAppContainer(RootDrawerNavigator);

@@ -10,8 +10,9 @@ import {
   TextInput,
   Dimensions
 } from 'react-native';
-import {Icon, Avatar} from 'react-native-elements';
+import {Icon} from 'react-native-elements';
 import {globalStyles} from '../styles/dcstyles';
+import CustomAvatar from '../shared/customAvatar';
 
 var loremIpsum = require('lorem-ipsum-react-native');
 const resolveAssetSource = Image.resolveAssetSource;
@@ -34,6 +35,7 @@ const names = [
 
 function Post(name, text, image, comments){
   this.name = name;
+  this.staff = RandomNumber(10) < 2;
   this.initials = GetInitials(name);
   this.text = text;
   this.image = image;
@@ -47,6 +49,7 @@ function GetInitials(name){
 
 function CommentObject(name, text){
   this.name = name;
+  this.staff = RandomNumber(10) < 2;
   this.initials = GetInitials(name);
   this.text = text;
   this.likes = RandomNumber(2) == 1 ? RandomNumber(12) : 0;
@@ -140,7 +143,10 @@ const Posts = () => {
         <View style={styles.postHeader}>
           <View style={styles.postUserHeader}>
             <CustomAvatar initials={post.initials}/>
-            <Text style={styles.orginalPosterText}>   {post.name}</Text>
+            <Text style={[
+              (post.staff ? styles.orginalPosterTextStaff : styles.orginalPosterText),
+               {fontSize : 18}]}>   {post.name}
+            </Text>
           </View>
 
           <View style={styles.postTextView}>
@@ -180,51 +186,6 @@ const CommentSection = ({comments}) => {
 
     </View>
   )
-}
-
-const CommentsOld = ({comments}) => {
-  return comments.map((comment, i) => {
-    return(
-      <View key={i}>
-        <View style={commentSectionStyles.commentView}>
-          <CustomAvatar initials={comment.initials} style={{alignSelf : 'flex-start'}}/>
-          <View>
-            <View style={commentSectionStyles.commentTextView}>
-              <Text numberOfLines={4} style={commentSectionStyles.commentText}>
-                <Text style={[commentSectionStyles.commentText, { fontSize : 14, fontWeight: "bold"}]}>{comment.name}{'\n'}</Text>
-                {comment.text}
-              </Text>
-            </View>
-            {
-              comment.likes > 0 ?
-                <View style={comment.text.length < 20 ? commentSectionStyles.commentBadgeViewShort : commentSectionStyles.commentBadgeView}>
-                  <Icon name='thumb-up' size={15} color='#FFC300'/>
-                  <Text style={commentSectionStyles.commentBadgeText}> {comment.likes > 99 ? '99+' : comment.likes}</Text>
-                </View>
-                :
-                null
-            }
-          </View>
-        </View>
-
-        <View style={commentSectionStyles.commentButtons}>
-          <TouchableOpacity>
-            <Text style={postFooterStyles.likeCommentText}>Like</Text>
-          </TouchableOpacity>
-          <Text style={postFooterStyles.likeCommentText}>
-            {'  -  '}
-          </Text>
-          <TouchableOpacity>
-            <Text style={postFooterStyles.likeCommentText}>Reply</Text>
-          </TouchableOpacity>
-
-
-        </View>
-        {/*only render like badge if likes are greater than 0*/}
-        {comment.replies.length > 0 ? <CommentReplies replies={comment.replies}/> : null}
-      </View>
-    )
-  })
 }
 
 const Comments = ({comments}) => {
@@ -272,7 +233,7 @@ const Comment = ({comment}) => {
     <View style={{flexDirection : 'row'}}>
       <View style={commentSectionStyles.commentTextView}>
         <Text numberOfLines={4} style={commentSectionStyles.commentText}>
-          <Text style={[commentSectionStyles.commentText, { fontSize : 14, fontWeight: "bold"}]}>{comment.name}{'\n'}</Text>
+          <Text style={(comment.staff ? styles.orginalPosterTextStaff : styles.orginalPosterText)}>{comment.name}{'\n'}</Text>
           {comment.text}
         </Text>
       </View>
@@ -330,7 +291,7 @@ const CommentReplies = ({replies}) => {
             <View style={{flex : 0}}>
               <View style={commentSectionStyles.commentTextView}>
                 <Text numberOfLines={4} style={commentSectionStyles.commentText}>
-                  <Text style={[commentSectionStyles.commentText, { fontSize : 14, fontWeight: "bold"}]}>{reply.name}{'\n'}</Text>
+                  <Text style={(reply.staff ? styles.orginalPosterTextStaff : styles.orginalPosterText)}>{reply.name}{'\n'}</Text>
                   {reply.text}
                 </Text>
               </View>
@@ -351,17 +312,7 @@ const CommentReplies = ({replies}) => {
   })
 }
 
-const CustomAvatar = ({initials, style}) => {
-  return (
-    <Avatar
-      rounded
-      size="medium"
-      size={38}
-      icon={{name: 'user', type: 'font-awesome'}}
-      title={initials}
-      containerStyle={[styles.avatar, style]}/>
-  )
-}
+
 
 const CommentInputText = ({placeholder}) => {
   return (
@@ -402,7 +353,7 @@ const Line = () => {
 
 const LikeButton = () => {
   return (
-    <TouchableHighlight style={footButtonStyles.postFooterButton}>
+    <TouchableHighlight underlayColor={'#212121'} style={footButtonStyles.postFooterButton}>
       <View style={footButtonStyles.postFooterButtonView}>
         <Icon
           name='thumb-up'
@@ -418,7 +369,7 @@ const LikeButton = () => {
 
 const CommentButton = () => {
   return (
-    <TouchableHighlight style={footButtonStyles.postFooterButton}>
+    <TouchableHighlight underlayColor={'#212121'} style={footButtonStyles.postFooterButton}>
       <View style={footButtonStyles.postFooterButtonView}>
         <View style={footButtonStyles.textView}>
           <Text style={footButtonStyles.text}>Comment  </Text>
@@ -555,9 +506,7 @@ const styles = StyleSheet.create({
     marginTop : 10,
     marginBottom : 10,
   },
-  avatar : {
-    backgroundColor : '#a5a5a5',
-  },
+
   postHeader : {
     margin : 5
   },
@@ -567,17 +516,9 @@ const styles = StyleSheet.create({
     margin : 5
   },
   postImageView : {
-    //flex : 1,
-    //height : 'auto'
   },
   postImage : {
-    //width : 423,
-    //height : 120,
     width : Dimensions.get('window').width,
-    //height : 'auto',
-    //backgroundColor : 'white',
-    //flex : 1,
-    //resizeMode : 'center'
   },
   line : {
     borderBottomColor : '#494949',
@@ -585,9 +526,7 @@ const styles = StyleSheet.create({
     marginHorizontal : 10,
   },
   yellowLineVertical : {
-    //borderColor : '#FFC300',
     borderColor : '#494949',
-    //borderRadius : 20,
     borderLeftWidth: 4,
     marginLeft : 18,
     marginVertical : 30,
@@ -597,11 +536,13 @@ const styles = StyleSheet.create({
   },
   orginalPosterText : {
     color : '#FFFFFF',
-    fontSize : 16
+    fontSize : 14,
+    fontWeight : 'bold'
   },
   orginalPosterTextStaff : {
     color : '#FFC300',
-    fontSize : 16
+    fontSize : 14,
+    fontWeight : 'bold'
   },
   postTextView : {
     margin : 3

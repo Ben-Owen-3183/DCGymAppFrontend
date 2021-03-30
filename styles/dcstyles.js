@@ -22,9 +22,10 @@ export const globalStyles = StyleSheet.create({
 
 export const DefaultNavigationOptions = {
   defaultNavigationOptions : {
-    //headerTitleAlign : 'center',
+    headerTintColor  : '#FFC300',
     headerStyle : {
-      backgroundColor : '#2D2D2D'
+      backgroundColor : '#2D2D2D',
+      shadowColor : '#2D2D2D',
     },
     headerTitleStyle : {
       color : '#FFC300'
