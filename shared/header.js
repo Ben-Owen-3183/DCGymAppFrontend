@@ -10,7 +10,7 @@ export default function Header({ navigation, title, back }) {
   return (
     <View style={styles.header}>
       <View style={styles.headerTextView}>
-        <Text numberOfLines={1} style={styles.headerText}> {navigation.getParam('title', title)} </Text>
+        <Text numberOfLines={1} style={styles.headerText}> {title} </Text>
       </View>
 
       <View style={styles.emptyElement}></View>
@@ -33,8 +33,8 @@ const styles = StyleSheet.create({
     flex : 1,
     flexDirection : 'row',
     alignItems : 'center',
-    justifyContent : 'center'
-    //height : 1000,
+    justifyContent : 'center',
+    height : 56,
   },
   headerText : {
     fontWeight : 'bold',

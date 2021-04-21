@@ -18,6 +18,8 @@ target 'DCGymAppFrontend' do
 
   pod 'react-native-webview', :path => '../node_modules/react-native-webview'
 
+  pod 'react-native-encrypted-storage', :path => '../node_modules/react-native-encrypted-storage'
+
   target 'DCGymAppFrontendTests' do
     inherit! :complete
     # Pods for testing

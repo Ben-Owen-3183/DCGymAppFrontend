@@ -1,0 +1,14 @@
+com/dcgymappfrontend/MainActivity.java
+ com.dcgymappfrontend.MainActivity
+com/dcgymappfrontend/BuildConfig.java
+ com.dcgymappfrontend.BuildConfig
+com/dcgymappfrontend/ReactNativeFlipper.java
+ com.dcgymappfrontend.ReactNativeFlipper
+ com.dcgymappfrontend.ReactNativeFlipper$1
+ com.dcgymappfrontend.ReactNativeFlipper$2
+ com.dcgymappfrontend.ReactNativeFlipper$2$1
+com/dcgymappfrontend/MainApplication.java
+ com.dcgymappfrontend.MainApplication
+ com.dcgymappfrontend.MainApplication$1
+com/facebook/react/PackageList.java
+ com.facebook.react.PackageList

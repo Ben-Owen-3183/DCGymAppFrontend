@@ -1,19 +1,27 @@
-import {createStackNavigator} from 'react-navigation-stack';
-import {createAppContainer} from 'react-navigation';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import TimeTable from '../screens/timeTable';
-import {DefaultNavigationOptions} from '../styles/dcstyles';
 import React from 'react';
 import Header from '../shared/header';
 
-const screens = {
-  TimeTable : {
-    screen : TimeTable,
-    navigationOptions : ({ navigation }) => {
-      return {
-        headerTitle : () => <Header navigation={navigation} title='Timetable'/>,
-      }
-    }
-  }
-};
+const Stack = createStackNavigator();
 
-export const TimeTableStack = createStackNavigator(screens, DefaultNavigationOptions);
+export default function TimeTableStack({ navigation }) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerTintColor: '#FFC300',
+        headerStyle: {backgroundColor: '#494949'}
+      }}>
+
+      <Stack.Screen
+        options={{
+          headerTitle: () => <Header navigation={navigation} title='TimeTable'/>
+        }}
+        name="TimeTable"
+        component={TimeTable} />
+
+
+    </Stack.Navigator>
+  );
+}
