@@ -16,6 +16,76 @@ import Image from 'react-native-scalable-image';
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
 const SignupForm = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [emailConf, setEmailConf] = useState('');
+  const [fName, setFName] = useState('');
+  const [sName, setSName] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConf, setPasswordConf] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState(null);
+
+  function onSubmit(){
+    setErrors(null);
+    let payload = {
+      'fName': fName,
+      'sName': sName,
+      'password': password,
+      'passwordConf': passwordConf,
+      'email': email,
+      'emailConf': emailConf
+    }
+
+    console.log(payload)
+    const onSuccess = (response) => {
+      setIsLoading(false);
+      console.log(response)
+      if(response['errors']['name'].length > 0
+        || response['errors']['email'].length > 0
+        || response['errors']['password'].length > 0)
+        console.log("we have errors...");
+      else{
+        console.log("no errors here...")
+      }
+      return;
+
+      if(response['token']){
+        storeToken(response['token']);
+        setToken(response['token']);
+      }
+      // user did not login :(
+      else{
+        let newErrors = [];
+        if(response['non_field_errors'])
+          newErrors.push('The email or password provided is incorrect. Please try again')
+        if(response['username'])
+          newErrors.push('The email field cannot be blank. Enter the correct email to sign in')
+        if(response['password'])
+          newErrors.push('The password field cannot be blank. Enter the correct password to sign in')
+        if(newErrors.length > 0)
+          setErrors(newErrors)
+      }
+
+    };
+
+    const onFailure = (response) => {
+        setIsLoading(false);
+        setErrors(['Server cannot be reached. Make sure you are connected to the internet']);
+        console.log(response);
+    };
+
+    setIsLoading(true);
+
+    fetch('http://192.168.43.167:8000/signup/', {
+        method: "POST",
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(response => {onSuccess(response)})
+      .catch(response => {onFailure(response)})
+
+  }
 
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
@@ -33,12 +103,14 @@ const SignupForm = ({ navigation }) => {
           <View style={{flex: 1}}></View>
 
           <View style={{flex: 10}}>
-            <Names/>
-            <Email/>
-            <Password/>
+            <Names state={{fName, sName}}/>
+            <Email state={{email, emailConf}}/>
+            <Password state={{password, passwordConf}}/>
 
             <View style={{marginVertical: 20}}></View>
-            <TouchableHighlight style={[styles.button, {backgroundColor: '#FFC300'}]}>
+            <TouchableHighlight
+              onPress={() => onSubmit()}
+              style={[styles.button, {backgroundColor: '#FFC300'}]}>
               <Text style={[styles.text, {color: 'black', fontWeight: 'bold'}]}> Submit </Text>
             </TouchableHighlight>
           </View>
@@ -51,7 +123,7 @@ const SignupForm = ({ navigation }) => {
   );
 }
 
-const Email = () => {
+const Email = ({email, emailConf}) => {
   return(
     <View>
       <View style={{flexDirection: 'row'}}>
@@ -72,6 +144,7 @@ const Email = () => {
         </View>
 
         <TextInput
+          value={email}
           style={styles.inputText}
           placeholder="Email"
           numberOfLines={1}
@@ -85,6 +158,7 @@ const Email = () => {
         <View style={styles.inputContainer}></View>
         <View style={{marginVertical: 8}}></View>
         <TextInput
+          value={emailConf}
           style={styles.inputText}
           placeholder="Confirm Email"
           numberOfLines={1}
@@ -101,7 +175,7 @@ const Email = () => {
   )
 }
 
-const Names = () => {
+const Names = ({fName, sName}) => {
   return(
     <View>
       <View style={{flexDirection: 'row'}}>
@@ -115,6 +189,7 @@ const Names = () => {
 
       <View style={styles.subFormContainer}>
         <TextInput
+          value={fName}
           style={styles.inputText}
           placeholder="First Name"
           numberOfLines={1}
@@ -128,6 +203,7 @@ const Names = () => {
         <View style={styles.inputContainer}></View>
         <View style={{marginVertical: 8}}></View>
         <TextInput
+          value={sName}
           style={styles.inputText}
           placeholder="Last Name"
           numberOfLines={1}
@@ -144,7 +220,7 @@ const Names = () => {
   )
 }
 
-const Password = () => {
+const Password = ({password, passwordConf}) => {
   return(
     <View>
       <View style={{flexDirection: 'row'}}>
@@ -158,6 +234,7 @@ const Password = () => {
 
       <View style={styles.subFormContainer}>
         <TextInput
+          value={password}
           style={styles.inputText}
           placeholder="Password"
           numberOfLines={1}
@@ -172,6 +249,7 @@ const Password = () => {
         <View style={styles.inputContainer}></View>
         <View style={{marginVertical: 8}}></View>
         <TextInput
+          value={passwordConf}
           style={styles.inputText}
           placeholder="Confirm Password"
           numberOfLines={1}
