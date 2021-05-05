@@ -1,9 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
   Text,
-  ActivityIndicator,
   TextInput,
   TouchableHighlight,
   ImageBackground
@@ -11,7 +10,8 @@ import {
 import {globalStyles} from '../styles/dcstyles';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
-const SignupStep1 = ({ navigation }) => {
+const VerifyEmail = ({ navigation }) => {
+
 
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
@@ -23,22 +23,21 @@ const SignupStep1 = ({ navigation }) => {
         <View style={{flex: 5}}>
 
           <View style={{alignItems: 'center' }}>
-            <Text style={[styles.text]}>
-            Are you an existing member of the David Corfield Gymnasium?
+            <Text style={styles.text}>
+              We have sent you an verification email.
+            </Text>
+
+            <Text style={styles.text}>
+            {'\n'} If you do not see the email make sure you check your spam/junk folder.
             </Text>
           </View>
 
           <View style={{marginVertical: 20}}></View>
+
           <TouchableHighlight
-            underlayColor={'#dba400'}
-            onPress={() => navigation.navigate('SignupForm')}
-            style={[styles.button, {backgroundColor: '#FFC300'}]}>
-            <Text style={[styles.text, {color: 'black', fontWeight: 'bold'}]}> Yes </Text>
-          </TouchableHighlight>
-          <TouchableHighlight
-            onPress={() => navigation.navigate('Gym Membership')}
-            style={[styles.button]}>
-            <Text style={[styles.text, {color: '#FFC300', fontWeight: 'bold'}]}> No </Text>
+            onPress={() => navigation.reset({index: 0, routes: [{ name: 'Login' }],})}
+            style={styles.button}>
+            <Text style={[styles.text, {color: '#FFC300', fontWeight: 'bold'}]}> Continue to Login </Text>
           </TouchableHighlight>
         </View>
 
@@ -47,7 +46,7 @@ const SignupStep1 = ({ navigation }) => {
     </ImageBackground>
   );
 }
-export default SignupStep1;
+export default VerifyEmail;
 
 
 const styles = StyleSheet.create({
@@ -62,6 +61,7 @@ const styles = StyleSheet.create({
   text: {
     color : 'white',
     fontSize : 20,
+    textAlign: 'center'
   },
   inputText: {
     paddingVertical: 15,

@@ -2,9 +2,16 @@ import React from 'react';
 import {Avatar} from 'react-native-elements';
 import {StyleSheet} from 'react-native';
 
-const CustomAvatar = ({initials, style, size}) => {
+const CustomAvatar = ({initials, style, size, avatarData}) => {
+
+  let source = null;
+  if(avatarData){
+      source = {uri: `data:${avatarData.type};base64,${avatarData.base64}`}
+  }
+
   return (
     <Avatar
+      source={(source ? source : null)}
       rounded
       size="medium"
       size={(size ? size : 38)}

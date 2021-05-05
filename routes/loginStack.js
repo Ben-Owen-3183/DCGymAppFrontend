@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from '../screens/login';
 import SignupStep1 from '../screens/signupStep1';
 import SignupForm from '../screens/signupForm';
+import VerifyEmail from '../screens/verifyEmail';
 import Header from '../shared/header';
 
 const Stack = createStackNavigator();
@@ -35,6 +36,14 @@ export default function LoginStack({ navigation }) {
         component={SignupForm}
         options={{
           headerTitle: () => <Header navigation={navigation} title='Sign up'/>,
+        }}
+      />
+
+      <Stack.Screen
+        name="VerifyEmail"
+        component={VerifyEmail}
+        options={{
+          headerTitle: () => <Header navigation={navigation} title='Verify Email'/>,
         }}
       />
 

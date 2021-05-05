@@ -12,8 +12,9 @@ import {
 } from 'react-native';
 import {globalStyles} from '../styles/dcstyles';
 import Image from 'react-native-scalable-image';
-import {storeToken} from '../shared/storage';
+import {storeUserData} from '../shared/storage';
 import {AuthContext} from '../routes/drawer';
+import Settings from '../shared/settings';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
@@ -46,22 +47,25 @@ const Login = ({navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState(null);
 
-  const { setToken } = React.useContext(AuthContext);
+  const { setUserData } = React.useContext(AuthContext);
 
   function onSubmit(username, password, setIsLoading, setErrors){
+    if(isLoading)
+      return;
+
     setErrors(null);
     let payload = {
       'username': username,//username.value,
       'password': password//password.value
     }
 
-    console.log(payload)
     const onSuccess = (response) => {
       setIsLoading(false);
       // user logged in :)
       if(response['token']){
-        storeToken(response['token']);
-        setToken(response['token']);
+        // setPassword('');
+        storeUserData(response);
+        setUserData(response);
       }
       // user did not login :(
       else{
@@ -80,14 +84,14 @@ const Login = ({navigation }) => {
     };
 
     const onFailure = (response) => {
+        console.log("failed");
         setIsLoading(false);
         setErrors(['Server cannot be reached. Make sure you are connected to the internet']);
-        console.log(response);
     };
 
     setIsLoading(true);
 
-    fetch('http://192.168.43.167:8000/auth/login/', {
+    fetch('http://' + Settings.siteUrl + '/auth/login/', {
         method: "POST",
         headers: {"Content-type": "application/json; charset=UTF-8"},
         body: JSON.stringify(payload)
@@ -95,19 +99,7 @@ const Login = ({navigation }) => {
       .then(response => response.json())
       .then(response => {onSuccess(response)})
       .catch(response => {onFailure(response)})
-
   }
-
-  /*
-  const handleUsernameChange = event => {
-    setUsername(event.target.value);
-  }
-
-  const handlePasswordChange = event => {
-    setPassword(event.target.value);
-  }
-  */
-
 
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
@@ -126,6 +118,7 @@ const Login = ({navigation }) => {
 
             <TextInput
               value={username}
+              autoCompleteType={'email'}
               onChangeText={text => setUsername(text)}
               style={styles.inputText}
               placeholder="Email"
@@ -142,6 +135,7 @@ const Login = ({navigation }) => {
 
             <TextInput
               value={password}
+              autoCompleteType={'password'}
               onChangeText={text => setPassword(text)}
               style={styles.inputText}
               keyboardAppearance={'dark'}
@@ -161,7 +155,7 @@ const Login = ({navigation }) => {
             </View>
 
             <TouchableHighlight
-              onPress={isLoading ? null : () => onSubmit(username, password, setIsLoading, setErrors)}
+              onPress={() => onSubmit(username, password, setIsLoading, setErrors)}
               underlayColor={'#dba400'}
               style={[styles.button, {backgroundColor: '#FFC300'}]}>
               <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
@@ -206,10 +200,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   inputContainer: {
-    //paddingVertical: 0,
-    //backgroundColor: '#494949',
-    //borderRadius: 40,
-    //backgroundColor: '#ff9900',
     marginHorizontal: 5,
     borderBottomColor: 'lightgrey',
     borderBottomWidth: 1
