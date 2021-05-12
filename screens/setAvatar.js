@@ -15,49 +15,62 @@ import Settings from '../shared/settings';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
-function createFormData(image){
-  let imageData = {
-    name: '',
-    type: image.mime,
-    uri: Platform.OS === 'ios' ? image.path.replace('file://', '') : image.path,
-  };
-
-  var data = new FormData();
-  console.log("form append");
-  data.append('image', imageData);
-  console.log("form end");
-  return data;
-};
-
-function submit(image, userData, setErrors){
-  setErrors(null);
-
-  const onSuccess = (response) => {
-    console.log(response);
-  };
-
-  const onFailure = (response) => {
-    console.log('failure');
-      setErrors(['Server cannot be reached. Make sure you are connected to the internet']);
-  };
-
-  fetch('http://' + Settings.siteUrl + '/user/avatar/', {
-      method: "POST",
-      headers: {
-        "Authorization": "Token " + userData.token
-      },
-      body: createFormData(image)
-    })
-    .then(response => response.json())
-    .then(response => {onSuccess(response)})
-    .catch(response => {onFailure(response)})
-}
-
 
 const SetAvatar = ({ navigation }) => {
   const { updateUserData } = React.useContext(AuthContext);
   const [userData, setUserData] = React.useState('')
   const [errors, setErrors] = React.useState('')
+
+  function createFormData(image){
+    let imageData = {
+      name: 'image.jpg',
+      type: image.mime,
+      uri: Platform.OS === 'ios' ? image.path.replace('file://', '') : image.path,
+    };
+
+    var data = new FormData();
+    data.append('image', imageData);
+    return data;
+  };
+
+
+  // START SUBMIT
+  function submit(image){
+    setErrors(null);
+
+    const onSuccess = (response) => {
+      if (response['errors']){
+        console.log(response['errors']);
+        setErrors(response['errors']);
+      }
+      else {
+        userData.avatarURL = response['url'];
+        const newUserData = Object.assign({}, userData);
+        setUserData(newUserData);
+        storeUserData(newUserData);
+        updateUserData(newUserData);
+
+      }
+    };
+
+    const onFailure = (response) => {
+      console.log('failure');
+      setErrors(['Server cannot be reached. Make sure you are connected to the internet']);
+    };
+
+    fetch(Settings.siteUrl + '/user/avatar/', {
+        method: "POST",
+        enctype: "multipart/form-data",
+        headers: {
+          "Authorization": "Token " + userData.token
+        },
+        body: createFormData(image)
+      })
+      .then(response => response.json())
+      .then(response => {onSuccess(response)})
+      .catch(response => {onFailure(response)})
+  }
+  // END SUBMIT
 
   React.useEffect(() => {
     const loadUserData = async () => {
@@ -75,12 +88,11 @@ const SetAvatar = ({ navigation }) => {
 
   function selectImage(){
     ImagePicker.openPicker({
-      includeBase64: true,
-      width: 400,
-      height: 400,
+      width: 1000,
+      height: 1000,
       cropping: true
     }).then(image => {
-      submit(image, userData, setErrors);
+      submit(image);
     }).
     catch(e => {
 
@@ -89,26 +101,16 @@ const SetAvatar = ({ navigation }) => {
 
   function takePhoto(){
     ImagePicker.openCamera({
-      includeBase64: true,
       useFrontCamera: true,
-      width: 400,
-      height: 400,
+      width: 1000,
+      height: 1000,
       cropping: true,
     }).then(image => {
-      submit(image, userData, setErrors);
+      submit(image);
     }).
     catch(e => {
 
     });
-  }
-
-  // Updates avatar CLIENT side
-  function saveUserData(imageData){
-    userData.avatarData = imageData;
-    const newUserData = Object.assign({}, userData);
-    setUserData(newUserData);
-    storeUserData(newUserData);
-    updateUserData(newUserData);
   }
 
   return (
@@ -119,14 +121,15 @@ const SetAvatar = ({ navigation }) => {
 
         <View style={{flex: 5}}>
           <View style={{alignItems: 'center' }}>
-            <CustomAvatar avatarData={userData.avatarData} style={{marginBottom: 35}} size={240}/>
-            <View style={{marginVertical: 7}}></View>
-            <Text style={styles.text}>
+            <Text style={styles.titleText}>
               Choose your avatar
             </Text>
+
+            <View style={{marginVertical: 10}}></View>
+            <CustomAvatar avatarURL={userData.avatarURL} style={{marginBottom: 35}} size={240}/>
+            <View style={{marginVertical: 7}}></View>
           </View>
 
-          <View style={{marginVertical: 20}}></View>
           <TouchableHighlight
             underlayColor={'#dba400'}
             onPress={() => takePhoto()}
@@ -193,4 +196,12 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     alignItems : 'center',
   },
+  titleText : {
+      color : '#FFC300',
+      margin : 'auto',
+      marginTop : 20,
+      marginBottom : 20,
+      fontSize : 40,
+      fontFamily : 'BebasNeue Bold'
+    },
 });

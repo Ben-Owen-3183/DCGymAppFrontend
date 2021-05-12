@@ -14,6 +14,7 @@ import {retrieveUserData} from '../shared/storage';
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
 const Errors = ({ errors }) => {
+  console.log("errors"  + errors);
   return(
     <View style={{backgroundColor: '#515151', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6}}>
       <Text style={[styles.errorText, {margin: 5}]}>Please address the following issue{errors.length > 1 ? 's' : null}:</Text>
@@ -36,34 +37,14 @@ const Errors = ({ errors }) => {
   )
 }
 
-const ChangePassword = ({ navigation }) => {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [currentPassword, setCurrentPassword] = React.useState('');
-  const [newPassword, setNewPassword] = React.useState('');
-  const [newPasswordConf, setNewPasswordConf] = React.useState('');
+const ForgottenPassword = ({ navigation }) => {
+  const [email, setEmail] = React.useState('');
   const [errors, setErrors] = React.useState('');
-  const [userData, setUserData] = React.useState('');
-
-  React.useEffect(() => {
-    const loadUserData = async () => {
-      let response;
-
-      try {
-        response = await retrieveUserData();
-      } catch (e) {
-      }
-      setUserData(response);
-    };
-
-    loadUserData();
-  }, []);
-
+  const [finished, setFinished] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   // START SUBMIT
   function submit(){
-    if(isLoading)
-      return;
-
     setErrors(null);
 
     const onSuccess = (response) => {
@@ -72,27 +53,24 @@ const ChangePassword = ({ navigation }) => {
         setErrors(response['errors'])
       }
       else{
-        navigation.reset({index: 0, routes: [{ name: 'ChangePasswordSuccess' }],})
+        setFinished(true);
       }
     };
 
     const onFailure = (response) => {
+      setIsLoading(false);
       console.log('failure');
       setErrors(['Server cannot be reached. Make sure you are connected to the internet']);
     };
 
     setIsLoading(true);
-    fetch(Settings.siteUrl + '/user/password/change/', {
+
+    fetch(Settings.siteUrl + '/user/password/reset/', {
         method: "POST",
         headers: {
           "Content-type": "application/json; charset=UTF-8",
-          "Authorization": "Token " + userData.token
         },
-        body: JSON.stringify({
-          'currentPassword': currentPassword,
-          'newPassword': newPassword,
-          'newPasswordConf': newPasswordConf,
-        })
+        body: JSON.stringify({email: email})
       })
       .then(response => response.json())
       .then(response => {onSuccess(response)})
@@ -100,6 +78,39 @@ const ChangePassword = ({ navigation }) => {
   }
   // END SUBMIT
 
+  if(finished){
+    return(
+      <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
+        <View style={styles.mainContainer}>
+          <View style={{flex: 1}}></View>
+          <View style={{flex: 5}}>
+            <View>
+              <Text style={styles.titleText}>Email Sent</Text>
+              <Text style={styles.text}>
+                An email has been sent to your inbox. Don't forget to check your junk folder if you don't see it.
+              </Text>
+            </View>
+
+            <View style={{marginVertical: 20}}></View>
+
+            <TouchableHighlight
+              onPress={() => {
+                setFinished(true);
+                navigation.reset({index: 0, routes: [{ name: 'Login' }],})
+              }}
+              style={styles.button}
+              underlayColor={'#dba400'}>
+              <Text style={[styles.text, {color: 'black', fontWeight: 'bold'}]}>
+                Continue
+              </Text>
+            </TouchableHighlight>
+          </View>
+
+          <View style={{flex: 1}}></View>
+        </View>
+      </ImageBackground>
+    )
+  }
 
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
@@ -109,65 +120,35 @@ const ChangePassword = ({ navigation }) => {
 
         <View style={{flex: 5}}>
 
-          <View >
-            <Text style={styles.titleText}>
-              Set New Password
+          <View>
+            <Text style={styles.titleText}>Enter Email</Text>
+            <Text style={styles.text}>
+              Enter your
+              <Text style={[styles.text, {color: "#FFC300"}]}> app account email </Text>
+              that you wish to reset the password for.
+              {'\n'}{'\n'}
+              On pressing
+              <Text style={[styles.text, {color: "#FFC300"}]}> Reset Password </Text>
+              an email will be sent to
+              <Text style={[styles.text, {color: "#FFC300"}]}> confirm </Text>
+              this action.
             </Text>
           </View>
 
-          <View style={{marginVertical: 10}}></View>
-
-          <Text style={styles.text}>
-            Enter you current password and confirm your new one. The password change will take place immediately and will be required on the next login attempt.
-          </Text>
-
-          <View style={{marginVertical: 10}}></View>
+          <View style={{marginVertical: 20}}></View>
 
           <TextInput
-            value={currentPassword}
-            onChangeText={text => setCurrentPassword(text)}
+            value={email}
+            onChangeText={text => setEmail(text)}
             style={styles.inputText}
-            placeholder="Current Password"
-            autoCompleteType={'password'}
-            secureTextEntry={true}
+            placeholder="Enter email"
+            autoCompleteType={'email'}
             numberOfLines={1}
             placeholderTextColor={'lightgrey'}
             fontSize={18}
             color={'white'}
             keyboardAppearance={'dark'}
           />
-          <View style={styles.line}></View>
-          <View style={{marginVertical: 10}}></View>
-
-          <TextInput
-            value={newPassword}
-            onChangeText={text => setNewPassword(text)}
-            style={styles.inputText}
-            placeholder="New Password"
-            secureTextEntry={true}
-            numberOfLines={1}
-            placeholderTextColor={'lightgrey'}
-            fontSize={18}
-            color={'white'}
-            keyboardAppearance={'dark'}
-          />
-
-          <View style={styles.line}></View>
-          <View style={{marginVertical: 10}}></View>
-
-          <TextInput
-            value={newPasswordConf}
-            onChangeText={text => setNewPasswordConf(text)}
-            style={styles.inputText}
-            placeholder="Confirm New Password"
-            secureTextEntry={true}
-            numberOfLines={1}
-            placeholderTextColor={'lightgrey'}
-            fontSize={18}
-            color={'white'}
-            keyboardAppearance={'dark'}
-          />
-
           <View style={styles.line}></View>
 
           <View style={{marginVertical: 20}}>
@@ -176,13 +157,14 @@ const ChangePassword = ({ navigation }) => {
 
           <TouchableHighlight
             onPress={() => submit()}
-            underlayColor={'#dba400'}
-            style={styles.button}>
-            <Text style={[styles.text, {color: 'black', fontWeight: 'bold'}]}>
-            Submit
-            </Text>
+            style={styles.button}
+            underlayColor={'#dba400'}>
+            <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              {isLoading ? <View style={{flex: 1}}></View> : null}
+              <Text style={[styles.text, {color: 'black', fontWeight: 'bold'}]}> Reset Password </Text>
+              {isLoading ? <ActivityIndicator style={{flex: 1, marginRight: 0}} color="black" size={25}/> : null}
+            </View>
           </TouchableHighlight>
-          <View style={{marginVertical: 40}}></View>
         </View>
 
         <View style={{flex: 1}}></View>
@@ -190,7 +172,7 @@ const ChangePassword = ({ navigation }) => {
     </ImageBackground>
   );
 }
-export default ChangePassword;
+export default ForgottenPassword;
 
 
 const styles = StyleSheet.create({

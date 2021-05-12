@@ -1,4 +1,11 @@
-import {React, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
+
+
+export const GlobalColors = {
+  dcYellow: '#FFC300',
+  dcGrey: '#2D2D2D',
+  dcLightGrey: '#494949',
+}
 
 export const globalHeaderStyles = StyleSheet.create({
   container : {
@@ -10,13 +17,18 @@ export const globalHeaderStyles = StyleSheet.create({
   }
 });
 
-export const globalStyles = StyleSheet.create({
+export const GlobalStyles = StyleSheet.create({
   container : {
     height : '100%',
     backgroundColor : '#d3d3d3'
   },
-  text : {
-    color : '#000000',
+  text: {
+    color : 'white',
+    fontSize : 16,
+  },
+  primaryText : {
+    color : GlobalColors.dcYellow,
+    fontSize : 16,
   }
 });
 

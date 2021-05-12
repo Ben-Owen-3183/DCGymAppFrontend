@@ -3,6 +3,7 @@ import {
   StyleSheet,
   ScrollView,
   View,
+  KeyboardAvoidingView,
   Text,
   ActivityIndicator,
   TextInput,
@@ -21,22 +22,22 @@ const backgroundImagePath = '../assets/images/timetable-background.png';
 const Errors = ({ errors }) => {
   return(
     <View style={{backgroundColor: '#515151', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6}}>
-    <Text style={[styles.errorText, {margin: 5}]}>Please address the following issue{errors.length > 1 ? 's' : null}:</Text>
-    {
-      errors.map((error, i) => {
-        return(
-          <View style={{margin: 5, flexDirection: 'row'}} key={i}>
-            <View style={{marginHorizontal: 7, flex: 0}}>
-              <Text style={[styles.errorText, {fontWeight: 'bold'}]}>-</Text>
-            </View>
+      <Text style={[styles.errorText, {margin: 5}]}>Please address the following issue{errors.length > 1 ? 's' : null}:</Text>
+      {
+        errors.map((error, i) => {
+          return(
+            <View style={{margin: 5, flexDirection: 'row'}} key={i}>
+              <View style={{marginHorizontal: 7, flex: 0}}>
+                <Text style={[styles.errorText, {fontWeight: 'bold'}]}>-</Text>
+              </View>
 
-            <View style={{flex: 1}}>
-              <Text style={styles.errorText}>{error}</Text>
+              <View style={{flex: 1}}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
             </View>
-          </View>
-        )
-      })
-    }
+          )
+        })
+      }
     </View>
   )
 }
@@ -84,14 +85,13 @@ const Login = ({navigation }) => {
     };
 
     const onFailure = (response) => {
-        console.log("failed");
         setIsLoading(false);
         setErrors(['Server cannot be reached. Make sure you are connected to the internet']);
     };
 
     setIsLoading(true);
 
-    fetch('http://' + Settings.siteUrl + '/auth/login/', {
+    fetch(Settings.siteUrl + '/auth/login/', {
         method: "POST",
         headers: {"Content-type": "application/json; charset=UTF-8"},
         body: JSON.stringify(payload)
@@ -103,74 +103,89 @@ const Login = ({navigation }) => {
 
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
-      <ScrollView style={{width: '100%'}}>
-        <View style={[styles.mainContainer, {marginBottom: 100}]}>
+      <ScrollView style={{width: '100%'}}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+
+        <View>
           <View style={{flex: 1}}></View>
+          <View style={styles.mainContainer}>
+            <View style={{flex: 1}}></View>
 
-          <View style={{flex: 5}}>
-            <ActivityIndicator size="large" />
-            <View style={{alignItems: 'center'}}>
-              <Image
-                width={Dimensions.get('window').width*0.9}
-                source={require('../assets/images/dclogo.png')}/>
-              <Text style={styles.text}></Text>
-            </View>
-
-            <TextInput
-              value={username}
-              autoCompleteType={'email'}
-              onChangeText={text => setUsername(text)}
-              style={styles.inputText}
-              placeholder="Email"
-              numberOfLines={1}
-              keyboardType={'email-address'}
-              placeholderTextColor={'lightgrey'}
-              fontSize={18}
-              color={'white'}
-              keyboardAppearance={'dark'}
-            />
-
-            <View style={styles.inputContainer}></View>
-            <View style={{marginVertical: 10}}></View>
-
-            <TextInput
-              value={password}
-              autoCompleteType={'password'}
-              onChangeText={text => setPassword(text)}
-              style={styles.inputText}
-              keyboardAppearance={'dark'}
-              blurOnSubmit={true}
-              numberOfLines={1}
-              placeholder="Password"
-              textContentType={'password'}
-              secureTextEntry={true}
-              placeholderTextColor={'lightgrey'}
-              fontSize={18}
-              color={'white'}
-            />
-            <View style={styles.inputContainer}></View>
-
-            <View style={{marginVertical: 20}}>
-              {errors ? <Errors errors={errors}/> : null}
-            </View>
-
-            <TouchableHighlight
-              onPress={() => onSubmit(username, password, setIsLoading, setErrors)}
-              underlayColor={'#dba400'}
-              style={[styles.button, {backgroundColor: '#FFC300'}]}>
-              <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                {isLoading ? <View style={{flex: 1}}></View> : null}
-                <Text style={[styles.text, {color: 'black', fontWeight: 'bold'}]}> Login </Text>
-                {isLoading ? <ActivityIndicator style={{flex: 1, marginRight: 0}} color="black" size={25}/> : null}
+            <View style={{flex: 5}}>
+              <ActivityIndicator size="large" />
+              <View style={{flex: 1}}></View>
+              <View style={{alignItems: 'center'}}>
+                <Image
+                  width={Dimensions.get('window').width*0.9}
+                  source={require('../assets/images/dclogo.png')}/>
               </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              onPress={() => navigation.navigate('SignupStep1')}
-              style={[styles.button]}>
-              <Text style={[styles.text, {color: '#FFC300', fontWeight: 'bold'}]}> Sign up </Text>
-            </TouchableHighlight>
-          </View>
+              <View style={{flex: 1}}></View>
+              <TextInput
+                value={username}
+                autoCompleteType={'email'}
+                onChangeText={text => setUsername(text)}
+                style={styles.inputText}
+                placeholder="Email"
+                numberOfLines={1}
+                keyboardType={'email-address'}
+                placeholderTextColor={'lightgrey'}
+                fontSize={18}
+                color={'white'}
+                keyboardAppearance={'dark'}
+              />
 
+              <View style={styles.inputContainer}></View>
+              <View style={{marginVertical: 10}}></View>
+
+              <TextInput
+                value={password}
+                autoCompleteType={'password'}
+                onChangeText={text => setPassword(text)}
+                style={styles.inputText}
+                keyboardAppearance={'dark'}
+                blurOnSubmit={true}
+                numberOfLines={1}
+                placeholder="Password"
+                textContentType={'password'}
+                secureTextEntry={true}
+                placeholderTextColor={'lightgrey'}
+                fontSize={18}
+                color={'white'}
+              />
+              <View style={styles.inputContainer}></View>
+
+              <View style={{marginVertical: 20}}>
+                {errors ? <Errors errors={errors}/> : null}
+              </View>
+
+              <TouchableHighlight
+                underlayColor={'#dba400'}
+                onPress={() => onSubmit(username, password, setIsLoading, setErrors)}
+                underlayColor={'#dba400'}
+                style={[styles.button, {backgroundColor: '#FFC300'}]}>
+                <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  {isLoading ? <View style={{flex: 1}}></View> : null}
+                  <Text style={[styles.text, {color: 'black', fontWeight: 'bold'}]}> Login </Text>
+                  {isLoading ? <ActivityIndicator style={{flex: 1, marginRight: 0}} color="black" size={25}/> : null}
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight
+                underlayColor={'#dba400'}
+                onPress={() => navigation.navigate('SignupStep1')}
+                style={[styles.button]}>
+                <Text style={[styles.text, {color: '#FFC300', fontWeight: 'bold'}]}> Sign up </Text>
+              </TouchableHighlight>
+
+              <TouchableHighlight
+                underlayColor={null}
+                onPress={() => navigation.navigate('ForgottenPassword')}
+                style={{alignItems: 'center', marginVertical: 15}}>
+                <Text style={[styles.text, {color: '#FFC300', fontWeight: 'bold'}]}> forgotten password? </Text>
+              </TouchableHighlight>
+              <View style={{flex: 1}}></View>
+            </View>
+            <View style={{flex: 1}}></View>
+          </View>
           <View style={{flex: 1}}></View>
         </View>
       </ScrollView>
@@ -183,10 +198,10 @@ const styles = StyleSheet.create({
   mainContainer: {
     height: '100%',
     width: '100%',
-    // backgroundColor : '#2D2D2D',
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    flex: 8
   },
   text: {
     color : 'white',

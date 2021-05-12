@@ -11,7 +11,7 @@ export default function FeedStack({ navigation }) {
     <Stack.Navigator
       screenOptions={{
         headerTintColor: '#FFC300',
-        headerStyle: {backgroundColor: '#494949'}
+        headerStyle: {backgroundColor: '#494949', shadowOpacity: 0,elevation: 0}
       }}>
 
       <Stack.Screen

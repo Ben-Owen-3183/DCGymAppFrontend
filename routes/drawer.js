@@ -66,6 +66,7 @@ export default Navigator = ({navigation}) => {
     userData: null,
   }
 
+
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   React.useEffect(() => {
@@ -101,6 +102,7 @@ export default Navigator = ({navigation}) => {
         removeUserData();
         dispatch({ type: 'SIGN_OUT' })
       },
+      getUserData: () => { return state.userData }
     }),
     []
   );

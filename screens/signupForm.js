@@ -64,7 +64,7 @@ const SignupForm = ({ navigation }) => {
 
     setIsLoading(true);
 
-    fetch('http://' + Settings.siteUrl + '/signup/', {
+    fetch(Settings.siteUrl + '/signup/', {
         method: "POST",
         headers: {"Content-type": "application/json; charset=UTF-8"},
         body: JSON.stringify(payload)

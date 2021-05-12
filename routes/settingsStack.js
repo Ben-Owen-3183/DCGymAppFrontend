@@ -6,6 +6,7 @@ import Header from '../shared/header';
 
 import SetAvatar from '../screens/setAvatar';
 import ChangePassword from '../screens/changePassword';
+import ChangePasswordSuccess from '../screens/changePasswordSuccess';
 
 const Stack = createStackNavigator();
 
@@ -14,7 +15,7 @@ export default function SettingsStack({ navigation }) {
     <Stack.Navigator
       screenOptions={{
         headerTintColor: '#FFC300',
-        headerStyle: {backgroundColor: '#494949'}
+        headerStyle: {backgroundColor: '#494949', shadowOpacity: 0,elevation: 0}
       }}>
 
       <Stack.Screen
@@ -37,6 +38,17 @@ export default function SettingsStack({ navigation }) {
         }}
         name="ChangePassword"
         component={ChangePassword}
+      />
+
+      <Stack.Screen
+        options={{
+          headerTitle: () => <Header navigation={navigation} title='Success'/>,
+          headerLeft: () => {
+            return null;
+          },
+        }}
+        name="ChangePasswordSuccess"
+        component={ChangePasswordSuccess}
       />
 
 

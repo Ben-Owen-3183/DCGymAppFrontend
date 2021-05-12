@@ -11,7 +11,7 @@ const fontSize = 16;
 
 export function DefaultDrawerContent(props){
   return(
-      <View style={[styles.drawer, {paddingTop: 24, marginBottom: 620}]}>
+      <View style={[styles.drawer, {paddingTop: 24, maxHeight: 160, minHeight: 160}]}>
         <TouchableHighlight
           underlayColor={'#1c1c1c'}
           onPress={() => props.navigation.navigate('Login')}>
@@ -95,7 +95,7 @@ export function DrawerContent(props){
       <DrawerContentScrollView { ... props }>
         <View>
           <View style={styles.headerView}>
-            <CustomAvatar avatarData={props.userData.avatarData} size={100}/>
+            <CustomAvatar avatarURL={props.userData.avatarURL} size={100}/>
             <View style={{marginTop: 15}}></View>
             <View style={styles.avatarText}>
               <Text style={{fontSize: fontSize, color: 'white'}}

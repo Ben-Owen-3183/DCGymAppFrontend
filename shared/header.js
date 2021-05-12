@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { Icon } from 'react-native-elements'
 
 export default function Header({ navigation, title, back }) {
   const openMenu = () => {
+    Keyboard.dismiss();
     navigation.openDrawer();
   }
 
@@ -37,10 +38,10 @@ const styles = StyleSheet.create({
     height : 56,
   },
   headerText : {
-    fontWeight : 'bold',
-    fontSize : 20,
+    fontSize : 27,
     letterSpacing : 1,
     color : '#FFC300',
+    fontFamily : 'BebasNeue Bold'
   },
   icon : {
     color : '#FFC300',

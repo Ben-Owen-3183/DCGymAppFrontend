@@ -5,6 +5,7 @@ import Login from '../screens/login';
 import SignupStep1 from '../screens/signupStep1';
 import SignupForm from '../screens/signupForm';
 import VerifyEmail from '../screens/verifyEmail';
+import ForgottenPassword from '../screens/forgottenPassword';
 import Header from '../shared/header';
 
 const Stack = createStackNavigator();
@@ -14,7 +15,7 @@ export default function LoginStack({ navigation }) {
     <Stack.Navigator
       screenOptions={{
         headerTintColor: '#FFC300',
-        headerStyle: {backgroundColor: '#494949'}
+        headerStyle: {backgroundColor: '#494949', shadowOpacity: 0,elevation: 0}
       }}>
 
       <Stack.Screen
@@ -47,6 +48,13 @@ export default function LoginStack({ navigation }) {
         }}
       />
 
+      <Stack.Screen
+        name="ForgottenPassword"
+        component={ForgottenPassword}
+        options={{
+          headerTitle: () => <Header navigation={navigation} title='Password Reset'/>,
+        }}
+      />
     </Stack.Navigator>
   );
 }

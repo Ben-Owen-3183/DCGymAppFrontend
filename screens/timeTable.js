@@ -6,7 +6,8 @@ import {
   ScrollView,
   ImageBackground
 } from 'react-native';
-import {globalStyles} from '../styles/dcstyles';
+import {GlobalStyles} from '../styles/dcstyles';
+import {PrimaryButton} from '../shared/basicComponents'
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
@@ -63,18 +64,25 @@ function GenerateData (){
   return timetableData;
 }
 
-const TimeTable = () => {
+const TimeTable = ({navigation}) => {
 
   const timetableData = GenerateData();
 
   return (
-    <View style={globalStyles.container}>
+    <View style={GlobalStyles.container}>
       <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
         <ScrollView style={styles.scrollView}>
+
           <View style={styles.timetableContainer}>
             <View>
+              <View style={{marginTop: 30, marginLeft: -50, width: 160}}>
+                <PrimaryButton text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
+              </View>
               <Text style={styles.titleText}>CLASS{"\n"}TIMETABLE </Text>
               <DayView/>
+              <View style={{marginBottom: 30, marginTop: -10, width: 160}}>
+                <PrimaryButton text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -191,9 +199,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginBottom : 8,
   },
-
-
-  // Text
   dayText : {
     color : '#FFC300',
     marginBottom : 10,
@@ -203,13 +208,13 @@ const styles = StyleSheet.create({
   classText : {
     color : '#FFFFFF',
     textAlign : 'left',
-    fontSize : 20,
+    fontSize : 22,
     fontFamily : 'BebasNeue Regular',
   },
   liveText : {
     color : '#FFFFFF',
     textAlign : 'left',
-    fontSize : 20,
+    fontSize : 22,
     fontFamily : 'BebasNeue Bold',
     marginRight : 8
 
@@ -221,7 +226,6 @@ const styles = StyleSheet.create({
     fontSize : 20,
     fontFamily : 'BebasNeue Regular'
   },
-
 
   // Views
   classesView : {

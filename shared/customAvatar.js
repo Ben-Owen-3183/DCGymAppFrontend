@@ -1,19 +1,21 @@
 import React from 'react';
 import {Avatar} from 'react-native-elements';
 import {StyleSheet} from 'react-native';
+import Settings from '../shared/settings';
 
-const CustomAvatar = ({initials, style, size, avatarData}) => {
-
+const CustomAvatar = ({initials, style, size, avatarURL}) => {
   let source = null;
-  if(avatarData){
-      source = {uri: `data:${avatarData.type};base64,${avatarData.base64}`}
+  if(avatarURL){
+      source = {
+        uri: Settings.siteUrl + '/media/avatars/' + avatarURL,
+        cache: 'reload'
+      }
   }
-
   return (
     <Avatar
-      source={(source ? source : null)}
+      imageProps={{transitionDuration: 0}}
+      source={source}
       rounded
-      size="medium"
       size={(size ? size : 38)}
       icon={{name: 'user', type: 'font-awesome'}}
       title={initials}
