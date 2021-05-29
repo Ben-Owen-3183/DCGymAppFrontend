@@ -6,98 +6,85 @@ import {
   ScrollView,
   TouchableHighlight
 } from 'react-native';
-import {globalStyles} from '../styles/dcstyles';
+import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import CustomAvatar from '../shared/customAvatar';
+import {PrimaryButtonWithIcon} from '../shared/basicComponents';
+import {AuthContext} from '../routes/drawer';
+import {UsersName} from '../shared/basicComponents';
+import {retrieveChats} from '../shared/storage';
+import moment from 'moment'
+import Moment from 'react-moment';
 
-var loremIpsum = require('lorem-ipsum-react-native');
-
-function RandomNumber(max){
-  return (Math.floor(Math.random() * max));
+async function sort(chat){
+  console.log("You are not sorting chats!")
+  return chat;
 }
 
-function GenerateMessageText(){
-  return loremIpsum({
-    count : RandomNumber(3) + 1,
-    units : 'sentences',
-    format : 'plain',
-    sentenceLowerBound: 1,
-    sentenceUpperBound: 6
-  })
-}
 
-const names = [
-  'Jane Doe',
-  'Joe Blogs',
-  'Sarah Smith',
-  'Greg Smith',
-  'Will Jones',
-  'Sarah Jones',
-  'Alexander Montgomery'
-];
+const Messenger = (props) => {
 
-const times = [
-  '3h',
-  '7h',
-  'yesterday',
-  '11 Mar',
-  'Mon',
-  'Fri'
-];
-
-function Chat(name, lastMessage, lastMessageTime){
-  this.name = name;
-  this.lastMessagePerson = RandomNumber(2) === 0;
-  this.lastMessage = lastMessage;
-  this.lastMessageTime = lastMessageTime;
-  this.newMessage = RandomNumber(5) < 1;
-}
-
-function GenerateChats(){
-  var chats = Array();
-  for(var i = 0; i < 15; i++){
-    chats.push(new Chat(
-      names[RandomNumber(names.length)],
-      GenerateMessageText(),
-      times[RandomNumber(times.length)]
-    ));
-  }
-  return chats;
-}
-
-function GetInitials(name){
-  return name.split(" ")[0].split("")[0] + name.split(" ")[1].split("")[0];
-}
-
-const Messenger = ({navigation}) => {
   return (
     <ScrollView style={styles.mainContainer}>
-      <Chats navigation={navigation}/>
+      <View style={{marginHorizontal: 5, marginTop: 4}}>
+        <PrimaryButtonWithIcon
+          onPress={() => props.navigation.navigate('SearchUser')}
+          text="Search users to message"
+          iconType={'font-awesome-5'}
+          iconName={'search'}/>
+      </View>
+      {
+        props.chats.length > 0 ?
+        (
+          <Chats chats={props.chats} navigation={props.navigation}/>
+        ) : (
+          null
+        )
+      }
+
     </ScrollView>
   );
 }
 
-const Chats = ({navigation}) => {
-  return GenerateChats().map((chat, i) => {
+const Chats = ({chats, navigation}) => {
+
+  return chats.map((chat, i) => {
+    const name = `${chat.other_user_data.fName} ${chat.other_user_data.sName}`;
+    const isYou = chat.messages[chat.messages.length - 1].user_id.toString()
+      !== chat.other_user_data.id.toString()
+
     return(
-      <TouchableHighlight key={i} underlayColor={'#212121'} onPress={() => navigation.navigate('Chat', { title :  chat.name})}>
-        <View style={[styles.chatRow, {backgroundColor : (chat.newMessage ? '#458145' : null)} ]}>
-          <CustomAvatar intials={GetInitials(chat.name)} size={55}/>
+      <TouchableHighlight
+        key={chat['id']}
+        underlayColor={'#212121'}
+        onPress={() => {
+          navigation.navigate('Chat', {
+            title: name,
+            chat_id: chat.id
+          });
+        }}>
+        <View style={[styles.chatRow, {backgroundColor : (!chat.read ? '#458145' : null)} ]}>
+          <CustomAvatar
+            name={name}
+            size={55}
+            avatarURL={chat.other_user_data.avatarURL} />
           <View style={{flex : 1, marginLeft : 12}}>
-            <Text numberOfLines={1} style={styles.chatText}>
-              {chat.name}
-            </Text>
+            <UsersName
+              isStaff={chat['isStaff']}
+              isSuperUser={chat['isSuperUser']}
+              fName={chat['other_user_data']['fName']}
+              sName={chat['other_user_data']['sName']}
+            />
 
             <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center'}}>
-
               <View>
                 <Text numberOfLines={1} style={[styles.subText, {fontWeight : 'bold' }]}>
-                  {(chat.lastMessagePerson ? 'You: ' : chat.name + ': ')}
+                  {(isYou ? 'You: ' : name + ': ')}
                 </Text>
               </View>
 
               <View style={{flex : 1, marginHorizontal : 5}}>
                 <Text numberOfLines={1} style={styles.subText}>
-                  {chat.lastMessage}
+                  {chat.messages[chat.messages.length - 1].message}
                 </Text>
               </View>
 
@@ -110,7 +97,7 @@ const Chats = ({navigation}) => {
 
           <View style={styles.time}>
             <Text style={styles.chatText}>
-            {chat.lastMessageTime}
+              {moment().startOf(chat.messages[chat.messages.length - 1].datetime).fromNow()}
             </Text>
           </View>
         </View>
@@ -126,7 +113,6 @@ const styles = StyleSheet.create({
     backgroundColor : '#2D2D2D'
   },
   chatRow : {
-    //justifyContent : 'space-between',
     alignItems : 'center',
     flexDirection : 'row',
     marginVertical : 3,

@@ -75,10 +75,11 @@ const TimeTable = ({navigation}) => {
 
           <View style={styles.timetableContainer}>
             <View>
-              <View style={{marginTop: 30, marginLeft: -50, width: 160}}>
+
+              <Text style={styles.titleText}>CLASS{"\n"}TIMETABLE </Text>
+              <View style={{marginVertical: 10, marginLeft: -10, width: 160}}>
                 <PrimaryButton text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
               </View>
-              <Text style={styles.titleText}>CLASS{"\n"}TIMETABLE </Text>
               <DayView/>
               <View style={{marginBottom: 30, marginTop: -10, width: 160}}>
                 <PrimaryButton text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>

@@ -10,7 +10,14 @@ import PastStreamStack from './videosStack';
 import LiveStreamStack from './liveStreamStack';
 import SettingsStack from './settingsStack';
 import Header from '../shared/header';
-import {retrieveUserData, storeUserData, removeUserData} from '../shared/storage';
+import {
+  retrieveUserData,
+  storeUserData,
+  removeUserData,
+  retrieveChats,
+  storeChats,
+  removeChats,
+} from '../shared/storage';
 import {
   View, Text, Dimensions, StyleSheet, ImageBackground, ActivityIndicator,
 } from 'react-native';
@@ -18,10 +25,60 @@ import {DrawerContent, DefaultDrawerContent} from '../shared/drawerContent'
 import Image from 'react-native-scalable-image';
 import SetAvatar from '../screens/setAvatar';
 import ChangePassword from '../screens/changePassword';
+import Settings from '../shared/settings'
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 const Drawer = createDrawerNavigator();
 const AuthContext = React.createContext();
+
+
+async function getChatData(userData, setChats, dispatch){
+  console.log("fetching chat data");
+
+  // if we fail to download chat data, pull the old one from FS
+  const loadOldChatData = async () => {
+    let chats;
+
+    try {
+      chats = await retrieveChats();
+    } catch (e) {}
+
+    if(chats){
+      setChats(chats);
+      console.log("loaded cached chat data")  ;
+    }
+    else{
+      setChats([]);
+    }
+  };
+
+  const onSuccess = (response) => {
+    if(response['chats']){
+      storeChats(response['chats']);
+      setChats(response['chats']);
+      console.log("chat data synced");
+    }
+    else{
+      loadOldChatData();
+    }
+  };
+
+  const onFailure = (response) => {
+      loadOldChatData();
+  };
+
+  fetch(Settings.siteUrl + '/messenger/get_chats/', {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "Authorization": "Token " + userData.token
+      },
+    })
+    .then(response => response.json())
+    .then(response => {onSuccess(response)})
+    .catch(response => {onFailure(response)})
+}
+
 
 function reducer(prevState, action){
   switch (action.type) {
@@ -53,7 +110,11 @@ function reducer(prevState, action){
         ...prevState,
         userData: action.userData,
       };
-
+    case 'WEBSOCKET_RECONNECT':
+      return {
+        ...prevState,
+        websocket: action.websocket,
+      };
   }
 }
 
@@ -66,29 +127,95 @@ export default Navigator = ({navigation}) => {
     userData: null,
   }
 
-
   const [state, dispatch] = React.useReducer(reducer, initialState);
+  const [websocket, setWebsocket] = React.useState(null);
+  const [websocketInitialised, setWebsocketInitialised] = React.useState(false);
+  const [chats, setChats] = React.useState(null);
+
+  if(websocket === null)
+    setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
+
+  async function initialiseWebsocket(userData){
+
+    console.log('sending websocket initialisation data.');
+    websocket.send(JSON.stringify({
+      'action': 'init',
+      'data' : {'token': userData.token}
+    }));
+  }
+
+
+  if(websocket){
+
+    websocket.onclose = function(){
+      setWebsocketInitialised(false);
+      console.log('websocket connection has been closed.')
+      console.log('attempting to reconnect...')
+
+      setTimeout(
+        () => setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/')),
+        2000
+      );
+    }
+
+    websocket.onopen = function(e){
+      console.log('websocket connection now open.')
+      // only should really be run after the web socket is disconnected
+      // and reconnected. These functions will get called in the useEffect
+      // when the app starts up
+      if(state.userData && !websocketInitialised){
+        console.log('web init called from *socket open*')
+        initialiseWebsocket(state.userData);
+        getChatData(state.userData, setChats, dispatch);
+      }
+    }
+
+    websocket.onmessage = function(e){
+      let data = JSON.parse(e.data)
+      console.log('websocket recieved: ' + e);
+      if(data.message === 'new_message'){
+        getChatData(state.userData, setChats, dispatch);
+      }
+      else if(data.message === 'new_chat'){
+        getChatData(state.userData, setChats, dispatch);
+        initialiseWebsocket(state.userData);
+      }
+    }
+  }
 
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const loadUserData = async () => {
       let userData;
 
-      try {
-        userData = await retrieveUserData();
-      } catch (e) {
+      try{
+        try {
+          userData = await retrieveUserData();
+        } catch (e) {
+          console.log(e);
+        }
 
+        if(userData){
+          dispatch({ type: 'RESTORE_USER_DATA', userData: userData });
+          getChatData(userData, setChats, dispatch);
+
+          if(userData && !websocketInitialised){
+            console.log('web init called from *load user data*')
+            setWebsocketInitialised(true)
+            initialiseWebsocket(userData);
+          }
+        }
+        else{
+          dispatch({ type: 'RESTORE_USER_DATA_FAILED'});
+        }
       }
-
-      if(userData)
-        dispatch({ type: 'RESTORE_USER_DATA', userData: userData });
-      else
-        dispatch({ type: 'RESTORE_USER_DATA_FAILED'});
+      catch (e) {
+        console.log(e);
+      }
     };
 
     loadUserData();
   }, []);
-
 
   const authContext = React.useMemo(
     () => ({
@@ -102,12 +229,12 @@ export default Navigator = ({navigation}) => {
         removeUserData();
         dispatch({ type: 'SIGN_OUT' })
       },
-      getUserData: () => { return state.userData }
+      getUserData: () => { return state.userData },
+      getWebSocket: async () => { return state.websocket },
     }),
     []
   );
 
-  //if (true) {
   if (state.isLoading) {
     return (
 
@@ -139,7 +266,9 @@ export default Navigator = ({navigation}) => {
             drawerContent={props => <DrawerContent userData={state.userData} {...props}/>}>
             <Drawer.Screen name="TimeTable" component={TimeTableStack} />
             <Drawer.Screen name="Feed" component={FeedStack}/>
-            <Drawer.Screen name="Messenger" component={MessengerStack} />
+            <Drawer.Screen name="Messenger">
+              {props => <MessengerStack chats={chats} userData={state.userData} websocket={websocket} {...props}/>}
+            </Drawer.Screen>
             <Drawer.Screen name="Videos" component={PastStreamStack} />
             <Drawer.Screen name="Live Stream" component={LiveStreamStack} />
             <Drawer.Screen name="Settings" component={SettingsStack} />

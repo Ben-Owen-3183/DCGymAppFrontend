@@ -8,6 +8,12 @@ import {globalStyles} from '../styles/dcstyles';
 import {PrimaryButton} from '../shared/basicComponents'
 import WebView from 'react-native-webview'
 
+const JAVASCRIPT = 'gcaptcha = document.querySelector(\'.g-recaptcha\');'
+  + 'gcaptcha.style.marginLeft = 0;'
+
+// g-recaptcha
+
+
 const GymMembership = () => {
 
   const [reload, setReload] = React.useState(null);
@@ -38,10 +44,12 @@ const GymMembership = () => {
 }
 
 const GymSignUp = ({setReload, setFailedToLoad}) => {
+
   const webViewRef = React.useRef(null);
   return (
     <WebView
       ref={webViewRef}
+      injectedJavaScript={JAVASCRIPT}
       onError={() => {
         setReload(webViewRef);
         setFailedToLoad(true);

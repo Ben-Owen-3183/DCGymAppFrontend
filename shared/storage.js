@@ -33,31 +33,38 @@ export async function removeUserData() {
     }
 }
 
-/*
-export async function storeToken(token) {
-  try {
-      await EncryptedStorage.setItem("token", token);
-  } catch (error) {
-  }
+
+// CHAT
+
+export async function storeChats(chats) {
+    try {
+        await EncryptedStorage.setItem(
+            "chats",
+            JSON.stringify(chats)
+        );
+        // Congrats! You've just stored your first value!
+    } catch (error) {
+        // There was an error on the native side
+    }
 }
 
-export async function getToken() {
+export async function retrieveChats() {
     try {
-        const token = await EncryptedStorage.getItem("token");
-        if (token !== undefined) {
-          return token;
+        const chats = await EncryptedStorage.getItem("chats");
+        if (chats !== undefined) {
+          return JSON.parse(chats);
         }
     } catch (error) {
+        // There was an error on the native side
     }
-    return '';
+    return ''
 }
 
-export async function deleteToken() {
+export async function removeChats() {
     try {
-        await EncryptedStorage.removeItem("token");
+        await EncryptedStorage.removeItem("chats");
         // Congrats! You've just removed your first value!
     } catch (error) {
         // There was an error on the native side
     }
 }
-*/

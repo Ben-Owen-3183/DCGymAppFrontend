@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { Icon } from 'react-native-elements'
 
-export default function Header({ navigation, title, back }) {
+export default function Header({route, dynamicTitle, navigation, title, back }) {
+
   const openMenu = () => {
     Keyboard.dismiss();
     navigation.openDrawer();

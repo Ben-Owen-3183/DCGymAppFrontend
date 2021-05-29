@@ -81,6 +81,8 @@ const BookingSite = ({setReload, setFailedToLoad}) => {
   const webViewRef = React.useRef(null);
   return (
     <WebView
+      style={{paddingHorizontal:0, marginHorizontal: 0}}
+      scalesPageToFit={true}
       ref={webViewRef}
       onError={() => {
         setReload(webViewRef);

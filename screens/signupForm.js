@@ -91,6 +91,7 @@ const SignupForm = ({ navigation }) => {
           <View style={{flex: 1}}></View>
 
           <View style={{flex: 10}}>
+
             <Names state={{fName, setFName, sName, setSName, errors}}/>
             <Email state={{email, setEmail, emailConf, setEmailConf, errors}}/>
             <Password state={{password, setPassword, passwordConf, setPasswordConf, errors}}/>
@@ -169,7 +170,7 @@ const Email = (state) => {
     <View>
       <View style={{flexDirection: 'row'}}>
         <View style={styles.subFormHeaderContainer}>
-          <Text style={[styles.headerText]}>
+          <Text style={[styles.titleText]}>
             Email
           </Text>
         </View>
@@ -240,7 +241,7 @@ const Names = (state) => {
     <View>
       <View style={{flexDirection: 'row'}}>
         <View style={styles.subFormHeaderContainer}>
-          <Text style={[styles.headerText]}>
+          <Text style={[styles.titleText]}>
             Name
           </Text>
         </View>
@@ -302,7 +303,7 @@ const Password = (state) => {
     <View>
       <View style={{flexDirection: 'row'}}>
         <View style={styles.subFormHeaderContainer}>
-          <Text style={[styles.headerText]}>
+          <Text style={[styles.titleText]}>
             Password
           </Text>
         </View>
@@ -438,5 +439,14 @@ const styles = StyleSheet.create({
   errorText: {
     color : 'white',
     fontSize : 16,
-  }
+  },
+  titleText : {
+    color : '#FFC300',
+    margin : 'auto',
+    marginTop : 7,
+    marginBottom : 7,
+    marginHorizontal: 10,
+    fontSize : 25,
+    fontFamily : 'BebasNeue Bold'
+  },
 });

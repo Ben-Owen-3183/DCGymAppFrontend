@@ -14,7 +14,7 @@ export function DefaultDrawerContent(props){
       <View style={[styles.drawer, {paddingTop: 24, maxHeight: 160, minHeight: 160}]}>
         <TouchableHighlight
           underlayColor={'#1c1c1c'}
-          onPress={() => props.navigation.navigate('Login')}>
+          onPress={() => props.navigation.reset({index: 1, routes: [{name: 'Login'}]})}>
           <View style={styles.buttonContainer}>
             <View style={{flex: 2}}>
               <Icon
@@ -60,28 +60,6 @@ export function DrawerContent(props){
 
   const { signOut } = React.useContext(AuthContext);
   const [settingsToggle, setSettingsToggle] = useState(false);
-
-  //const [userData, setUserData] = useState(null);
-
-/*
-  React.useEffect(() => {
-
-    console.log('drawer content reload')
-    // Fetch the token from storage then navigate to our appropriate place
-    const loadUserData = async () => {
-      let response;
-
-      try {
-        response = await retrieveUserData();
-        setUserData(response);
-      } catch (e) {
-      }
-
-    };
-
-    loadUserData();
-  }, []);
-*/
 
   function toggleSettings(){
     if(settingsToggle)

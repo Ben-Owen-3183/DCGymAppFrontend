@@ -16,6 +16,7 @@ import Image from 'react-native-scalable-image';
 import {storeUserData} from '../shared/storage';
 import {AuthContext} from '../routes/drawer';
 import Settings from '../shared/settings';
+import {SecondaryButton, PrimaryButton} from '../shared/basicComponents'
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
@@ -158,23 +159,18 @@ const Login = ({navigation }) => {
                 {errors ? <Errors errors={errors}/> : null}
               </View>
 
-              <TouchableHighlight
-                underlayColor={'#dba400'}
+
+
+              <PrimaryButton
                 onPress={() => onSubmit(username, password, setIsLoading, setErrors)}
-                underlayColor={'#dba400'}
-                style={[styles.button, {backgroundColor: '#FFC300'}]}>
-                <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                  {isLoading ? <View style={{flex: 1}}></View> : null}
-                  <Text style={[styles.text, {color: 'black', fontWeight: 'bold'}]}> Login </Text>
-                  {isLoading ? <ActivityIndicator style={{flex: 1, marginRight: 0}} color="black" size={25}/> : null}
-                </View>
-              </TouchableHighlight>
-              <TouchableHighlight
-                underlayColor={'#dba400'}
+                text={'Login'}
+                isLoading={isLoading}
+              />
+
+              <SecondaryButton
                 onPress={() => navigation.navigate('SignupStep1')}
-                style={[styles.button]}>
-                <Text style={[styles.text, {color: '#FFC300', fontWeight: 'bold'}]}> Sign up </Text>
-              </TouchableHighlight>
+                text={'Sign up'}
+              />
 
               <TouchableHighlight
                 underlayColor={null}
