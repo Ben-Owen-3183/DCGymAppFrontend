@@ -8,36 +8,57 @@ import {
 } from 'react-native';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import CustomAvatar from '../shared/customAvatar';
-import {PrimaryButtonWithIcon} from '../shared/basicComponents';
+import {PrimaryButtonWithIcon, PrimaryButton} from '../shared/basicComponents';
 import {AuthContext} from '../routes/drawer';
 import {UsersName} from '../shared/basicComponents';
 import {retrieveChats} from '../shared/storage';
 import moment from 'moment'
 import Moment from 'react-moment';
 
-async function sort(chat){
-  console.log("You are not sorting chats!")
-  return chat;
-}
-
 
 const Messenger = (props) => {
 
   return (
     <ScrollView style={styles.mainContainer}>
-      <View style={{marginHorizontal: 5, marginTop: 4}}>
-        <PrimaryButtonWithIcon
-          onPress={() => props.navigation.navigate('SearchUser')}
-          text="Search users to message"
-          iconType={'font-awesome-5'}
-          iconName={'search'}/>
+      <View style={{flex: 1, marginHorizontal: 10, marginTop: 4, flexDirection: 'row'}}>
+        <View style={{flex: 3}}>
+          <PrimaryButtonWithIcon
+            onPress={() => props.navigation.navigate('SearchUser')}
+            text="Find Member"
+            iconType={'font-awesome-5'}
+            iconName={'search'}/>
+        </View>
+        <View style={{marginHorizontal: 5}}></View>
+        <View style={{flex: 2}}>
+          <PrimaryButton
+            onPress={() => props.navigation.navigate('ListStaff')}
+            text="List Staff"/>
+        </View>
       </View>
       {
-        props.chats.length > 0 ?
+        props.chats && props.chats.length > 0 ?
         (
           <Chats chats={props.chats} navigation={props.navigation}/>
         ) : (
-          null
+          <View style={{flexDirection: 'row',marginTop: 40 ,flex: 1}}>
+            <View style={{flex: 1}}></View>
+            <View style={{
+                alignItems: 'center',
+                marginTop: 20,
+                flex: 4,
+                paddingHorizontal: 30,
+                paddingVertical: 20,
+                backgroundColor: GlobalColors.dcLightGrey,
+                borderRadius: 30
+              }}>
+              <Text style={styles.text}>You are currently not chatting with anyone</Text>
+              <View style={{margin: 15}}></View>
+              <Text style={styles.text}>Press <Text style={styles.primaryText}>Find Member</Text> to find a gym member to chat with</Text>
+              <Text style={[styles.primaryText, {marginVertical: 8}]}>OR</Text>
+              <Text style={styles.text}>Press <Text style={styles.primaryText}>List Staff</Text> to see all active members of staff</Text>
+            </View>
+            <View style={{flex: 1}}></View>
+          </View>
         )
       }
 
@@ -49,8 +70,12 @@ const Chats = ({chats, navigation}) => {
 
   return chats.map((chat, i) => {
     const name = `${chat.other_user_data.fName} ${chat.other_user_data.sName}`;
-    const isYou = chat.messages[chat.messages.length - 1].user_id.toString()
+    const isYou = chat.messages[0].user_id.toString()
       !== chat.other_user_data.id.toString()
+    let datetimeText = moment(chat.messages[0].datetime).fromNow();
+    // moment keeps printing 'in a few seconds' when it should be 'a few seconds ago'.
+    if(datetimeText === 'in a few seconds')
+      datetimeText = 'a few seconds ago';
 
     return(
       <TouchableHighlight
@@ -84,7 +109,7 @@ const Chats = ({chats, navigation}) => {
 
               <View style={{flex : 1, marginHorizontal : 5}}>
                 <Text numberOfLines={1} style={styles.subText}>
-                  {chat.messages[chat.messages.length - 1].message}
+                  {chat.messages[0].message}
                 </Text>
               </View>
 
@@ -97,7 +122,7 @@ const Chats = ({chats, navigation}) => {
 
           <View style={styles.time}>
             <Text style={styles.chatText}>
-              {moment().startOf(chat.messages[chat.messages.length - 1].datetime).fromNow()}
+              {datetimeText}
             </Text>
           </View>
         </View>
@@ -110,7 +135,18 @@ export default Messenger;
 
 const styles = StyleSheet.create({
   mainContainer : {
-    backgroundColor : '#2D2D2D'
+    backgroundColor : '#2D2D2D',
+    flex: 1,
+  },
+  text: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center'
+  },
+  primaryText:{
+    color: GlobalColors.dcYellow,
+    fontWeight: 'bold',
+    fontSize: 18,
   },
   chatRow : {
     alignItems : 'center',

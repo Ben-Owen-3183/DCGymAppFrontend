@@ -126,7 +126,12 @@ const SetAvatar = ({ navigation }) => {
             </Text>
 
             <View style={{marginVertical: 10}}></View>
-            <CustomAvatar avatarURL={userData.avatarURL} style={{marginBottom: 35}} size={240}/>
+            <CustomAvatar
+              avatarURL={userData.avatarURL}
+              style={{marginBottom: 35}}
+              size={240}
+              name={`${userData.first_name} ${userData.last_name}`}
+              />
             <View style={{marginVertical: 7}}></View>
           </View>
 

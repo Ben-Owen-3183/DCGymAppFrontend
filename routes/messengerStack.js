@@ -9,6 +9,7 @@ import Header from '../shared/header';
 import Messenger from '../screens/messenger';
 import Chat from '../screens/chat';
 import SearchUser from '../screens/searchUser';
+import ListStaff from '../screens/listStaff';
 
 const Stack = createStackNavigator();
 
@@ -40,7 +41,15 @@ export default function MessengerStack({userData, websocket, chats, route, navig
           headerTitle: () => <Header navigation={navigation} title='User Search'/>
         }}
         name="SearchUser">
-        {props => <SearchUser navigation={navigation} chats={chats} websocket={websocket} {...props}/>}
+        {props => <SearchUser navigation={navigation} chats={chats} websocket={websocket} userData={userData} {...props}/>}
+      </Stack.Screen>
+
+      <Stack.Screen
+        options={{
+          headerTitle: () => <Header navigation={navigation} title='David Corfield Staff'/>
+        }}
+        name="ListStaff">
+        {props => <ListStaff websocket={websocket} userData={userData} navigation={navigation} {...props}/>}
       </Stack.Screen>
 
 

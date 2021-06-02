@@ -6,77 +6,62 @@ import {
   ScrollView,
   TouchableHighlight,
 } from 'react-native';
-import {SearchInput, UsersName} from '../shared/basicComponents';
+import {SearchInput, UsersName, LoadingView} from '../shared/basicComponents';
 import {GlobalColors} from '../styles/dcstyles';
 import Settings from '../shared/settings';
 import CustomAvatar from '../shared/customAvatar';
 import {retrieveUserData} from '../shared/storage';
 
-const SearchUser = (props, {navigation, chat_id}) => {
+const SearchUser = ({userData, websocket, navigation}) => {
   const [searchText, setSearchText] = React.useState('');
   const [userList, setUserList] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [userData, setUserData] = React.useState('');
+  // const [userData, setUserData] = React.useState('');
 
-  React.useEffect(() => {
-    const loadUserData = async () => {
-      let response;
 
-      try {
-        response = await retrieveUserData();
-      } catch (e) {
-      }
-      setUserData(response);
-    };
 
-    loadUserData();
-  }, []);
-
-  function submit(user_id, name){
-
+  async function submit(user_id, name){
     if(isLoading)
       return;
+    setIsLoading(true);
 
-    const onSuccess = (response) => {
+    try{
+      let response = await fetch(
+        Settings.siteUrl + '/messenger/create_new_chat/', {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Authorization": "Token " + userData.token
+          },
+          body: JSON.stringify({ 'otherUser': user_id })
+      });
+
+      let data = await response.json();
+
+      if(!data['chat_id'])
+        throw 'Search user: no chat data returned from server';
+
+      websocket.send(JSON.stringify({
+        'action': 'new_chat',
+        'data' : {
+          'token': userData.token,
+          'other_user_id': user_id,
+          'chat_id': data['chat_id']
+        }
+      }));
+
+      navigation.navigate('Chat', {
+        title:  name,
+        user_id: user_id,
+        chat_id: data['chat_id']
+      });
+
+
+    }catch(e){
+      console.log(e);
       setIsLoading(false);
-      if(response['chat_id']){
-
-        props.websocket.send(JSON.stringify({
-          'action': 'new_chat',
-          'data' : {
-            'token': userData.token,
-            'other_user_id': user_id,
-            'chat_id': response['chat_id']
-          }
-        }))
-
-        props.navigation.navigate('Chat', {
-          title:  name,
-          user_id: user_id,
-          chat_id: response['chat_id']
-        });
-      }
-
-    };
-
-    const onFailure = (response) => {
-      setIsLoading(false);
-      console.log(response);
-    };
-
-    // setIsLoading(true);
-
-    fetch(Settings.siteUrl + '/messenger/create_new_chat/', {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          "Authorization": "Token " + userData.token
-        },
-        body: JSON.stringify({ 'otherUser': user_id })
-      })
-      .then(response => response.json())
-      .then(response => {onSuccess(response)})
-      .catch(response => {onFailure(response)})
+    }
+    setIsLoading(false);
   }
 
 
@@ -106,6 +91,12 @@ const SearchUser = (props, {navigation, chat_id}) => {
       .catch(response => {onFailure(response)})
 
     setSearchText(value);
+  }
+
+  if(isLoading){
+    return(
+      <LoadingView useBackground={true} text={'Loading new chat'}/>
+    )
   }
 
   return (

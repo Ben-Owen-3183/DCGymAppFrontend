@@ -34,15 +34,18 @@ export const PrimaryButtonWithIcon = ({text, onPress, iconType, iconName}) => {
         style={styles.button}>
         <View style={{paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center'}}>
 
-          <Text
-            style={[styles.text, { color: 'black', fontWeight: 'bold', marginRight: 15}]}>
+          <Text style={[styles.text,
+                { color: 'black', textAlign: 'center', fontWeight: 'bold', marginRight: 15}]
+              }>
             {text}
           </Text>
 
-          <Icon
-            name={iconName}
-            type={iconType}
-          />
+          <View style={{marginVertical: -15}}>
+            <Icon
+              name={iconName}
+              type={iconType}
+            />
+          </View>
         </View>
 
       </TouchableHighlight>
@@ -62,10 +65,12 @@ export const SecondaryButtonWithIcon = ({text, onPress, iconType, iconName}) => 
             {text}
           </Text>
 
-          <Icon
-            name={iconName}
-            type={iconType}
-          />
+          <View style={{marginVertical: -15}}>
+            <Icon
+              name={iconName}
+              type={iconType}
+            />
+          </View>
         </View>
 
       </TouchableHighlight>
@@ -86,20 +91,44 @@ export const SecondaryButton = ({text, onPress, isLoading}) => {
   )
 }
 
-export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize}) => {
-  const defaultFontSize = 16;
+export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style}) => {
+  const defaultFontSize = 20;
   return (
       isStaff ?
       (
-        <Text style={{color: GlobalColors.dcYellow, fontSize: (fontSize ? fontSize : defaultFontSize)}}>
+        <Text style={[{
+            color: GlobalColors.dcYellow,
+            fontSize: (fontSize ? fontSize : defaultFontSize),
+            fontFamily : 'BebasNeue Bold'
+          }, style]}>
           {`${fName} ${sName}`}
         </Text>
       ) : (
-        <Text style={{color: 'white', fontSize: (fontSize ? fontSize : defaultFontSize)}}>
+        <Text style={[{
+            color: 'white',
+            fontSize: (fontSize ? fontSize : defaultFontSize),
+            fontFamily : 'BebasNeue Bold'
+          }, style]}>
           {`${fName} ${sName}`}
         </Text>
       )
   );
+}
+
+export const LoadingView = ({text, useBackground}) => {
+  return(
+      <View style={{
+          backgroundColor: (useBackground ? GlobalColors.dcGrey : '#00000000'),
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+        <Text style={{fontSize: 25, marginTop: 30,marginBottom: 20, textAlign: 'center', color: '#FFC300'}} >
+          {text}
+        </Text>
+        <ActivityIndicator color={GlobalColors.dcYellow} size={80} />
+      </View>
+  )
 }
 
 export const SearchInput = ({placeholder, onPress, onChangeText, value}) => {
@@ -165,6 +194,7 @@ const styles = StyleSheet.create({
     fontSize : 16,
   },
   button : {
+    flex: 1,
     backgroundColor: '#FFC300',
     alignItems : 'center',
     marginVertical: 10,

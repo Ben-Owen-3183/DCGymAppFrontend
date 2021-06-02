@@ -73,7 +73,11 @@ export function DrawerContent(props){
       <DrawerContentScrollView { ... props }>
         <View>
           <View style={styles.headerView}>
-            <CustomAvatar avatarURL={props.userData.avatarURL} size={100}/>
+            <CustomAvatar
+              avatarURL={props.userData.avatarURL}
+              size={100}
+              name={`${props.userData.first_name} ${props.userData.last_name}`}
+              />
             <View style={{marginTop: 15}}></View>
             <View style={styles.avatarText}>
               <Text style={{fontSize: fontSize, color: 'white'}}

@@ -38,6 +38,18 @@ export async function removeUserData() {
 
 export async function storeChats(chats) {
     try {
+      if(!chats && chats.length === 0)
+        return;
+
+      for(let i = 0; i < chats.length; i++){
+        let messages = chats[i].messages;
+        let newMessages = [];
+        for(let j = 0; j < 30; j++){
+          newMessages[j] = messages[j];
+        }
+        chats[i].messages = newMessage;
+      }
+
         await EncryptedStorage.setItem(
             "chats",
             JSON.stringify(chats)

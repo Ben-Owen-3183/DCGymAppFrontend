@@ -135,13 +135,20 @@ export default Navigator = ({navigation}) => {
   if(websocket === null)
     setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
 
-  async function initialiseWebsocket(userData){
+  function initialiseWebsocket(userData){
 
     console.log('sending websocket initialisation data.');
-    websocket.send(JSON.stringify({
-      'action': 'init',
-      'data' : {'token': userData.token}
-    }));
+    try{
+      websocket.send(JSON.stringify({
+        'action': 'init',
+        'data' : {'token': userData.token}
+      }));
+      setWebsocketInitialised(true);
+    }
+    catch(e){
+      console.log(`IntialiseWebsocket: ${e}`);
+      setWebsocketInitialised(false);
+    }
   }
 
 
@@ -171,45 +178,111 @@ export default Navigator = ({navigation}) => {
     }
 
     websocket.onmessage = function(e){
-      let data = JSON.parse(e.data)
-      console.log('websocket recieved: ' + e);
-      if(data.message === 'new_message'){
-        getChatData(state.userData, setChats, dispatch);
-      }
-      else if(data.message === 'new_chat'){
-        getChatData(state.userData, setChats, dispatch);
-        initialiseWebsocket(state.userData);
+      let recieved = JSON.parse(e.data)
+      const name = state.userData.first_name + ' ' + state.userData.last_name;
+      console.log(`${name} message recieved: ${JSON.stringify(recieved)}`)
+
+
+      if(!recieved.data || !recieved.data.action)
+        return;
+
+      else if(recieved.data.action === 'NEW_CHAT_MESSAGE'){
+        let newMessage = recieved.data.message;
+        let chatID = recieved.data.message.chat_id;
+
+        async function updateChat(){
+          try{
+            for(let i = 0; i < chats.length; i++){
+              if(chats[i].id.toString() === chatID.toString()) {
+                chats[i].messages = [newMessage].concat(chats[i].messages);
+                let newChats = []
+                Object.assign(newChats, chats);
+                storeChats(newChats);
+                setChats(newChats);
+                return;
+              }
+            }
+
+          }catch(e){
+            console.log(`WS NEW MESSAGE: ${e}`)
+          }
+          // if we did not find a chat to add the message, fetch the chat data
+          // should be called if on first message of new chat
+          await fetchChat();
+        }
+
+        async function fetchChat(){
+          try{
+            let response = await fetch(Settings.siteUrl + '/messenger/get_chat/', {
+              method: "POST",
+              headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "Authorization": "Token " + state.userData.token
+              },
+              body: JSON.stringify({
+                'chat_id': chatID
+              })
+            })
+
+            data = await response.json();
+            chats.push(data);
+            let newChats = []
+            Object.assign(newChats, chats);
+            storeChats(newChats);
+            setChats(newChats);
+          }catch(e){
+            console.log(`WS NEW MESSAGE: ${e}`)
+          }
+
+
+        }
+
+        updateChat();
+
+
+        console.log("ORDER CHATS BY DATETIME!!!!!!")
+
+      }else if(recieved.data.action === 'NEW_CHAT'){
+        async function addNewChat(){
+          try {
+            // subscribe to new chat in websocket
+            websocket.send(JSON.stringify({
+              'action': 'add_new_chat',
+              'data' : {
+                'token': state.userData.token
+              }
+            }));
+          } catch (e) {
+            console.log(`WS NEW CHAT: ${e}`)
+          }
+        }
+        addNewChat();
+
       }
     }
   }
 
   React.useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
+
     const loadUserData = async () => {
       let userData;
 
-      try{
-        try {
-          userData = await retrieveUserData();
-        } catch (e) {
-          console.log(e);
-        }
-
+      try {
+        userData = await retrieveUserData();
         if(userData){
           dispatch({ type: 'RESTORE_USER_DATA', userData: userData });
           getChatData(userData, setChats, dispatch);
 
           if(userData && !websocketInitialised){
             console.log('web init called from *load user data*')
-            setWebsocketInitialised(true)
             initialiseWebsocket(userData);
           }
         }
         else{
           dispatch({ type: 'RESTORE_USER_DATA_FAILED'});
         }
-      }
-      catch (e) {
+
+      } catch (e) {
         console.log(e);
       }
     };

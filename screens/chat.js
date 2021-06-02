@@ -3,9 +3,9 @@ import {
   StyleSheet,
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
-  TextInput
+  TextInput,
+  FlatList
 } from 'react-native';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import CustomAvatar from '../shared/customAvatar';
@@ -14,7 +14,6 @@ import {retrieveUserData} from '../shared/storage';
 import Settings from '../shared/settings'
 
 var youToggle = null;
-
 
 function ToggleSpace(toggle){
   if(youToggle === toggle){
@@ -30,109 +29,146 @@ function findChat(chats, id){
       return chat;
 }
 
-const Chat = (props) => {
+const Chat = ({route, websocket, userData, chats}) => {
+  const [initialScroll, setInitialScroll] = React.useState(false);
   const [message, setMessage] = React.useState('');
-  const [userData, setUserData] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const scrollViewRef = useRef(null);
+  const chat = findChat(chats, route.params.chat_id);
 
-  const chat = findChat(props.chats, props.route.params.chat_id);
-
-  function setChatToRead(){
-    if(!props.userData)
-      return
-
-    const onSuccess = (response) => {
-      console.log('chat set to read');
+  async function setChatToRead(){
+    try{
+      let response = await fetch(Settings.siteUrl + '/messenger/set_chat_read/', {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Authorization": "Token " + userData.token
+          },
+          body: JSON.stringify({
+            'chat_id': chat.id
+          })
+      });
       chat.read = true;
-      // updateChats(props.chats);
-    };
+    }catch(e){
+      console.log(e);
+    }
+  }
 
-    const onFailure = (response) => {
-        console.log('failed to set chat read');
-    };
-
-    fetch(Settings.siteUrl + '/messenger/set_chat_read/', {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          "Authorization": "Token " + props.userData.token
-        },
-        body: JSON.stringify({
-          'chat_id': chat.id
-        })
-      })
-      .then(response => response.json())
-      .then(response => {onSuccess(response)})
-      .catch(response => {onFailure(response)})
+  async function fetchNextPage(){
+    console.log("do not call this unless there is more than 29 messages")
   }
 
   if(chat && !chat.read)
     setChatToRead();
 
   const sendMessage = () => {
-    if(!props.websocket || !userData || !message || isLoading)
+    if(!websocket || !userData || !message || isLoading)
       return;
 
-    if(props.websocket.readyState !== WebSocket.OPEN)
+    if(websocket.readyState !== WebSocket.OPEN)
       return;
 
     setIsLoading(true);
-    props.websocket.send(JSON.stringify({
-      'action': 'message',
-      'data' : {
-        'token': userData.token,
-        'chat_id': props.route.params.chat_id,
-        'message': message,
-      }
-    }))
+    try{
+      websocket.send(JSON.stringify({
+        'action': 'message',
+        'data' : {
+          'token': userData.token,
+          'chat_id': route.params.chat_id,
+          'message': message,
+        }
+      }))
+    }catch(e){
+      console.log(`chat WebSocket: ${e}`);
+    }
 
     setIsLoading(false);
     setMessage('');
   }
 
-  useEffect(() =>{
-    const load = async () => {
-      let fetchedUserData;
+  const onScrollEndReached = () => {
+    console.log('scrolled to end');
+  }
 
-      try {
-        fetchedUserData = await retrieveUserData();
-      } catch (e) {
-      }
-      if(!userData)
-        setUserData(fetchedUserData);
-    };
+  const messageComponent = ({item}) => {
+    const isUser = item.user_id.toString() === userData.user_id.toString();
+    return (
+      <View key={item.id}>
+        {
+          ToggleSpace(isUser) ? <View style={{marginVertical : 5}}></View> : null
+        }
+        <View style={[
+            {flexDirection : 'row'},
+            (isUser ? {justifyContent : 'flex-end'} : {justifyContent : 'flex-start'})
+          ]}>
+            {isUser ? <View style={{marginHorizontal : 30}}></View> : null}
+          <View style={[isUser ? styles.yourMessage : styles.otherMessage, styles.messageView]}>
+            <Text style={styles.text}>{item.message}</Text>
+          </View>
+          {!isUser ? <View style={{marginHorizontal : 30}}></View> : null}
+        </View>
+      </View>
+    )
+  }
 
-    load();
-    scrollViewRef.current.scrollToEnd({animated : false});
+  /*
+  const [t, st] = React.useState(false);
+  function test(){
+    if(!websocket || !userData)
+      return;
+
+    if(websocket.readyState !== WebSocket.OPEN)
+      return;
+    st(true);
+    for(let i = 0; i < 120; i++){
+      websocket.send(JSON.stringify({
+        'action': 'message',
+        'data' : {
+          'token': userData.token,
+          'chat_id': route.params.chat_id,
+          'message': i.toString(),
+        }
+      }))
+    }
+  }
+
+  React.useEffect(() => {
+    if(!t){
+      test();
+    }
   })
+  */
 
   return (
     <View style={styles.messagesView}>
-      {/*forces text to bottom if only few messages on screen*/}
-      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
-
-        <View style={{justifyContent: 'flex-end', flex: 1}}>
-          <View style={{flex: 1}}></View>
-          {
-            chat && chat.messages.length > 0 && userData ? (
-              <View style={{flex: 0}}>
-                <Messages user_id={userData.user_id} messages={chat.messages}/>
-              </View>
-            ) : (
-              null
-            )
-          }
-        </View>
-      </ScrollView>
+      <View style={{flex: 1}}>
+        {
+          chat && chat.messages.length > 0 && userData ? (
+            <View style={{flex: 1}}>
+              <FlatList
+                inverted
+                onEndReached={onScrollEndReached}
+                onEndReachedThreshold={0.5}
+                ref={scrollViewRef}
+                data={chat.messages}
+                keyExtractor={item => item.id}
+                renderItem={messageComponent}
+              />
+            </View>
+          ) : (
+            null
+          )
+        }
+      </View>
       {
-        chat && chat.messages.length > 0 ? (
+        chat && chat.messages && chat.messages.length > 0 ? (
           null
         ) : (
           <NoMessageView/>
         )
       }
       <CommentInputText
+        scrollViewRef={scrollViewRef}
         message={message}
         sendMessage={sendMessage}
         chat={chat}
@@ -155,35 +191,14 @@ const NoMessageView = ({messages}) => {
   )
 }
 
-const Messages = ({messages, user_id}) => {
+const CommentInputText = ({scrollViewRef, placeholder, message, setMessage, sendMessage}) => {
+  if(scrollViewRef && scrollViewRef.current){
+    scrollViewRef.current.scrollToIndex({
+      index: 0,
+      animated: false,
+    });
+  }
 
-  return (
-    messages.map((message, i) =>{
-      const isUser = message.user_id === user_id;
-      return(
-        <View key={i}>
-          {
-            ToggleSpace(isUser) ? <View style={{marginVertical : 5}}></View> : null
-          }
-
-          <View style={[
-              {flexDirection : 'row'},
-              (isUser ? {justifyContent : 'flex-end'} : {justifyContent : 'flex-start'})
-            ]}>
-
-            {isUser ? <View style={{marginHorizontal : 30}}></View> : null}
-            <View style={[isUser ? styles.yourMessage : styles.otherMessage, styles.messageView]}>
-              <Text style={styles.text}>{message.message}</Text>
-            </View>
-            {!isUser ? <View style={{marginHorizontal : 30}}></View> : null}
-
-          </View>
-        </View>
-    )})
-  )
-}
-
-const CommentInputText = ({placeholder, message, setMessage, sendMessage}) => {
   return (
     <View style={{
       flexDirection : 'row',
@@ -191,14 +206,13 @@ const CommentInputText = ({placeholder, message, setMessage, sendMessage}) => {
     }}>
       <View style={styles.inputView}>
         <TextInput
-            value={message}
-            onChangeText={message => setMessage(message)}
-            multiline={true}
-            style={styles.inputText}
-            placeholder={placeholder}
-            placeholderTextColor={'#afafaf'}
-          />
-
+          value={message}
+          onChangeText={message => setMessage(message)}
+          multiline={true}
+          style={styles.inputText}
+          placeholder={placeholder}
+          placeholderTextColor={'#afafaf'}
+        />
       </View>
       <TouchableOpacity onPress={() => sendMessage()} style={styles.sendButton} >
         <Icon name='send' size={35} color='#FFC300'/>
@@ -215,7 +229,8 @@ const styles = StyleSheet.create({
   },
   messagesView : {
     backgroundColor : '#2D2D2D',
-    justifyContent : 'flex-end'
+    justifyContent : 'flex-end',
+    flex: 1
   },
   sendButton : {
     flex : 0,
