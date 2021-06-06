@@ -26,59 +26,170 @@ import Image from 'react-native-scalable-image';
 import SetAvatar from '../screens/setAvatar';
 import ChangePassword from '../screens/changePassword';
 import Settings from '../shared/settings'
+import moment from 'moment'
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 const Drawer = createDrawerNavigator();
 const AuthContext = React.createContext();
 
-
-async function getChatData(userData, setChats, dispatch){
-  console.log("fetching chat data");
-
-  // if we fail to download chat data, pull the old one from FS
-  const loadOldChatData = async () => {
-    let chats;
-
-    try {
-      chats = await retrieveChats();
-    } catch (e) {}
-
-    if(chats){
-      setChats(chats);
-      console.log("loaded cached chat data")  ;
-    }
-    else{
-      setChats([]);
-    }
-  };
-
-  const onSuccess = (response) => {
-    if(response['chats']){
-      storeChats(response['chats']);
-      setChats(response['chats']);
-      console.log("chat data synced");
-    }
-    else{
-      loadOldChatData();
-    }
-  };
-
-  const onFailure = (response) => {
-      loadOldChatData();
-  };
-
-  fetch(Settings.siteUrl + '/messenger/get_chats/', {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-        "Authorization": "Token " + userData.token
-      },
-    })
-    .then(response => response.json())
-    .then(response => {onSuccess(response)})
-    .catch(response => {onFailure(response)})
+function findChat(chats, chat_id){
+  for (var i = 0; i < chats.length; i++)
+    if(chats[i].id.toString() === chat_id.toString())
+      return chats[i];
+  return null;
 }
 
+// orders chats by datetime of last message
+function sortChats(chats, setChats){
+  if(chats && chats.length > 1){
+    chats.sort(function(a, b){
+      return moment(b.messages[0].datetime).diff(
+        moment(a.messages[0].datetime));
+    });
+    let newChats = []
+    Object.assign(newChats, chats);
+    storeChats(chats);
+    setChats(chats);
+  }
+}
+
+function createSyncChatsPayload(chats){
+  let payload = {
+    chats_data: []
+  };
+  if(!chats) return payload;
+  // fill in payload.
+  for (var i = 0; i < chats.length; i++) {
+    if(chats[i].messages.length > 0){
+      payload.chats_data.push({
+        chat_id: chats[i].id,
+        last_message_id: chats[i].messages[0].id,
+        last_message_time: chats[i].messages[0].datetime,
+      })
+    }
+  }
+
+
+  return payload;
+}
+
+// merges the synced chat data from the server with
+// the local chat data
+function mergeNewChatData(chats, setChats, data){
+  // add new messages to existing chats
+  if(data.new_chat_messages){
+    for (var i = 0; i < data.new_chat_messages.length; i++) {
+      let chat = findChat(chats, data.new_chat_messages[i].chat_id);
+      if(chat){
+        chat.messages = data.new_chat_messages[i].messages.concat(chat.messages);
+      }
+    }
+  }
+
+  let newChats = []
+  // Add new chats from response to chats
+  newChats = newChats.concat(data.new_chats);
+  newChats = newChats.concat(chats);
+
+  // fiddle to trick useState
+  let chatNewList = []
+  Object.assign(chatNewList, newChats)
+
+  storeChats(chatNewList);
+  setChats(chatNewList);
+}
+
+async function syncChats(userData, chats, setChats){
+  try {
+    let response = await fetch(Settings.siteUrl + '/messenger/sync_chat/', {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "Authorization": "Token " + userData.token
+        },
+        body: JSON.stringify(createSyncChatsPayload(chats))
+      })
+    let data = await response.json();
+    if(!data) throw 'empty response';
+
+    console.log(`sync response: ${JSON.stringify(data)}`);
+    if(data['new_chats'].length > 0 || data['new_chat_messages'].length > 0){
+      mergeNewChatData(chats, setChats, data);
+    }
+
+  } catch (e) {
+    console.log(`Error Chat Sync: ${e}`);
+  }
+}
+
+async function fetchChat(userData, chat_id, chats, setChats){
+  try{
+    let response = await fetch(Settings.siteUrl + '/messenger/get_chat/', {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "Authorization": "Token " + state.userData.token
+      },
+      body: JSON.stringify({
+        'chat_id': chatID
+      })
+    })
+
+    data = await response.json();
+    if(!data) throw 'no chat returned';
+
+    chats.push(data);
+    let newChats = []
+    Object.assign(newChats, chats);
+    storeChats(newChats);
+    setChats(newChats);
+  }catch(e){
+    console.log(`Fetching Chat: ${e}`)
+  }
+}
+
+async function addNewChatMessage(chats, setChats, chat_id, newMessage, userData){
+  try{
+    let chat = findChat(chats, chat_id)
+
+    if(!chat) throw 'chat does not exist';
+
+    chat.messages = [newMessage].concat(chats.messages);
+    let newChats = []
+    Object.assign(newChats, chats);
+    storeChats(newChats);
+    setChats(newChats);
+
+  }catch(e){
+    console.log(`Adding New Chat Message: ${e}`)
+    fetchAndAddChat(userData, chat_id, chats, setChats);
+  }
+}
+
+async function loadCachedChatData(){
+  try {
+    let chats = await retrieveChats();
+    console.log(`Cached chat data: ${JSON.stringify(chats)}`);
+    return chats;
+  } catch (e) {
+    console.log(`Error Chat Get Cached: ${e}`);
+    return [];
+  }
+}
+
+async function subscribeToNewChatOnServer(userData, websocket){
+  try {
+    // subscribe to new chat in websocket
+    websocket.send(JSON.stringify({
+      'action': 'add_new_chat',
+      'data' : {
+        'token': state.userData.token
+      }
+    }));
+  } catch (e) {
+    console.log(`WS NEW CHAT: ${e}`);
+  }
+}
 
 function reducer(prevState, action){
   switch (action.type) {
@@ -120,6 +231,12 @@ function reducer(prevState, action){
 
 export default Navigator = ({navigation}) => {
 
+  /*
+  removeChats();
+  return null;
+  */
+
+
   const initialState = {
     reRender: false,
     isLoading: true,
@@ -151,7 +268,6 @@ export default Navigator = ({navigation}) => {
     }
   }
 
-
   if(websocket){
 
     websocket.onclose = function(){
@@ -173,7 +289,8 @@ export default Navigator = ({navigation}) => {
       if(state.userData && !websocketInitialised){
         console.log('web init called from *socket open*')
         initialiseWebsocket(state.userData);
-        getChatData(state.userData, setChats, dispatch);
+        syncChats(state.userData, chats, setChats);
+        sortChats(chats, setChats);
       }
     }
 
@@ -182,97 +299,38 @@ export default Navigator = ({navigation}) => {
       const name = state.userData.first_name + ' ' + state.userData.last_name;
       console.log(`${name} message recieved: ${JSON.stringify(recieved)}`)
 
-
       if(!recieved.data || !recieved.data.action)
         return;
 
-      else if(recieved.data.action === 'NEW_CHAT_MESSAGE'){
+      if(recieved.data.action === 'NEW_CHAT_MESSAGE'){
+        return;
         let newMessage = recieved.data.message;
         let chatID = recieved.data.message.chat_id;
-
-        async function updateChat(){
-          try{
-            for(let i = 0; i < chats.length; i++){
-              if(chats[i].id.toString() === chatID.toString()) {
-                chats[i].messages = [newMessage].concat(chats[i].messages);
-                let newChats = []
-                Object.assign(newChats, chats);
-                storeChats(newChats);
-                setChats(newChats);
-                return;
-              }
-            }
-
-          }catch(e){
-            console.log(`WS NEW MESSAGE: ${e}`)
-          }
-          // if we did not find a chat to add the message, fetch the chat data
-          // should be called if on first message of new chat
-          await fetchChat();
-        }
-
-        async function fetchChat(){
-          try{
-            let response = await fetch(Settings.siteUrl + '/messenger/get_chat/', {
-              method: "POST",
-              headers: {
-                "Content-type": "application/json; charset=UTF-8",
-                "Authorization": "Token " + state.userData.token
-              },
-              body: JSON.stringify({
-                'chat_id': chatID
-              })
-            })
-
-            data = await response.json();
-            chats.push(data);
-            let newChats = []
-            Object.assign(newChats, chats);
-            storeChats(newChats);
-            setChats(newChats);
-          }catch(e){
-            console.log(`WS NEW MESSAGE: ${e}`)
-          }
-
-
-        }
-
-        updateChat();
-
-
-        console.log("ORDER CHATS BY DATETIME!!!!!!")
-
-      }else if(recieved.data.action === 'NEW_CHAT'){
-        async function addNewChat(){
-          try {
-            // subscribe to new chat in websocket
-            websocket.send(JSON.stringify({
-              'action': 'add_new_chat',
-              'data' : {
-                'token': state.userData.token
-              }
-            }));
-          } catch (e) {
-            console.log(`WS NEW CHAT: ${e}`)
-          }
-        }
-        addNewChat();
-
+        addNewChatMessage(chats, setChats, chat_id, newMessage, state.userData);
+        sortChats(chats, setChats);
       }
+      else if(recieved.data.action === 'NEW_CHAT'){
+        subscribeToNewChatOnServer(state.userData, websocket);
+      }
+
     }
   }
 
   React.useEffect(() => {
-
-    const loadUserData = async () => {
+    const initialiseApp = async () => {
       let userData;
 
       try {
         userData = await retrieveUserData();
+        let cachedChats = await loadCachedChatData();
+        setChats(cachedChats);
+
         if(userData){
           dispatch({ type: 'RESTORE_USER_DATA', userData: userData });
-          getChatData(userData, setChats, dispatch);
 
+          await syncChats(userData, cachedChats, setChats);
+
+          sortChats(chats, setChats);
           if(userData && !websocketInitialised){
             console.log('web init called from *load user data*')
             initialiseWebsocket(userData);
@@ -287,7 +345,7 @@ export default Navigator = ({navigation}) => {
       }
     };
 
-    loadUserData();
+    initialiseApp();
   }, []);
 
   const authContext = React.useMemo(
@@ -303,7 +361,6 @@ export default Navigator = ({navigation}) => {
         dispatch({ type: 'SIGN_OUT' })
       },
       getUserData: () => { return state.userData },
-      getWebSocket: async () => { return state.websocket },
     }),
     []
   );

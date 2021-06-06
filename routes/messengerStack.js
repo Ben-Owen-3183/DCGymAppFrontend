@@ -73,7 +73,7 @@ export default function MessengerStack({userData, websocket, chats, route, navig
             )
           })
         }>
-          {props => <Chat userData={userData} navigation={navigation} chats={chats} websocket={websocket} {...props}/>}
+          {props => <Chat userData={userData} navigation={navigation} chatsData={chats} websocket={websocket} {...props}/>}
       </Stack.Screen>
 
     </Stack.Navigator>

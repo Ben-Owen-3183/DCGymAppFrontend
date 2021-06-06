@@ -71,7 +71,7 @@ const Chats = ({chats, navigation}) => {
   return chats.map((chat, i) => {
     const name = `${chat.other_user_data.fName} ${chat.other_user_data.sName}`;
     const isYou = chat.messages[0].user_id.toString()
-      !== chat.other_user_data.id.toString()
+                  !== chat.other_user_data.id.toString();
     let datetimeText = moment(chat.messages[0].datetime).fromNow();
     // moment keeps printing 'in a few seconds' when it should be 'a few seconds ago'.
     if(datetimeText === 'in a few seconds')

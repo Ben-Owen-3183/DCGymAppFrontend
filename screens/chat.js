@@ -29,10 +29,11 @@ function findChat(chats, id){
       return chat;
 }
 
-const Chat = ({route, websocket, userData, chats}) => {
+const Chat = ({route, websocket, userData, chatsData}) => {
   const [initialScroll, setInitialScroll] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [chats, setChats] = React.useState(chatsData);
   const scrollViewRef = useRef(null);
   const chat = findChat(chats, route.params.chat_id);
 
@@ -94,9 +95,7 @@ const Chat = ({route, websocket, userData, chats}) => {
     const isUser = item.user_id.toString() === userData.user_id.toString();
     return (
       <View key={item.id}>
-        {
-          ToggleSpace(isUser) ? <View style={{marginVertical : 5}}></View> : null
-        }
+
         <View style={[
             {flexDirection : 'row'},
             (isUser ? {justifyContent : 'flex-end'} : {justifyContent : 'flex-start'})
@@ -107,6 +106,9 @@ const Chat = ({route, websocket, userData, chats}) => {
           </View>
           {!isUser ? <View style={{marginHorizontal : 30}}></View> : null}
         </View>
+        {
+          ToggleSpace(isUser) ? <View style={{marginVertical : 5}}></View> : null
+        }
       </View>
     )
   }
