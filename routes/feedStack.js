@@ -6,7 +6,7 @@ import Header from '../shared/header';
 
 const Stack = createStackNavigator();
 
-export default function FeedStack({ navigation }) {
+export default function FeedStack({ chats, navigation }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -16,7 +16,7 @@ export default function FeedStack({ navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Feed'/>
+          headerTitle: () => <Header chats={chats} navigation={navigation} title='Feed'/>
         }}
         name="Feed"
         component={Feed} />

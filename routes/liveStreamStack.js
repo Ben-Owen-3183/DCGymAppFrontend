@@ -6,7 +6,7 @@ import Header from '../shared/header';
 
 const Stack = createStackNavigator();
 
-export default function LiveStreamStack({ navigation }) {
+export default function LiveStreamStack({ chats, navigation }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -16,7 +16,7 @@ export default function LiveStreamStack({ navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='LiveStream'/>
+          headerTitle: () => <Header chats={chats} navigation={navigation} title='LiveStream'/>
         }}
         name="LiveStream"
         component={LiveStream} />

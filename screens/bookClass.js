@@ -26,11 +26,13 @@ const BookClass = () => {
               The external page failed to load. Make sure you have an internet connection.
             </Text>
 
-            <PrimaryButton onPress={() => {
-              reload.current ? reload.current.reload() : null;
-              setFailedToLoad(false);
-            }}
-            text={'Reload'}/>
+            <View style={{height: 70}}>
+              <PrimaryButton onPress={() => {
+                reload.current ? reload.current.reload() : null;
+                setFailedToLoad(false);
+              }}
+              text={'Reload'}/>
+            </View>
           </View>
         ) : (
           <BookingSite setReload={setReload} setFailedToLoad={setFailedToLoad}/>
@@ -41,33 +43,32 @@ const BookClass = () => {
         hide === false ?
         (
           <View style={{backgroundColor: GlobalColors.dcLightGrey, paddingHorizontal: 10, padding: 30}}>
+            <View style={{alignItems: 'center'}}>
+              <TouchableHighlight
+                underlayColor={'#dba400'}
+                onPress={() => setHide(true)}
+                style={{
+                  position: 'absolute',
+                  backgroundColor: GlobalColors.dcYellow,
+                  borderRadius: 200,
+                  width: 45,
+                  height: 45,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bottom: 7,
+                }}>
+                <Icon
+                  size={30}
+                  name='angle-double-down'
+                  type='font-awesome-5'
+                  color={GlobalColors.dcGrey}
+                />
+              </TouchableHighlight>
+            </View>
             <Text style={GlobalStyles.primaryText}>
               Please note that you do not need to book if you are watching live. This is only required for physical visits to the gym. Thank you.
             </Text>
-            <View>
-              <View style={{alignItems: 'center'}}>
-                <TouchableHighlight
-                  underlayColor={'#dba400'}
-                  onPress={() => setHide(true)}
-                  style={{
-                    position: 'absolute',
-                    backgroundColor: GlobalColors.dcYellow,
-                    borderRadius: 200,
-                    width: 45,
-                    height: 45,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    bottom: 45,
-                  }}>
-                  <Icon
-                    size={30}
-                    name='angle-double-down'
-                    type='font-awesome-5'
-                    color={GlobalColors.dcGrey}
-                  />
-                </TouchableHighlight>
-              </View>
-            </View>
+
           </View>
         ) : (
           null

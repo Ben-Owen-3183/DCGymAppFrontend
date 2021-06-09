@@ -70,13 +70,14 @@ export async function storeChats(chats) {
     for(let i = 0; i < chats.length; i++){
       let messages = chats[i].messages;
       let newMessages = [];
-      for(let j = 0; j < 30; j++){
-        if(!messages[j])
-          break;
+      let range = (messages.length > 30 ? 30 : messages.length)
+      for(let j = 0; j < range; j++){
         newMessages[j] = messages[j];
       }
       chats[i].messages = newMessages;
     }
+
+    // console.log(`STORING: ${JSON.stringify(chats)}`)
     await EncryptedStorage.setItem(
         "chats",
         JSON.stringify(chats)
@@ -101,7 +102,8 @@ export async function retrieveChats() {
 
 export async function removeChats() {
   try {
-      await EncryptedStorage.removeItem("chats");
+    await EncryptedStorage.removeItem("chats");
   } catch (error) {
+    console.log(`Remove Chats: ${error}`);
   }
 }

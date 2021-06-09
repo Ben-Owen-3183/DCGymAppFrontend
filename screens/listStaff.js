@@ -175,6 +175,8 @@ const ListView = ({staffList, submit}) => {
   return staffList.map((staff, i) => {
     return (
       <TouchableHighlight
+        style={{paddingHorizontal: 15, borderRadius: 100}}
+        underlayColor={'#00000050'}
         onPress={() => submit(staff.id, `${staff.fName} ${staff.sName}`)}
         key={staff.id}>
         <Staff staff={staff}/>

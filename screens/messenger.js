@@ -61,7 +61,6 @@ const Messenger = (props) => {
           </View>
         )
       }
-
     </ScrollView>
   );
 }
@@ -69,9 +68,12 @@ const Messenger = (props) => {
 const Chats = ({chats, navigation}) => {
 
   return chats.map((chat, i) => {
+    const userId = chat.messages[0].user_id.toString();
+    const otherUserId = chat.other_user_data.id.toString(); // other user is actually the person that made the message
+
     const name = `${chat.other_user_data.fName} ${chat.other_user_data.sName}`;
-    const isYou = chat.messages[0].user_id.toString()
-                  !== chat.other_user_data.id.toString();
+    const isYou = userId !== otherUserId;
+
     let datetimeText = moment(chat.messages[0].datetime).fromNow();
     // moment keeps printing 'in a few seconds' when it should be 'a few seconds ago'.
     if(datetimeText === 'in a few seconds')
@@ -79,7 +81,7 @@ const Chats = ({chats, navigation}) => {
 
     return(
       <TouchableHighlight
-        key={chat['id']}
+        key={i}
         underlayColor={'#212121'}
         onPress={() => {
           navigation.navigate('Chat', {

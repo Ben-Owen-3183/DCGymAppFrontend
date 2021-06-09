@@ -1,13 +1,24 @@
 import React from 'react';
 import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { Icon } from 'react-native-elements'
+import { Icon, Badge } from 'react-native-elements'
 
-export default function Header({route, dynamicTitle, navigation, title, back }) {
+export default function Header({chats, route, dynamicTitle, navigation, title, back }) {
 
   const openMenu = () => {
     Keyboard.dismiss();
     navigation.openDrawer();
   }
+
+  function countUnreadChats(){
+    let count = 0;
+    for (var i = 0; i < chats.length; i++)
+      if(chats[i].read === false)
+        count++;
+    return count;
+  }
+
+  let unreadChatsCount = 0;
+  if(chats) unreadChatsCount = countUnreadChats();
 
   return (
     <View style={styles.header}>
@@ -17,6 +28,25 @@ export default function Header({route, dynamicTitle, navigation, title, back }) 
 
       <View style={styles.emptyElement}></View>
       <View style={styles.iconView}>
+        {
+          unreadChatsCount > 0 ? (
+            <TouchableOpacity onPress={() => navigation.navigate('Messenger')} style={{padding : 10}}>
+              <Icon
+                name='bell'
+                type='simple-line-icon'
+                iconStyle={styles.icon}
+                size={25}
+              />
+              <Badge
+                status="primary"
+                containerStyle={{position: 'absolute', top: 2, right: 22 }}
+                badgeStyle={{borderWidth: 0}}
+                value={unreadChatsCount}
+
+              />
+            </TouchableOpacity>
+          ) : (null)
+        }
         <TouchableOpacity onPress={openMenu} style={{padding : 10}}>
           <Icon
             name='menu'

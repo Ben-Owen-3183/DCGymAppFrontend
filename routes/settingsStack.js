@@ -10,7 +10,7 @@ import ChangePasswordSuccess from '../screens/changePasswordSuccess';
 
 const Stack = createStackNavigator();
 
-export default function SettingsStack({ navigation }) {
+export default function SettingsStack({ chats, navigation }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -20,7 +20,7 @@ export default function SettingsStack({ navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Set Avatar'/>,
+          headerTitle: () => <Header chats={chats}navigation={navigation} title='Set Avatar'/>,
           headerLeft: () => {
             return null;
           },
@@ -31,7 +31,7 @@ export default function SettingsStack({ navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Change Password'/>,
+          headerTitle: () => <Header chats={chats}navigation={navigation} title='Change Password'/>,
           headerLeft: () => {
             return null;
           },
@@ -42,7 +42,7 @@ export default function SettingsStack({ navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Success'/>,
+          headerTitle: () => <Header chats={chats}navigation={navigation} title='Success'/>,
           headerLeft: () => {
             return null;
           },

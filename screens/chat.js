@@ -12,6 +12,8 @@ import CustomAvatar from '../shared/customAvatar';
 import {Icon} from 'react-native-elements';
 import {retrieveUserData} from '../shared/storage';
 import Settings from '../shared/settings'
+import { useFocusEffect } from '@react-navigation/native';
+
 
 var youToggle = null;
 
@@ -29,37 +31,45 @@ function findChat(chats, id){
       return chat;
 }
 
-const Chat = ({route, websocket, userData, chatsData}) => {
+const Chat = ({navigation, route, websocket, userData, chats}) => {
   const [initialScroll, setInitialScroll] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
-  const [chats, setChats] = React.useState(chatsData);
+  const [firstScrollToEndCalled, setFirstScrollToEndCalled] = React.useState(false);
+  const [chatHistory, setChatHistory] = React.useState([]);
+  const [screenFocused, setScreenFocused] = React.useState(false);
   const scrollViewRef = useRef(null);
   const chat = findChat(chats, route.params.chat_id);
 
+  // console.log(`Chat History ${JSON.stringify(chat)}`);
+
   async function setChatToRead(){
     try{
-      let response = await fetch(Settings.siteUrl + '/messenger/set_chat_read/', {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "Authorization": "Token " + userData.token
-          },
-          body: JSON.stringify({
-            'chat_id': chat.id
-          })
-      });
-      chat.read = true;
+      websocket.send(JSON.stringify({
+        'action': 'chat_read',
+        'data' : {
+          'token': userData.token,
+          'chat_id': route.params.chat_id,
+        }
+      }))
     }catch(e){
       console.log(e);
     }
   }
 
-  async function fetchNextPage(){
-    console.log("do not call this unless there is more than 29 messages")
-  }
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("screen focused");
+      // setScreenFocused(true);
+      return () => {
+        console.log("screen unfocused");
+        // setScreenFocused(false);
+        navigation.goBack();
+      };
+    }, [])
+  );
 
-  if(chat && !chat.read)
+  if(chat && !chat.read)// && screenFocused)
     setChatToRead();
 
   const sendMessage = () => {
@@ -87,8 +97,52 @@ const Chat = ({route, websocket, userData, chatsData}) => {
     setMessage('');
   }
 
+  async function getHistory(){
+    try {
+      console.log("getting history");
+
+      let payload = {}
+      if(chatHistory.length === 0){
+        payload.chat_id = chat.id;
+        payload.last_message_time = chat.messages[chat.messages.length - 1].datetime;
+        payload.last_message_id = chat.messages[chat.messages.length - 1].id;
+      }
+      else{
+        payload.chat_id = chat.id;
+        payload.last_message_time = chatHistory[chatHistory.length - 1].datetime;
+        payload.last_message_id = chatHistory[chatHistory.length - 1].id;
+      }
+
+      let response = await fetch(Settings.siteUrl + '/messenger/chat_history/', {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Authorization": "Token " + userData.token
+          },
+          body: JSON.stringify(payload)
+        });
+
+      let data = await response.json();
+      // console.log(`Chat History ${JSON.stringify(data)}`);
+
+      if(data.messages && data.messages.length > 0)
+        setChatHistory(chatHistory.concat(data.messages))
+      else
+        console.log('no chat history returned');
+    } catch (e) {
+
+    }
+  }
+
   const onScrollEndReached = () => {
-    console.log('scrolled to end');
+
+    console.log('scrolled to end called');
+    // if(!firstScrollToEndCalled){
+      //////////// setFirstScrollToEndCalled(true);
+    //  return;
+    // }
+    if(chat.messages.length == 30)
+    getHistory();
   }
 
   const messageComponent = ({item}) => {
@@ -115,22 +169,29 @@ const Chat = ({route, websocket, userData, chatsData}) => {
 
   /*
   const [t, st] = React.useState(false);
-  function test(){
+  async function test(){
     if(!websocket || !userData)
       return;
 
     if(websocket.readyState !== WebSocket.OPEN)
       return;
     st(true);
-    for(let i = 0; i < 120; i++){
-      websocket.send(JSON.stringify({
-        'action': 'message',
-        'data' : {
-          'token': userData.token,
-          'chat_id': route.params.chat_id,
-          'message': i.toString(),
-        }
-      }))
+    try {
+      for(let i = 0; i < 120; i++){
+
+        websocket.send(JSON.stringify({
+          'action': 'message',
+          'data' : {
+            'token': userData.token,
+            'chat_id': route.params.chat_id,
+            'message': i.toString(),
+          }
+        }))
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+
     }
   }
 
@@ -152,7 +213,7 @@ const Chat = ({route, websocket, userData, chatsData}) => {
                 onEndReached={onScrollEndReached}
                 onEndReachedThreshold={0.5}
                 ref={scrollViewRef}
-                data={chat.messages}
+                data={chat.messages.concat(chatHistory)}
                 keyExtractor={item => item.id}
                 renderItem={messageComponent}
               />

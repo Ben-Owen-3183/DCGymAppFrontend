@@ -6,7 +6,7 @@ import Header from '../shared/header';
 
 const Stack = createStackNavigator();
 
-export default function LoginStack({ navigation }) {
+export default function LoginStack({ chats, navigation }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -16,7 +16,7 @@ export default function LoginStack({ navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Videos'/>
+          headerTitle: () => <Header chats={chats}navigation={navigation} title='Videos'/>
         }}
         name="PastStreams"
         component={PastStreams} />

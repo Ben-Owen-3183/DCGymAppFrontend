@@ -129,6 +129,8 @@ const ListUsers = ({userList, submit}) => {
   return userList.map((user, i) => {
     return (
       <TouchableHighlight
+        style={{marginHorizontal: 20, paddingHorizontal: 10, borderRadius: 100}}
+        underlayColor={'#00000050'}
         onPress={() => submit(user.id, `${user.fName} ${user.sName}`)}
         key={user.id}>
         <User user={user}/>
@@ -141,7 +143,7 @@ const User = ({user}) => {
 
   return (
     <View style={styles.userView}>
-      <View style={{marginHorizontal: 20}}>
+      <View style={{marginRight: 20}}>
         <CustomAvatar
           size={50}
           avatarURL={user.avatarURL}

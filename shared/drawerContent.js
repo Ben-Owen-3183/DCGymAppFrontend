@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { View, TouchableHighlight, Text, StyleSheet } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Icon, Badge } from 'react-native-elements';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import {AuthContext} from '../routes/drawer';
 import CustomAvatar from './customAvatar';
@@ -68,6 +68,16 @@ export function DrawerContent(props){
       setSettingsToggle(true)
   }
 
+  function countUnreadChats(){
+    let count = 0;
+    for (var i = 0; i < props.chats.length; i++)
+      if(props.chats[i].read === false)
+        count++;
+    return count;
+  }
+
+  const unreadChatsCount = countUnreadChats();
+
   return (
     <View style={styles.drawer}>
       <DrawerContentScrollView { ... props }>
@@ -99,9 +109,6 @@ export function DrawerContent(props){
           <View style={styles.line}></View>
 
           <View style={{marginTop: 10}}>
-
-
-
 
             <TouchableHighlight
               underlayColor={'#1c1c1c'}
@@ -151,11 +158,26 @@ export function DrawerContent(props){
                     type='font-awesome-5'
                     color='#FFC300'
                   />
+
                 </View>
 
-                <Text style={[styles.labelStyle, {marginLeft: 25, flex: 7}]}>
-                  Messenger
-                </Text>
+                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 25, flex: 7}}>
+                  <Text style={styles.labelStyle}>
+                    Messenger
+                  </Text>
+                  {
+                    unreadChatsCount > 0 ? (
+                      <Badge
+                        status="primary"
+                        containerStyle={{marginLeft: 10}}
+                        badgeStyle={{borderWidth: 0}}
+                        value={unreadChatsCount}
+                      />
+                    ) : (null)
+                  }
+
+                </View>
+
               </View>
             </TouchableHighlight>
 

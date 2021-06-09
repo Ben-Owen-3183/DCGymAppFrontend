@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { Icon } from 'react-native-elements'
+import { Icon, Badge } from 'react-native-elements'
 
 // Screens
 import Header from '../shared/header';
@@ -20,6 +20,17 @@ export default function MessengerStack({userData, websocket, chats, route, navig
     navigation.openDrawer();
   }
 
+  function countUnreadChats(){
+    let count = 0;
+    for (var i = 0; i < chats.length; i++)
+      if(chats[i].read === false)
+        count++;
+    return count;
+  }
+
+  let unreadChatsCount = 0;
+  if(chats) unreadChatsCount = countUnreadChats();
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -30,7 +41,7 @@ export default function MessengerStack({userData, websocket, chats, route, navig
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Messenger'/>
+          headerTitle: () => <Header chats={chats}navigation={navigation} title='Messenger'/>
         }}
         name="Messenger">
           {props => <Messenger navigation={navigation} chats={chats} {...props}/>}
@@ -38,7 +49,7 @@ export default function MessengerStack({userData, websocket, chats, route, navig
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='User Search'/>
+          headerTitle: () => <Header chats={chats}navigation={navigation} title='User Search'/>
         }}
         name="SearchUser">
         {props => <SearchUser navigation={navigation} chats={chats} websocket={websocket} userData={userData} {...props}/>}
@@ -46,7 +57,7 @@ export default function MessengerStack({userData, websocket, chats, route, navig
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='David Corfield Staff'/>
+          headerTitle: () => <Header chats={chats}navigation={navigation} title='David Corfield Staff'/>
         }}
         name="ListStaff">
         {props => <ListStaff websocket={websocket} userData={userData} navigation={navigation} {...props}/>}
@@ -60,20 +71,42 @@ export default function MessengerStack({userData, websocket, chats, route, navig
           ({ route, props }) => ({
             title: route.params.title,
             headerRight: (props) => (
-              <View style={styles.iconView}>
-                <TouchableOpacity onPress={openMenu} style={{padding : 10}}>
-                  <Icon
-                    name='menu'
-                    type='simple-line-icon'
-                    iconStyle={styles.icon}
-                    size={25}
-                  />
-                </TouchableOpacity>
+              <View style={{flexDirection: 'row', marginRight: 15}}>
+                {
+                  unreadChatsCount > 0 ? (
+                    <TouchableOpacity onPress={() => navigation.navigate('Messenger')} style={{padding : 10}}>
+                      <Icon
+                        name='bell'
+                        type='simple-line-icon'
+                        iconStyle={styles.icon}
+                        size={25}
+                      />
+                      <Badge
+                        status="primary"
+                        containerStyle={{position: 'absolute', top: 2, right: 22 }}
+                        badgeStyle={{borderWidth: 0}}
+                        value={unreadChatsCount}
+
+                      />
+                    </TouchableOpacity>
+                  ) : (null)
+                }
+                <View style={styles.iconView}>
+                  <TouchableOpacity onPress={openMenu} style={{padding : 10}}>
+                    <Icon
+                      name='menu'
+                      type='simple-line-icon'
+                      iconStyle={styles.icon}
+                      size={25}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
+
             )
           })
         }>
-          {props => <Chat userData={userData} navigation={navigation} chatsData={chats} websocket={websocket} {...props}/>}
+          {props => <Chat userData={userData} navigation={navigation} chats={chats} websocket={websocket} {...props}/>}
       </Stack.Screen>
 
     </Stack.Navigator>

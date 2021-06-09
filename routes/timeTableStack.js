@@ -7,7 +7,7 @@ import Header from '../shared/header';
 
 const Stack = createStackNavigator();
 
-export default function TimeTableStack({ navigation }) {
+export default function TimeTableStack({ chats, navigation }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -17,14 +17,14 @@ export default function TimeTableStack({ navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='TimeTable'/>
+          headerTitle: () => <Header chats={chats} navigation={navigation} title='TimeTable'/>
         }}
         name="TimeTable"
         component={TimeTable} />
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Book Now'/>
+          headerTitle: () => <Header chats={chats} navigation={navigation} title='Book Now'/>
         }}
         name="BookClass"
         component={BookClass} />

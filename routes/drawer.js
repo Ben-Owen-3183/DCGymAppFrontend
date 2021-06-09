@@ -57,8 +57,11 @@ function createSyncChatsPayload(chats){
   let payload = {
     chats_data: []
   };
-  if(!chats) return payload;
+  if(!chats || chats == undefined || chats == null) return payload;
   // fill in payload.
+  // console.log(`create sync payload: ${JSON.stringify(chats)}`)
+  // console.log(`create sync payload: ${chats}`)
+
   for (var i = 0; i < chats.length; i++) {
     if(chats[i].messages.length > 0){
       payload.chats_data.push({
@@ -69,19 +72,21 @@ function createSyncChatsPayload(chats){
     }
   }
 
-
   return payload;
 }
 
 // merges the synced chat data from the server with
 // the local chat data
 function mergeNewChatData(chats, setChats, data){
+
   // add new messages to existing chats
   if(data.new_chat_messages){
     for (var i = 0; i < data.new_chat_messages.length; i++) {
       let chat = findChat(chats, data.new_chat_messages[i].chat_id);
       if(chat){
+        chat.read = false;
         chat.messages = data.new_chat_messages[i].messages.concat(chat.messages);
+
       }
     }
   }
@@ -112,7 +117,7 @@ async function syncChats(userData, chats, setChats){
     let data = await response.json();
     if(!data) throw 'empty response';
 
-    console.log(`sync response: ${JSON.stringify(data)}`);
+    // console.log(`sync response: ${JSON.stringify(data)}`);
     if(data['new_chats'].length > 0 || data['new_chat_messages'].length > 0){
       mergeNewChatData(chats, setChats, data);
     }
@@ -122,22 +127,23 @@ async function syncChats(userData, chats, setChats){
   }
 }
 
-async function fetchChat(userData, chat_id, chats, setChats){
+async function fetchAndAddChat(userData, chat_id, chats, setChats){
   try{
     let response = await fetch(Settings.siteUrl + '/messenger/get_chat/', {
       method: "POST",
       headers: {
         "Content-type": "application/json; charset=UTF-8",
-        "Authorization": "Token " + state.userData.token
+        "Authorization": "Token " + userData.token
       },
       body: JSON.stringify({
-        'chat_id': chatID
+        'chat_id': chat_id
       })
     })
 
-    data = await response.json();
-    if(!data) throw 'no chat returned';
-
+    let data = await response.json();
+    if(!data || data['errors'] && data.other_user_data) throw 'no chat returned';
+    // console.log(`Fetched Chat data:  ${JSON.stringify(data)}`);
+    console.log(`Fetched Chat data`);
     chats.push(data);
     let newChats = []
     Object.assign(newChats, chats);
@@ -148,13 +154,18 @@ async function fetchChat(userData, chat_id, chats, setChats){
   }
 }
 
-async function addNewChatMessage(chats, setChats, chat_id, newMessage, userData){
+async function addNewChatMessage(chats, setChats, userData, data){
+
+  let newMessage = data.message;
+  let chat_id = data.message.chat_id;
+  let read = data.read[userData.user_id.toString()];
+
   try{
+
     let chat = findChat(chats, chat_id)
-
-    if(!chat) throw 'chat does not exist';
-
-    chat.messages = [newMessage].concat(chats.messages);
+    if(!chat) throw 'NO_CHAT_FOUND';
+    chat.read = read;
+    chat.messages.unshift(newMessage);
     let newChats = []
     Object.assign(newChats, chats);
     storeChats(newChats);
@@ -162,14 +173,31 @@ async function addNewChatMessage(chats, setChats, chat_id, newMessage, userData)
 
   }catch(e){
     console.log(`Adding New Chat Message: ${e}`)
-    fetchAndAddChat(userData, chat_id, chats, setChats);
+    if(e === 'NO_CHAT_FOUND'){
+      data.chat_data.push
+      createNewChatWithNewMessages(data.chat_data, newMessage, chats, setChats);
+    }
+      //fetchAndAddChat(userData, chat_id, chats, setChats);
+  }
+}
+
+async function createNewChatWithNewMessages(chat_data, newMessage, chats, setChats){
+  try {
+    chat_data.messages = [newMessage];
+    let newChats = [];
+    Object.assign(newChats, chats);
+    newChats.push(chat_data);
+    setChats(newChats);
+    storeChats(newChats);
+  } catch (e) {
+    console.log(`New Chat From New Message ${e}`);
   }
 }
 
 async function loadCachedChatData(){
   try {
     let chats = await retrieveChats();
-    console.log(`Cached chat data: ${JSON.stringify(chats)}`);
+    // console.log(`Cached chat data: ${JSON.stringify(chats)}`);
     return chats;
   } catch (e) {
     console.log(`Error Chat Get Cached: ${e}`);
@@ -177,13 +205,15 @@ async function loadCachedChatData(){
   }
 }
 
-async function subscribeToNewChatOnServer(userData, websocket){
+async function subscribeToNewChatOnServer(userData, websocket, chats, setChats){
   try {
+    await syncChats(userData, chats, setChats);
+
     // subscribe to new chat in websocket
     websocket.send(JSON.stringify({
       'action': 'add_new_chat',
       'data' : {
-        'token': state.userData.token
+        'token': userData.token
       }
     }));
   } catch (e) {
@@ -236,7 +266,6 @@ export default Navigator = ({navigation}) => {
   return null;
   */
 
-
   const initialState = {
     reRender: false,
     isLoading: true,
@@ -247,14 +276,20 @@ export default Navigator = ({navigation}) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
   const [websocket, setWebsocket] = React.useState(null);
   const [websocketInitialised, setWebsocketInitialised] = React.useState(false);
-  const [chats, setChats] = React.useState(null);
+  const [chats, setChats] = React.useState([]);
+
+  // console.log(`CHATS: ${JSON.stringify(chats)}`)
+
 
   if(websocket === null)
     setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
 
   function initialiseWebsocket(userData){
+    if(websocket === null)
+      setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
 
     console.log('sending websocket initialisation data.');
+    // console.log(websocket);
     try{
       websocket.send(JSON.stringify({
         'action': 'init',
@@ -268,9 +303,42 @@ export default Navigator = ({navigation}) => {
     }
   }
 
+  const initialiseApp = async () => {
+    try {
+      let userData = state.userData;
+      if(!userData) userData = await retrieveUserData();
+
+      let cachedChats = await loadCachedChatData();
+      if(cachedChats.length > 0) setChats(cachedChats);
+
+      if(userData){
+        dispatch({ type: 'RESTORE_USER_DATA', userData: userData });
+
+        await syncChats(userData, cachedChats, setChats);
+
+        sortChats(chats, setChats);
+        if(userData && !websocketInitialised){
+          console.log('web init called from *Initialise App*')
+          initialiseWebsocket(userData);
+        }
+
+      }
+      else{
+        dispatch({ type: 'RESTORE_USER_DATA_FAILED'});
+      }
+
+
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+
+  // Web Socket Functions
   if(websocket){
 
     websocket.onclose = function(){
+
       setWebsocketInitialised(false);
       console.log('websocket connection has been closed.')
       console.log('attempting to reconnect...')
@@ -297,60 +365,43 @@ export default Navigator = ({navigation}) => {
     websocket.onmessage = function(e){
       let recieved = JSON.parse(e.data)
       const name = state.userData.first_name + ' ' + state.userData.last_name;
-      console.log(`${name} message recieved: ${JSON.stringify(recieved)}`)
+      // console.log(`${name} message recieved: ${JSON.stringify(recieved)}`)
 
       if(!recieved.data || !recieved.data.action)
         return;
 
       if(recieved.data.action === 'NEW_CHAT_MESSAGE'){
-        return;
-        let newMessage = recieved.data.message;
-        let chatID = recieved.data.message.chat_id;
-        addNewChatMessage(chats, setChats, chat_id, newMessage, state.userData);
+        addNewChatMessage(chats, setChats, state.userData, recieved.data);
         sortChats(chats, setChats);
       }
       else if(recieved.data.action === 'NEW_CHAT'){
-        subscribeToNewChatOnServer(state.userData, websocket);
+        subscribeToNewChatOnServer(state.userData, websocket, chats, setChats);
+      }
+      else if(recieved.data.action === 'SET_CHAT_READ'){
+        let chat_id = recieved.data.chat_id;
+        if(chat_id){
+          let chat = findChat(chats, chat_id);
+          if(chat) {
+            chat.read = true;
+            let newChats = [];
+            Object.assign(newChats, chats);
+            setChats(newChats);
+            storeChats(newChats);
+          }
+        }
       }
 
     }
   }
 
   React.useEffect(() => {
-    const initialiseApp = async () => {
-      let userData;
-
-      try {
-        userData = await retrieveUserData();
-        let cachedChats = await loadCachedChatData();
-        setChats(cachedChats);
-
-        if(userData){
-          dispatch({ type: 'RESTORE_USER_DATA', userData: userData });
-
-          await syncChats(userData, cachedChats, setChats);
-
-          sortChats(chats, setChats);
-          if(userData && !websocketInitialised){
-            console.log('web init called from *load user data*')
-            initialiseWebsocket(userData);
-          }
-        }
-        else{
-          dispatch({ type: 'RESTORE_USER_DATA_FAILED'});
-        }
-
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
     initialiseApp();
   }, []);
 
   const authContext = React.useMemo(
     () => ({
       setUserData: async userData => {
+        initialiseApp();
         dispatch({ type: 'SIGN_IN', userData: userData });
       },
       updateUserData: async userData => {
@@ -358,9 +409,13 @@ export default Navigator = ({navigation}) => {
       },
       signOut: () => {
         removeUserData();
+        removeChats();
+        setChats([]);
+        if(websocket) websocket.close();
         dispatch({ type: 'SIGN_OUT' })
       },
-      getUserData: () => { return state.userData },
+      getUserData: () => { return state.userData }
+      // updateChat: (chat) => {setChat(chat)}
     }),
     []
   );
@@ -393,15 +448,31 @@ export default Navigator = ({navigation}) => {
         ) : (
           <Drawer.Navigator
             drawerStyle={{ width: '75%', backgroundColor: ''}}
-            drawerContent={props => <DrawerContent userData={state.userData} {...props}/>}>
-            <Drawer.Screen name="TimeTable" component={TimeTableStack} />
-            <Drawer.Screen name="Feed" component={FeedStack}/>
+            drawerContent={props => <DrawerContent chats={chats} userData={state.userData} {...props}/>}>
+
+            <Drawer.Screen name="TimeTable">
+              {props => <TimeTableStack chats={chats} {...props}/>}
+            </Drawer.Screen>
+
+            <Drawer.Screen name="Feed">
+              {props => <FeedStack chats={chats} {...props}/>}
+            </Drawer.Screen>
+
             <Drawer.Screen name="Messenger">
               {props => <MessengerStack chats={chats} userData={state.userData} websocket={websocket} {...props}/>}
             </Drawer.Screen>
-            <Drawer.Screen name="Videos" component={PastStreamStack} />
-            <Drawer.Screen name="Live Stream" component={LiveStreamStack} />
-            <Drawer.Screen name="Settings" component={SettingsStack} />
+
+            <Drawer.Screen name="Videos">
+              {props => <PastStreamStack chats={chats} {...props}/>}
+            </Drawer.Screen>
+
+            <Drawer.Screen name="Live Stream">
+              {props => <LiveStreamStack chats={chats} {...props}/>}
+            </Drawer.Screen>
+
+            <Drawer.Screen name="Settings">
+              {props => <SettingsStack chats={chats} {...props}/>}
+            </Drawer.Screen>
           </Drawer.Navigator>
         )}
       </NavigationContainer>
