@@ -37,7 +37,6 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [firstScrollToEndCalled, setFirstScrollToEndCalled] = React.useState(false);
   const [chatHistory, setChatHistory] = React.useState([]);
-  const [screenFocused, setScreenFocused] = React.useState(false);
   const scrollViewRef = useRef(null);
   const chat = findChat(chats, route.params.chat_id);
 
@@ -59,17 +58,16 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("screen focused");
-      // setScreenFocused(true);
       return () => {
-        console.log("screen unfocused");
-        // setScreenFocused(false);
-        navigation.goBack();
+        try{
+          navigation.popToTop();
+        }
+        catch(e){}
       };
     }, [])
   );
 
-  if(chat && !chat.read)// && screenFocused)
+  if(chat && !chat.read)
     setChatToRead();
 
   const sendMessage = () => {
@@ -137,10 +135,10 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
   const onScrollEndReached = () => {
 
     console.log('scrolled to end called');
-    // if(!firstScrollToEndCalled){
-      //////////// setFirstScrollToEndCalled(true);
-    //  return;
-    // }
+    if(!firstScrollToEndCalled){
+      setFirstScrollToEndCalled(true);
+      return;
+    }
     if(chat.messages.length == 30)
     getHistory();
   }
@@ -166,41 +164,6 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
       </View>
     )
   }
-
-  /*
-  const [t, st] = React.useState(false);
-  async function test(){
-    if(!websocket || !userData)
-      return;
-
-    if(websocket.readyState !== WebSocket.OPEN)
-      return;
-    st(true);
-    try {
-      for(let i = 0; i < 120; i++){
-
-        websocket.send(JSON.stringify({
-          'action': 'message',
-          'data' : {
-            'token': userData.token,
-            'chat_id': route.params.chat_id,
-            'message': i.toString(),
-          }
-        }))
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-
-    }
-  }
-
-  React.useEffect(() => {
-    if(!t){
-      test();
-    }
-  })
-  */
 
   return (
     <View style={styles.messagesView}>

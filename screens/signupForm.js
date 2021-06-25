@@ -81,8 +81,8 @@ const SignupForm = ({ navigation }) => {
         <View style={{padding: 14}}></View>
         <View style={{alignItems: 'center'}}>
           <Image
-            width={Dimensions.get('window').width*0.9}
-            source={require('../assets/images/dclogo.png')}/>
+            width={Dimensions.get('window').width*0.8}
+            source={require('../assets/images/DC-logo.png')}/>
           <Text style={styles.text}></Text>
         </View>
 

@@ -86,7 +86,6 @@ function mergeNewChatData(chats, setChats, data){
       if(chat){
         chat.read = false;
         chat.messages = data.new_chat_messages[i].messages.concat(chat.messages);
-
       }
     }
   }
@@ -427,7 +426,7 @@ export default Navigator = ({navigation}) => {
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <Image
             width={Dimensions.get('window').width*0.9}
-            source={require('../assets/images/dclogo.png')}/>
+            source={require('../assets/images/DC-logo.png')}/>
           <Text style={{fontSize: 25, marginTop: 30,marginBottom: 20, textAlign: 'center', color: '#FFC300'}} > Signing in </Text>
           <ActivityIndicator color={'#FFC300'} size={80} />
         </View>
@@ -455,7 +454,7 @@ export default Navigator = ({navigation}) => {
             </Drawer.Screen>
 
             <Drawer.Screen name="Feed">
-              {props => <FeedStack chats={chats} {...props}/>}
+              {props => <FeedStack chats={chats} userData={state.userData} {...props}/>}
             </Drawer.Screen>
 
             <Drawer.Screen name="Messenger">

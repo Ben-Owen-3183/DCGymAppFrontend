@@ -78,12 +78,15 @@ const SearchUser = ({userData, websocket, navigation}) => {
     };
 
     const onFailure = (response) => {
-
+      console.log('failed')
     };
 
     fetch(Settings.siteUrl + '/user/search/', {
         method: "POST",
-        headers: {"Content-type": "application/json; charset=UTF-8"},
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "Authorization": "Token " + userData.token
+        },
         body: JSON.stringify({'text': value})
       })
       .then(response => response.json())
@@ -126,6 +129,10 @@ const SearchUser = ({userData, websocket, navigation}) => {
 }
 
 const ListUsers = ({userList, submit}) => {
+
+  if(!userList) return null;
+  console.log(userList);
+
   return userList.map((user, i) => {
     return (
       <TouchableHighlight

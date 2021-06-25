@@ -20,6 +20,8 @@ target 'DCGymAppFrontend' do
 
   pod 'react-native-encrypted-storage', :path => '../node_modules/react-native-encrypted-storage'
 
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
   target 'DCGymAppFrontendTests' do
     inherit! :complete
     # Pods for testing

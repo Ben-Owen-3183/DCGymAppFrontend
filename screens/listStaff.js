@@ -25,12 +25,12 @@ const ListStaff = ({userData, navigation, websocket}) => {
     try{
       const data = await Storage.get('staff_data');
       if(data) {
-        setStaffList(data)
+        setStaffList(data);
+        setIsLoadingStaff(false);
       }
 
     } catch(e) {
       console.log(`Get Cached Staff Data: ${e}`);
-      setFailedToLoadStaff(true);
     }
   }
 
@@ -39,6 +39,8 @@ const ListStaff = ({userData, navigation, websocket}) => {
     setIsLoadingStaff(true);
 
     try{
+      await fetchStorageStaffData();
+
       let response = await fetch(Settings.siteUrl + '/user/list_staff/', {
           method: "GET",
           headers: {
@@ -56,7 +58,7 @@ const ListStaff = ({userData, navigation, websocket}) => {
         throw 'no staff data was returned from the server';
       }
     }catch(e){
-      fetchStorageStaffData();
+      setFailedToLoadStaff(true);
     }
     setIsLoadingStaff(false);
   }
@@ -189,7 +191,7 @@ const Staff = ({staff}) => {
 
   return (
     <View style={styles.userView}>
-      <View style={{marginRight: -40}}>
+      <View style={{marginRight: 25}}>
         <CustomAvatar
           size={70}
           avatarURL={staff.avatarURL}

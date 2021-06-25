@@ -5,17 +5,81 @@ import {
   Text,
   ActivityIndicator,
   TouchableHighlight,
-  TextInput
+  TextInput,
+  Dimensions,
+  Modal
 } from 'react-native';
-import {Icon} from 'react-native-elements';
+import {Icon, Avatar} from 'react-native-elements';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
+import Image from 'react-native-scalable-image';
 
-export const PrimaryButton = ({text, onPress, isLoading}) => {
+
+export const Popup = ({buttons, text, setModalVisible, modalVisible}) => {
+
+  const ButtonsComponent = ({buttons, setModalVisible, modalVisible}) => {
+    return buttons.map((button, i) => {
+      return(
+        <View key={i}>
+          {
+            button.primary ? (
+              <PrimaryButton
+                text={button.text}
+                onPress={button.onClick}
+              />
+            ) : (
+              <SecondaryButton
+                text={button.text}
+                onPress={button.onClick}
+              />
+            )
+          }
+          <View style={{marginVertical: 7}}></View>
+        </View>
+      )
+    })
+  }
+
+  return(
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={modalVisible}>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#00000070'}}>
+        <View style={{flexDirection: 'row', flex: 0}}>
+          <View style={{flex: 1}}></View>
+          <View style={{
+              justifyContent: 'center',
+              flex: 5,
+              borderRadius: 20,
+              paddingHorizontal: 25,
+              paddingTop: 20,
+              paddingBottom: 10,
+              backgroundColor: GlobalColors.dcLightGrey
+              }}>
+            <Text style={{color: 'white', textAlign: 'center', marginBottom: 15, fontSize: 20}}>
+            {text}
+            </Text>
+
+            <ButtonsComponent buttons={buttons} setModalVisible={setModalVisible} modalVisible={modalVisible}/>
+
+          </View>
+          <View style={{flex: 1}}></View>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
+export const PrimaryButton = ({text, onPress, isLoading, square = false}) => {
+
+  let extraStyles = {}
+  if (square) extraStyles.borderRadius = 0;
+
   return(
     <TouchableHighlight
       underlayColor={'#dba400'}
       onPress={onPress}
-      style={[styles.button, {}]}>
+      style={[styles.button, extraStyles]}>
       <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
         {isLoading ? <View style={{flex: 1}}></View> : null}
         <Text style={[styles.text, {color: 'black', fontWeight: 'bold'}]}> {text} </Text>
@@ -25,13 +89,15 @@ export const PrimaryButton = ({text, onPress, isLoading}) => {
   )
 }
 
-export const PrimaryButtonWithIcon = ({text, onPress, iconType, iconName}) => {
+export const PrimaryButtonWithIcon = ({text, onPress, iconType, iconName, square = false}) => {
+  let extraStyles = {}
+  if (square) extraStyles.borderRadius = 0;
 
   return(
       <TouchableHighlight
         underlayColor={'#dba400'}
         onPress={onPress}
-        style={styles.button}>
+        style={[styles.button, extraStyles]}>
         <View style={{paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center'}}>
 
           <Text style={[styles.text,
@@ -91,29 +157,45 @@ export const SecondaryButton = ({text, onPress, isLoading}) => {
   )
 }
 
-export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style}) => {
+export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style, defaultFont}) => {
   const defaultFontSize = 20;
   return (
-      isStaff ?
-      (
-        <Text style={[{
-            color: GlobalColors.dcYellow,
-            fontSize: (fontSize ? fontSize : defaultFontSize),
-            fontFamily : 'BebasNeue Bold'
-          }, style]}>
-          {`${fName} ${sName}`}
-        </Text>
-      ) : (
-        <Text style={[{
-            color: 'white',
-            fontSize: (fontSize ? fontSize : defaultFontSize),
-            fontFamily : 'BebasNeue Bold'
-          }, style]}>
-          {`${fName} ${sName}`}
-        </Text>
-      )
+    <View >
+      {
+        isStaff ?
+        (
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={[{
+                color: GlobalColors.dcYellow,
+                fontSize: (fontSize ? fontSize : defaultFontSize),
+                fontFamily : (defaultFont ? '' : 'BebasNeue Bold')
+              }, style]}>
+              {`${fName} ${sName}`}
+            </Text>
+          </View>
+        ) : (
+          <Text style={[{
+              color: 'white',
+              fontSize: (fontSize ? fontSize : defaultFontSize),
+              fontFamily : 'BebasNeue Bold'
+            }, style]}>
+            {`${fName} ${sName}`}
+          </Text>
+        )
+      }
+
+    </View>
   );
 }
+
+/*
+<View style={{ marginLeft: 10}}>
+  <Image
+    width={Dimensions.get('window').width*0.045}
+    source={require('../assets/images/DC-icon.png')}/>
+</View>
+
+*/
 
 export const LoadingView = ({text, useBackground}) => {
   return(
@@ -194,10 +276,10 @@ const styles = StyleSheet.create({
     fontSize : 16,
   },
   button : {
-    flex: 1,
+
     backgroundColor: '#FFC300',
     alignItems : 'center',
-    marginVertical: 10,
+    // marginVertical: 10,
     paddingVertical: 10,
     borderColor: '#FFC300',
     borderWidth: 1,
@@ -206,7 +288,6 @@ const styles = StyleSheet.create({
   },
   secondaryButtonbutton : {
     alignItems : 'center',
-    marginVertical: 10,
     paddingVertical: 10,
     borderColor: '#FFC300',
     borderWidth: 1,

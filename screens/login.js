@@ -115,10 +115,10 @@ const Login = ({navigation }) => {
             <View style={{flex: 5}}>
               <ActivityIndicator size="large" />
               <View style={{flex: 1}}></View>
-              <View style={{alignItems: 'center'}}>
+              <View style={{alignItems: 'center', marginBottom: 20}}>
                 <Image
-                  width={Dimensions.get('window').width*0.9}
-                  source={require('../assets/images/dclogo.png')}/>
+                  width={Dimensions.get('window').width*0.8}
+                  source={require('../assets/images/DC-logo.png')}/>
               </View>
               <View style={{flex: 1}}></View>
               <TextInput
@@ -166,7 +166,7 @@ const Login = ({navigation }) => {
                 text={'Login'}
                 isLoading={isLoading}
               />
-
+              <View style={{marginVertical: 10}}></View>
               <SecondaryButton
                 onPress={() => navigation.navigate('SignupStep1')}
                 text={'Sign up'}

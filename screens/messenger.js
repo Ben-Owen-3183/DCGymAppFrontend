@@ -20,19 +20,21 @@ const Messenger = (props) => {
 
   return (
     <ScrollView style={styles.mainContainer}>
-      <View style={{flex: 1, marginHorizontal: 10, marginTop: 4, flexDirection: 'row'}}>
+      <View style={{flex: 1, flexDirection: 'row', marginBottom: 10}}>
         <View style={{flex: 3}}>
           <PrimaryButtonWithIcon
             onPress={() => props.navigation.navigate('SearchUser')}
+            square={true}
             text="Find Member"
             iconType={'font-awesome-5'}
             iconName={'search'}/>
         </View>
-        <View style={{marginHorizontal: 5}}></View>
+        <View style={{marginHorizontal: 3}}></View>
         <View style={{flex: 2}}>
           <PrimaryButton
+            square={true}
             onPress={() => props.navigation.navigate('ListStaff')}
-            text="List Staff"/>
+            text={"List Staff"}/>
         </View>
       </View>
       {
@@ -40,7 +42,7 @@ const Messenger = (props) => {
         (
           <Chats chats={props.chats} navigation={props.navigation}/>
         ) : (
-          <View style={{flexDirection: 'row',marginTop: 40 ,flex: 1}}>
+          <View style={{flexDirection: 'row', marginTop: 40, flex: 1}}>
             <View style={{flex: 1}}></View>
             <View style={{
                 alignItems: 'center',
@@ -49,7 +51,7 @@ const Messenger = (props) => {
                 paddingHorizontal: 30,
                 paddingVertical: 20,
                 backgroundColor: GlobalColors.dcLightGrey,
-                borderRadius: 30
+                borderRadius: 30,
               }}>
               <Text style={styles.text}>You are currently not chatting with anyone</Text>
               <View style={{margin: 15}}></View>
