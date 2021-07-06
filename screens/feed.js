@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Image,
   StyleSheet,
   View,
   Text,
@@ -10,18 +9,20 @@ import {
   Pressable,
   TextInput,
   Dimensions,
-  Keyboard
+  Keyboard,
+  ActivityIndicator
 } from 'react-native';
 import {Icon, Overlay} from 'react-native-elements';
 import {GlobalColors, globalStyles} from '../styles/dcstyles';
 import CustomAvatar from '../shared/customAvatar';
-import {PrimaryButton, UsersName} from '../shared/basicComponents';
+import {PrimaryButton, UsersName, Popup} from '../shared/basicComponents';
 import Settings from '../shared/settings';
 import {BoxShadow} from 'react-native-shadow'
 import Storage from '../shared/storage';
 import { useFocusEffect } from '@react-navigation/native';
+import Image from 'react-native-scalable-image';
+import moment from 'moment'
 
-const resolveAssetSource = Image.resolveAssetSource;
 const windowWidth = Dimensions.get('window').width;
 const hideCommentsValue = 3;
 const hideRepliesValue = 0;
@@ -69,9 +70,7 @@ function CommentObject(name, text){
   this.replies = Array();
 }
 
-function RandomNumber(max){
-  return (Math.floor(Math.random() * max));
-}
+
 
 function RandomName(){
   return(names[RandomNumber(names.length)]);
@@ -123,43 +122,153 @@ function GeneratePosts(){
 
 */
 
-function Scale(image){
-  const sourceToUse = resolveAssetSource(image);
-
-  if(sourceToUse === null) {
-    return 1;
-  }
-  var scale = Dimensions.get('window').width / sourceToUse.width;
-  return sourceToUse.height * scale;
-}
-
-async function fetchPosts(userData){
+async function likePostElement(userData, likeType, id, posts, setPosts, userFeed){
 
   try {
-    let response = await fetch(Settings.siteUrl + '/feed/get_posts/', {
-        method: "GET",
-        headers: {
-          "Authorization": "Token " + userData.token,
-          "Content-type": "application/json; charset=UTF-8"
-        }
-      })
+    let urlEnd = ''
+    if(likeType === 'post') urlEnd = '/feed/like_post/';
+    else if(likeType === 'comment') urlEnd = '/feed/like_comment/';
+    else if(likeType === 'reply') urlEnd = '/feed/like_reply/';
+    else throw `likeType "${likeType}" not recognised`;
+
+    let response = await fetch(Settings.siteUrl + urlEnd, {
+      method: "POST",
+      headers: {
+        "Authorization": "Token " + userData.token,
+        "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({id: id})
+    })
 
     let data = await response.json()
-    console.log(`data returned ${JSON.stringify(data)}`);
+
+    if(data.post)
+      setPostLike(data.post, posts, setPosts, userFeed);
+    else if(data.comment)
+      setCommentLike(data.comment, posts, setPosts, userFeed);
+    else if(data.reply)
+      setReplyLike(data.reply, posts, setPosts, userFeed);
+    else if(data.errors)
+      throw `server errors: ${data.errors}`
+    else
+      throw 'server response not recognised'
+
+  } catch (e) {
+    console.log("Like Post Element: " + e);
+  }
+}
+
+async function setPostLike(post, posts, setPosts, userFeed){
+
+  for (var i = 0; i < posts.length; i++) {
+    if(posts[i].id.toString() === post.id.toString()){
+      let newPosts = []
+      Object.assign(newPosts, posts);
+      newPosts[i] = post;
+      setPosts(newPosts);
+      storePosts(newPosts, userFeed);
+      return;
+    }
+  }
+
+  throw 'Failed to find post to update like';
+}
+
+async function setCommentLike(comment, posts, setPosts, userFeed){
+
+  for (var i = 0; i < posts.length; i++) {
+    if(posts[i].id.toString() === comment.post_id.toString()){
+      for (var j = 0; j < posts[i].comments.length; j++) {
+        if(posts[i].comments[j].id.toString() === comment.id.toString()){
+          let newPosts = []
+          Object.assign(newPosts, posts);
+          newPosts[i].comments[j] = comment;
+          setPosts(newPosts);
+          storePosts(newPosts, userFeed);
+          return;
+        }
+      }
+    }
+  }
+
+  throw 'Failed to find comment to update like';
+}
+
+async function setReplyLike(reply, posts, setPosts, userFeed){
+
+  for (var i = 0; i < posts.length; i++) {
+    if(posts[i].id.toString() === reply.post_id.toString()){
+      for (var j = 0; j < posts[i].comments.length; j++) {
+        if(posts[i].comments[j].id.toString() === reply.comment_id.toString()){
+          for (var k = 0; k < posts[i].comments[j].replies.length; k++) {
+            if(posts[i].comments[j].replies[k].id.toString() === reply.id.toString()){
+              let newPosts = [];
+              Object.assign(newPosts, posts);
+              reply.new = true;
+              newPosts[i].comments[j].replies[k] = reply;
+              setPosts(newPosts);
+              storePosts(newPosts, userFeed);
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  throw 'Failed to find reply to update like';
+}
+
+async function fetchPosts(userData, userFeed){
+  try {
+    let response = await fetch(Settings.siteUrl + '/feed/get_posts/', {
+      method: "POST",
+      headers: {
+        "Authorization": "Token " + userData.token,
+        "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({user_posts_only: userFeed})
+    })
+
+    let data = await response.json()
     return data;
   } catch (e) {
     console.log("Fetch Posts: " + e);
   }
 }
 
-async function fetchPostsAfter(){
-  body: JSON.stringify({
-
-  })
+async function storePosts(posts, userFeed){
+  let postsToStore = [];
+  let loopRange = posts.length > 5 ? 5 : posts.length;
+  for (var i = 0; i < loopRange; i++) {
+    postsToStore[i] = posts[i]
+  }
+  if(userFeed)
+    Storage.set('user_posts', postsToStore);
+  else
+    Storage.set('posts', postsToStore);
 }
 
-async function fetchPostsBefore(){
+async function fetchPostsBefore(post, userData, userFeed){
+  try {
+    let response = await fetch(Settings.siteUrl + '/feed/get_posts_before/', {
+      method: "POST",
+      headers: {
+        "Authorization": "Token " + userData.token,
+        "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({
+        datetime: post.timestamp,
+        post_id: post.id,
+        user_posts_only: userFeed,
+      })
+    })
 
+    let data = await response.json()
+    return data;
+  } catch (e) {
+    console.log("Fetch Posts Before: " + e);
+  }
 }
 
 async function uploadComment(userData, commentText, post_id, posts, setPosts){
@@ -178,8 +287,9 @@ async function uploadComment(userData, commentText, post_id, posts, setPosts){
 
     let data = await response.json()
     if(data.comment){
-      addCommentToPosts(posts, setPosts, data.comment, post_id)
+      addCommentToPosts(posts, setPosts, data.comment, post_id);
     }
+
 
   } catch (e) {
     console.log("Upload comment: " + e);
@@ -203,12 +313,37 @@ async function uploadReply(userData, replyText, post_id, comment_id, posts, setP
 
     let data = await response.json()
     if(data.reply){
-      //addCommentToPosts(posts, setPosts, data.comment, post_id)
+      addReplyToPosts(posts, setPosts, data.reply);
     }
 
   } catch (e) {
     console.log("Upload reply: " + e);
   }
+}
+
+async function addReplyToPosts(posts, setPosts, reply){
+  for (var i = 0; i < posts.length; i++) {
+    if(posts[i].id.toString() === reply.post_id.toString()){
+      let comments = posts[i].comments;
+      for (var j = 0; j < comments.length; j++) {
+        if(comments[j].id.toString() === reply.comment_id.toString()){
+          let newPosts = [];
+          Object.assign(newPosts, posts);
+
+          let newReplies = [];
+          Object.assign(newReplies, posts[i].comments[j].replies)
+          reply.new = true;
+          newPosts[i].comments[j].replies = [reply].concat(newReplies);
+
+          setPosts(newPosts);
+          storePosts(newPosts);
+          return;
+        }
+      }
+    }
+  }
+
+  throw 'addReplyToPosts(): Failed to find post or comment to add new reply';
 }
 
 function addCommentToPosts(posts, setPosts, comment, postId){
@@ -220,35 +355,177 @@ function addCommentToPosts(posts, setPosts, comment, postId){
       let newComments = []
       newComments.push(comment);
       newComments = newComments.concat(newPostsArray[i].comments);
-      let test = []
-      Object.assign(test, newComments);
-      newPostsArray[i].comments = test;
+      newPostsArray[i].comments = newComments;
       setPosts([].concat(newPostsArray));
+      storePosts(newPostsArray);
       return;
     }
   }
+
+  throw 'addCommentToPosts(): Failed to find post to add new post';
 }
 
-const Feed = ({userData, navigation}) => {
+async function togglePinnedPost(userData, setPosts, posts, post_id, userFeed){
+  try {
+    let response = await fetch(Settings.siteUrl + '/feed/pin_post/', {
+      method: "POST",
+      headers: {
+        "Authorization": "Token " + userData.token,
+        "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({
+        post_id: post_id,
+      })
+    })
+
+    let data = await response.json()
+    if(data.post){
+      let newPosts = [];
+      Object.assign(newPosts, posts);
+      for (var i = 0; i < posts.length; i++)
+        if(posts[i].id.toString() === post_id.toString())
+          newPosts[i] = data.post;
+      setPosts(newPosts);
+      storePosts(posts, userFeed);
+    }
+
+  } catch (e) {
+    console.log("Pinned Post: " + e);
+  }
+}
+
+async function deletePost(userData, setPosts, posts, post_id, userFeed){
+  try {
+    let response = await fetch(Settings.siteUrl + '/feed/delete_post/', {
+      method: "POST",
+      headers: {
+        "Authorization": "Token " + userData.token,
+        "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({
+        post_id: post_id,
+      })
+    })
+
+    let data = await response.json()
+
+    if(data.success){
+      let newPosts = [];
+      for (var i = 0; i < posts.length; i++)
+        if(posts[i].id.toString() !== post_id.toString()){
+          newPosts.push(posts[i]);
+        }
+
+      setPosts(newPosts);
+      storePosts(posts, userFeed);
+    }
+
+  } catch (e) {
+    console.log("Delete Post: " + e);
+  }
+}
+
+function postExists(post_id, posts){
+  for (var i = 0; i < posts.length; i++)
+    if(posts[i].id.toString() === post_id.toString())
+      return true;
+  return false;
+}
+
+/*merges new posts to beggining of posts array*/
+function mergeNewPosts(oldPosts, newPosts){
+  if(oldPosts.length === 0) return newPosts;
+  let postsToConcat = [];
+  let mostRecentOldPostId = oldPosts[0].id;
+
+  for (var i = 0; i < newPosts.length; i++) {
+    if(newPosts[i].id.toString() === mostRecentOldPostId.toString()){
+      oldPosts = updatePost(oldPosts, newPosts)
+      break;
+    }
+    else if(!postExists(newPosts[i].id, oldPosts)){
+      postsToConcat.push(newPosts[i]);
+    }
+  }
+  return postsToConcat.concat(oldPosts);
+}
+
+function updatePost(oldPosts, newPosts){
+  for (var i = 0; i < oldPosts.length; i++) {
+    for (var j = 0; j < newPosts.length; j++) {
+      if(oldPosts[i].id.toString() === newPosts[j].id.toString()){
+        oldPosts[i] = newPosts[j];
+      }
+    }
+  }
+  return oldPosts;
+}
+
+/*merges old posts to end of posts array*/
+function mergeOldPosts(oldPosts, newPosts){
+  if(oldPosts.length === 0) return newPosts;
+  let oldestPostId = oldPosts[oldPosts.length - 1].toString();
+  let postsToConcat = [];
+
+  let idFound = false;
+  for (var i = 0; i < newPosts.length; i++) {
+    if(newPosts[i].id.toString() === oldestPostId)
+      idFound = true;
+    if(idFound)
+      postsToConcat.append(newPosts[i])
+  }
+
+  if(postsToConcat.length === 0)
+    return oldPosts.concat(newPosts);
+  return oldPosts.concat(postsToConcat);
+}
+
+const Feed = ({userData, navigation, userFeed}) => {
   const [viewHeight, setViewHeight] = React.useState(0);
   const [posts, setPosts] = React.useState([]);
+  const [usingOldData, setUsingOldData] = React.useState(true);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        try{
+          if(posts.length <= 5) return;
+
+          let newPosts = [];
+          for (var i = 0; i < 5; i++)
+            newPosts[i] = posts[i]
+          setPosts(newPosts);
+        }
+        catch(e){ console.log('useFocusEffect failed to trim posts data')}
+      };
+    }, [])
+  );
 
   useFocusEffect(
     React.useCallback(() => {
       async function loadPosts(){
         try {
-          let posts_data;
+          let old_posts_data;
 
           if(posts.length == 0){
-            posts_data = await Storage.get('posts');
-            if(posts_data) setPosts(posts_data);
+            old_posts_data = await Storage.get((userFeed ? 'user_posts' : 'posts'));
+            if(old_posts_data) setPosts(old_posts_data);
           }
 
-          posts_data = await fetchPosts(userData);
+          let posts_data = await fetchPosts(userData, userFeed);
 
-          if(posts_data){
-            Storage.set('posts', posts_data);
-            setPosts(posts_data);
+          if(posts_data && posts_data.posts){
+            // if the data used was from cache overrite it
+            if(usingOldData){
+              setPosts(posts_data.posts);
+            }
+            // else if the data is fresh, merge new posts with existing data
+            else{
+              let mergedPosts = mergeNewPosts(posts, posts_data.posts);
+              setPosts(mergedPosts);
+            }
+            setUsingOldData(false);
+            storePosts(posts_data.posts, userFeed);
           }
         } catch (e) {
           console.log('Feed useFocusEffect: ' + e);
@@ -260,20 +537,22 @@ const Feed = ({userData, navigation}) => {
   );
 
   return (
-    <View onLayout={event => {
-          setViewHeight(event.nativeEvent.layout.height);
-        }}
-        style={styles.feedView}>
-      <View style={styles.postSection}>
-        <Posts posts={posts} setPosts={setPosts} userData={userData}/>
-      </View>
-
+    <View
+      style={{backgroundColor: GlobalColors.dcLightGrey, flex: 1}}
+      onLayout={event => setViewHeight(event.nativeEvent.layout.height)}>
+      <Posts
+        userFeed={userFeed}
+        posts={posts}
+        setPosts={setPosts}
+        userData={userData}
+        mainViewHeight={viewHeight}
+      />
       <FeedMenu navigation={navigation} mainViewHeight={viewHeight}/>
     </View>
   );
 }
 
-const FeedMenu = ({mainViewHeight, navigation, posts, setPosts }) => {
+const FeedMenu = ({mainViewHeight, navigation, posts, setPosts}) => {
   const [viewWidth, setViewWidth] = React.useState(0);
   const [viewHeight, setViewHeight] = React.useState(0);
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -356,7 +635,44 @@ const FeedMenu = ({mainViewHeight, navigation, posts, setPosts }) => {
                   borderRadius: 20,
                   paddingVertical: 2,
                   paddingHorizontal: 10,
-                  backgroundColor: '#00000090',
+                  backgroundColor: '#000000B0',
+                  position: 'absolute',
+                  right: 60,
+                }}>
+                <Text style={{color: GlobalColors.dcYellow, fontSize: 18}}>Feed</Text>
+              </View>
+              <BoxShadow setting={subShadowOpt}>
+                <View style={{
+                  borderRadius: 300,
+                  borderColor: GlobalColors.dcYellow,
+                  backgroundColor: GlobalColors.dcGrey,
+                  borderWidth: 1,
+                  width:50,
+                  height:50,
+                  justifyContent: 'center',
+                }}>
+                  <Icon
+                    containerStyle={{marginVertical: 0}}
+                    name='users'
+                    type='font-awesome-5'
+                    size={20}
+                    color={GlobalColors.dcYellow}
+                    onPress={() => {
+                      navigation.navigate('Feed');
+                      setMenuOpen(false);
+                    }}/>
+                </View>
+              </BoxShadow>
+            </View>
+
+
+            <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 15}}>
+              <View
+                style={{
+                  borderRadius: 20,
+                  paddingVertical: 2,
+                  paddingHorizontal: 10,
+                  backgroundColor: '#000000B0',
                   position: 'absolute',
                   right: 60,
                 }}>
@@ -392,7 +708,7 @@ const FeedMenu = ({mainViewHeight, navigation, posts, setPosts }) => {
                   borderRadius: 20,
                   paddingVertical: 2,
                   paddingHorizontal: 10,
-                  backgroundColor: '#00000090',
+                  backgroundColor: '#000000B0',
                   position: 'absolute',
                   right: 60,
                 }}
@@ -451,35 +767,171 @@ const FeedMenu = ({mainViewHeight, navigation, posts, setPosts }) => {
   );
 }
 
-const Posts = ({userData, posts, setPosts}) => {
+const Posts = ({userData, posts, setPosts, userFeed, viewHeight}) => {
+  const [loadingHistory, setLoadingHistory] = React.useState(false);
+  const [newContentLoaded, setNewContentLoaded] = React.useState(false);
+  const [postLengths, setPostLengths] = React.useState({prev: 0, now: 0, item: null});
+  const flatlistRef = React.useRef(null);
+
+
+  // Works, but have no idea why do not touch
+  // Handles to scroll to new content on new content load
+  React.useEffect(() => {
+    if(newContentLoaded && postLengths.prev < postLengths.now && postLengths.item != null){
+      let avg = flatlistRef.current._listRef._averageCellLength;
+      let totalOffset = avg * postLengths.prev;
+      flatlistRef.current.scrollToOffset({offset: totalOffset})
+      setNewContentLoaded(false);
+    }
+  }, [posts]);
+
+  async function onPostsEndReached(){
+    try {
+      if(posts.length === 0) return;
+
+      setLoadingHistory(true);
+      let newPostsData = await fetchPostsBefore(posts[posts.length - 1], userData, userFeed);
+
+      if(newPostsData && newPostsData.posts && newPostsData.posts.length > 0){
+        let newPosts = mergeOldPosts(posts, newPostsData.posts);
+        if(newPosts.length === posts.length) return;
+
+        newPosts[posts.length]
+        setPostLengths({
+          prev: posts.length,
+          now: newPosts.length,
+          item: newPosts[posts.length]
+        });
+        setNewContentLoaded(true)
+        setPosts(newPosts);
+      }
+      else{
+        throw 'no posts returned';
+      }
+    } catch (e) {
+      console.log(`End Post Reached: ${e}`)
+    }
+    setLoadingHistory(false);
+  }
 
   const renderItem = ({ item }) => {
     return (
-      <Post posts={posts} setPosts={setPosts} userData={userData} post={item}/>
+      item ?
+      <Post posts={posts} setPosts={setPosts} userData={userData} post={item} userFeed={userFeed}/>
+      :
+      <View style={{marginVertical: 100}}></View>
     );
   };
 
   return(
-    <FlatList
-      data={posts}
-      renderItem={renderItem}
-      keyExtractor={item => item.id}
+    <View>
+      <FlatList
+        ref={flatlistRef}
+        data={posts.concat([null])}
+        onEndReached={() => onPostsEndReached()}
+        onEndReachedThreshold={0.1}
+        renderItem={renderItem}
+        keyExtractor={
+          (item) => {
+            if(item) return item.id;
+            return -1;
+        }}
+      />
+
+      {
+        loadingHistory ?
+        <LoadingSpinner mainViewHeight={viewHeight}/>
+        :
+        null
+      }
+    </View>
+
+  )
+}
+
+const LoadingSpinner = ({mainViewHeight}) => {
+  const [viewWidth, setViewWidth] = React.useState(0);
+  const windowWidth = Dimensions.get('window').width;
+
+  function setValues(event){
+    let width = event.nativeEvent.layout.width;
+    setViewWidth(width);
+  }
+  return(
+    <View>
+      <ActivityIndicator
+        onLayout={event => { setValues(event) }}
+        style={{
+          position: 'absolute',
+          padding: -0,
+          right: (windowWidth / 2) - (viewWidth / 2),
+          top: -80,
+          marginRight: 0,
+          alignItems: 'center'
+        }}
+        size={60}
+        color={GlobalColors.dcYellow}
+      />
+    </View>
+  )
+}
+
+const PostMenu = ({userData, post, postMenuToggle, setPostMenuToggle, posts, setPosts, userFeed}) => {
+
+  const buttons = [
+    {
+      text: (post.pinned ? 'Unpin Post' : 'Pin Post'),
+      useLoading: true,
+      primary: true,
+      onPress: async () => {
+        await togglePinnedPost(userData, setPosts, posts, post.id, userFeed);
+      },
+    },
+    {
+      text: 'Delete Post',
+      useLoading: true,
+      primary: true,
+      onPress: async () => {
+        await deletePost(userData, setPosts, posts, post.id, userFeed);
+      },
+      confirm: 'Are you sure you want to delete this post?'
+    },
+    {
+      text: 'Cancel',
+      primary: false,
+      onPress: () => {
+        setPostMenuToggle(false);
+      },
+    }
+  ]
+
+  return (
+    <Popup
+      buttons={buttons}
+      text={'Post Options:'}
+      setModalVisible={setPostMenuToggle}
+      modalVisible={postMenuToggle}
     />
   )
 }
 
-const Post = ({userData, post, posts, setPosts}) => {
+const Post = ({userData, post, posts, setPosts, userFeed}) => {
   const defaultMaxNumberOfLine = 6;
   const [numberOfLines, setNumberOfLines] = React.useState(null);
   const [maxNumberOfLines, setMaxNumberOfLines] = React.useState(defaultMaxNumberOfLine);
   const [showCommentSection, setShowCommentSection] = React.useState(post.comments.length > 0);
+  const [postMenuToggle, setPostMenuToggle] = React.useState(false);
+
+  let datetimeText = moment(post.timestamp).fromNow();
+  // moment keeps printing 'in a few seconds' when it should be 'a few seconds ago'.
+  if(datetimeText === 'in a few seconds')
+    datetimeText = 'a few seconds ago';
 
   function onLayout(textLayoutEvent){
     if(numberOfLines) return;
     let numLine = textLayoutEvent.nativeEvent.lines.length;
     setNumberOfLines(numLine);
   }
-
 
   function readMore(){
     setMaxNumberOfLines(numberOfLines);
@@ -493,6 +945,20 @@ const Post = ({userData, post, posts, setPosts}) => {
 
   return(
     <View style={styles.post}>
+      {
+        postMenuToggle ?
+        <PostMenu
+          userFeed={userFeed}
+          userData={userData}
+          post={post}
+          postMenuToggle={postMenuToggle}
+          setPostMenuToggle={setPostMenuToggle}
+          posts={posts}
+          setPosts={setPosts}
+        />
+        :
+        null
+      }
       <View style={styles.postHeader}>
         <View style={styles.postUserHeader}>
           <CustomAvatar name={name} avatarURL={post.user.avatarURL}/>
@@ -503,6 +969,36 @@ const Post = ({userData, post, posts, setPosts}) => {
             fName={post.user.fName}
             sName={post.user.sName}
             fontSize={22}/>
+          <View style={{flex: 1}}></View>
+          <Text style={textStyles.chatText}>
+            {datetimeText}
+          </Text>
+          <View style={{marginRight: 15}}></View>
+          <View style={{flexDirection: 'row'}}>
+            {
+              post.pinned ?
+              <Icon
+                style={{marginHorizontal: 10}}
+                name='pin'
+                type='octicon'
+                size={25}
+                color='#FFC300'/>
+              :
+              null
+            }
+            {
+              userData.is_staff || userData.is_superuser ?
+              <Icon
+                style={{marginHorizontal: 5}}
+                onPress={() => setPostMenuToggle(!postMenuToggle)}
+                name='options-vertical'
+                type='simple-line-icon'
+                size={25}
+                color='#FFC300'/>
+                :
+                null
+            }
+          </View>
         </View>
 
         <View style={styles.postTextView}>
@@ -532,22 +1028,33 @@ const Post = ({userData, post, posts, setPosts}) => {
       </View>
       <View style={styles.postImageView}>
         {
-          post.image !== null ?
-            <Image source={{uri: post.image_url}} style={[styles.postImage, {height : Scale(post.image)}]}/>
+          post.image_url ?
+            <Image
+              width={Dimensions.get('window').width}
+              source={{uri: Settings.siteUrl + post.image_url}}
+              style={styles.postImage}/>
             :
             null
         }
       </View>
+      <PostFooter
+        userData={userData}
+        post={post}
+        setShowCommentSection={setShowCommentSection}
+        userData={userData}
+        posts={posts}
+        setPosts={setPosts}
+        userFeed={userFeed}
+      />
 
-      <PostFooter userData={userData} post={post} setShowCommentSection={setShowCommentSection}/>
-
-      {showCommentSection ? <CommentSection posts={posts} post={post} setPosts={setPosts} userData={userData} comments={post.comments}/> : null}
+      {showCommentSection ? <CommentSection userFeed={userFeed} posts={posts} post={post} setPosts={setPosts} userData={userData} comments={post.comments}/> : null}
     </View>
   )
 }
 
-const CommentSection = ({comments, userData, post, posts, setPosts}) => {
+const CommentSection = ({comments, userData, post, posts, setPosts, userFeed}) => {
   const [commentText, setCommentText] = React.useState('')
+
   return (
     <View style={styles.commentSection}>
       <View style={commentSectionStyles.commentInputView}>
@@ -561,24 +1068,28 @@ const CommentSection = ({comments, userData, post, posts, setPosts}) => {
           value={commentText}
           setValue={setCommentText}/>
       </View>
-
-      <Comments posts={posts} setPosts={setPosts} userData={userData} comments={comments}/>
-
+      <Comments
+        posts={posts}
+        userFeed={userFeed}
+        setPosts={setPosts}
+        userData={userData}
+        comments={comments}
+      />
     </View>
   )
 }
 
-const Comments = ({comments, userData, posts, setPosts}) => {
+const Comments = ({comments, userData, posts, setPosts, userFeed}) => {
   const [commentsToShow, setCommentsToShow] = React.useState([]);
   const [numCommentsToShow, setNumCommentsToShow] = React.useState(
     comments.length > hideCommentsValue
     ? hideCommentsValue : comments.length);
 
   const numOfComments = comments.length;
-  let newCommentsArray = [];
+
   React.useEffect(() => {
     updateComments();
-  }, [comments.length]);
+  }, [posts]);
 
   function updateComments(){
     let newCommentsArray = [];
@@ -615,18 +1126,22 @@ const Comments = ({comments, userData, posts, setPosts}) => {
 
   return (
     <View>
-      <CommentComponent posts={posts} setPosts={setPosts} userData={userData} comments={commentsToShow}/>
+      <CommentComponent
+        userFeed={userFeed}
+        posts={posts}
+        setPosts={setPosts}
+        userData={userData}
+        comments={commentsToShow}/>
       {
         numOfComments > hideCommentsValue ? (
           <TouchableOpacity onPress={() => showMoreComments()}>
             <Text
               textDecorationLine={'underline'}
-              style={{
-                fontSize: 16,
-                paddingBottom: 10,
-                marginLeft: 20,
-                color: '#6c6cd9',
-              }}>
+              style={[commentSectionStyles.blueText, {
+                  paddingBottom: 10,
+                  marginLeft: 10,
+                }]}>
+
             {
               numCommentsToShow !==  numOfComments ?
               `Show More Comments (${numOfComments - numCommentsToShow})`
@@ -642,8 +1157,9 @@ const Comments = ({comments, userData, posts, setPosts}) => {
 
 }
 
-const CommentComponent = ({comments, userData, posts, setPosts}) =>{
+const CommentComponent = ({comments, userData, posts, setPosts, userFeed}) =>{
   return comments.map((comment, i) => {
+
     const name = `${comment.user.fName} ${comment.user.sName}`
     return(
       <View key={comment.id} style={commentSectionStyles.commentView}>
@@ -667,11 +1183,32 @@ const CommentComponent = ({comments, userData, posts, setPosts}) =>{
               <View style={{flex : 1}}>
               </View>
             </View>
-            <CommentButtons comment={comment} posts={posts} setPosts={setPosts} userData={userData} likes={comment.like_count} replyOption={true}/>
+            <CommentButtons
+              onPress={() =>
+                likePostElement(userData, 'comment', comment.id, posts, setPosts, userFeed)
+              }
+              comment={comment}
+              posts={posts}
+              setPosts={setPosts}
+              userData={userData}
+              likes={comment.like_count}
+              replyOption={true}
+            />
           </View>
 
           <View>
-            {comment.replies.length > 0 ? <CommentReplies replies={comment.replies}/> : null}
+            {
+              comment.replies.length > 0 ?
+              <CommentReplies
+                userData={userData}
+                setPosts={setPosts}
+                userFeed={userFeed}
+                replies={comment.replies}
+                posts={posts}
+              />
+              :
+              null
+            }
           </View>
         </View>
       </View>
@@ -735,14 +1272,13 @@ const Comment = ({comment}) => {
   );
 }
 
-const CommentButtons = ({userData, likes, replyOption, posts, setPosts, comment}) => {
+const CommentButtons = ({userData, likes, replyOption, posts, setPosts, comment, onPress}) => {
   const [replying, setReplying] = React.useState(false);
   const [replyText, setReplyText] = React.useState('');
-
   return(
     <View>
       <View style={commentSectionStyles.commentButtons}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPress}>
           <Text style={postFooterStyles.likeCommentText}>Like</Text>
         </TouchableOpacity>
         {
@@ -776,6 +1312,7 @@ const CommentButtons = ({userData, likes, replyOption, posts, setPosts, comment}
         replying ? (
           <CommentInputText
             onPress={() => {
+
               uploadReply(userData, replyText, comment.post_id, comment.id, posts, setPosts)
               setReplyText('');
               setReplying(false);
@@ -790,15 +1327,17 @@ const CommentButtons = ({userData, likes, replyOption, posts, setPosts, comment}
   );
 }
 
-const CommentReplyComponent = ({replies, userData}) => {
+const CommentReplyComponent = ({replies, posts, setPosts, userFeed, userData}) => {
+
   return replies.map((reply, i) => {
+    const name = `${reply.user.fName} ${reply.user.sName}`;
+
     return(
       <View key={i}>
 
         {/* marginRight : 0 to cancel out comment margin right to keep replies and comments the same size */}
         <View style={[commentSectionStyles.commentView, {marginRight : 0}]}>
-
-          <CustomAvatar name={reply.name} style={{alignSelf : 'flex-start'}}/>
+          <CustomAvatar name={name} avatarURL={reply.user.avatarURL} style={{alignSelf : 'flex-start'}}/>
           <View style={{flex : 1, flexDirection : 'row'}}>
             <View style={{flex : 0}}>
               <Reply reply={reply}/>
@@ -810,7 +1349,14 @@ const CommentReplyComponent = ({replies, userData}) => {
         </View>
 
         <View style={{marginLeft : 48}}>
-          <CommentButtons userData={userData} likes={reply.likes} replyOption={false}/>
+          <CommentButtons
+            onPress={() =>
+              likePostElement(userData, 'reply', reply.id, posts, setPosts, userFeed)
+            }
+            userData={userData}
+            likes={reply.like_count}
+            replyOption={false}
+          />
         </View>
       </View>
     )
@@ -841,12 +1387,18 @@ const Reply = ({reply, userData}) => {
 
   return(
     <View style={commentSectionStyles.commentTextView}>
+      <UsersName
+        isStaff={reply.user.isStaff}
+        isSuperUser={reply.user.isSuperUser}
+        fName={reply.user.fName}
+        sName={reply.user.sName}
+        defaultFont={true}
+        fontSize={16}/>
       <Text
         onTextLayout={textLayoutEvent => onLayout(textLayoutEvent)}
         numberOfLines={maxNumberOfLines}
         ellipsizeMode={'tail'}
         style={commentSectionStyles.commentText}>
-        <Text style={(reply.staff ? styles.orginalPosterTextStaff : styles.orginalPosterText)}>{reply.name}{'\n'}</Text>
         {reply.text}
       </Text>
       {
@@ -867,32 +1419,46 @@ const Reply = ({reply, userData}) => {
   );
 }
 
-const CommentReplies = ({replies, userData}) => {
+const CommentReplies = ({replies, userData, posts, setPosts, userFeed}) => {
   const [repliesToShow, setRepliesToShow] = React.useState([]);
-  const [numRepliesToShow, setNumRepliesToShow] = React.useState(
-    replies.length > hideRepliesValue
-    ? hideRepliesValue : replies.length);
+  // const intialToShow = replies.length > hideRepliesValue ? hideRepliesValue : replies.length;
+  const [numRepliesToShow, setNumRepliesToShow] = React.useState(0)
+
 
   const numOfReplies = replies.length;
 
-  console.log(`replies: ${JSON.stringify(replies)}`);
-
   React.useEffect(() => {
     updateReplies();
-  }, [replies.length]);
+  }, [posts]);
+
+  function countNewReplies(){
+    let total = 0;
+    for (var i = 0; i < replies.length; i++)
+      if(replies[i].new) total++;
+    return total;
+  }
 
   function updateReplies(){
     let newRepliesArray = [];
-    const num = (replies.length > hideRepliesValue ? hideRepliesValue : replies.length)
-    for (var i = 0; i < num; i++) {
+
+    let toShow;
+    if(replies.length > 0){
+        if(replies[0].new && numRepliesToShow <= 1){
+          toShow = countNewReplies();
+        }
+        else{
+          toShow = numRepliesToShow; // (replies.length > hideRepliesValue ? hideRepliesValue : replies.length)
+        }
+    }
+    setNumRepliesToShow(toShow);
+
+    for (var i = 0; i < toShow; i++) {
       newRepliesArray[i] = replies[i];
     }
-    console.log(`replies to show: ${JSON.stringify(newRepliesArray)}`);
     setRepliesToShow(newRepliesArray)
   }
 
   function showMoreReplies(){
-
     let newCount;
 
     // RESET
@@ -918,33 +1484,31 @@ const CommentReplies = ({replies, userData}) => {
     setRepliesToShow(newRepliesArray);
   }
 
-
-    return (
-      <View>
-        <CommentReplyComponent userData={userData} replies={repliesToShow}/>
-        {
-          replies.length > hideRepliesValue ? (
-            <TouchableOpacity onPress={() => showMoreReplies()}>
-              <Text
-                textDecorationLine={'underline'}
-                style={{
-                  fontSize: 16,
+  return (
+    <View>
+      <CommentReplyComponent setPosts={setPosts} userFeed={userFeed} posts={posts} userData={userData} replies={repliesToShow}/>
+      {
+        replies.length > hideRepliesValue ? (
+          <TouchableOpacity onPress={() => showMoreReplies()}>
+            <Text
+              textDecorationLine={'underline'}
+              style={[commentSectionStyles.blueText,
+                {
                   paddingBottom: 10,
                   marginLeft: 20,
-                  color: '#6c6cd9',
-                }}>
-              {
-                numRepliesToShow !==  numOfReplies ?
-                `Show More Replies (${numOfReplies - numRepliesToShow})`
-                :
-                'Hide Replies'
-              }
-              </Text>
-            </TouchableOpacity>
-          ) : (null)
-        }
-      </View>
-    )
+                }]}>
+            {
+              numRepliesToShow !==  numOfReplies ?
+              `Show More Replies (${numOfReplies - numRepliesToShow})`
+              :
+              'Hide Replies'
+            }
+            </Text>
+          </TouchableOpacity>
+        ) : (null)
+      }
+    </View>
+  )
 }
 
 const CommentInputText = ({placeholder, userData, onPress, setValue, value}) => {
@@ -970,7 +1534,7 @@ const CommentInputText = ({placeholder, userData, onPress, setValue, value}) => 
   )
 }
 
-const PostFooter = ({post, setShowCommentSection}) => {
+const PostFooter = ({post, setShowCommentSection, userData, posts, setPosts, userFeed}) => {
   return (
     <View>
       <View style={postFooterStyles.likeCommentBar}>
@@ -987,7 +1551,9 @@ const PostFooter = ({post, setShowCommentSection}) => {
 
       <Line/>
       <View style={postFooterStyles.postFooter}>
-        <LikeButton/>
+        <LikeButton
+          onPress={() => likePostElement(userData, 'post', post.id, posts, setPosts, userFeed)}
+        />
         <CommentButton setShowCommentSection={setShowCommentSection}/>
       </View>
       <Line/>
@@ -1001,9 +1567,12 @@ const Line = () => {
   );
 }
 
-const LikeButton = () => {
+const LikeButton = ({onPress}) => {
   return (
-    <TouchableHighlight underlayColor={'#212121'} style={footButtonStyles.postFooterButton}>
+    <TouchableOpacity
+      onPress={onPress}
+      underlayColor={'#212121'}
+      style={footButtonStyles.postFooterButton}>
       <View style={footButtonStyles.postFooterButtonView}>
         <Icon
           name='thumb-up'
@@ -1013,13 +1582,13 @@ const LikeButton = () => {
           <Text style={footButtonStyles.text}>Like</Text>
         </View>
       </View>
-    </TouchableHighlight>
+    </TouchableOpacity>
   )
 }
 
 const CommentButton = ({setShowCommentSection}) => {
   return (
-    <TouchableHighlight
+    <TouchableOpacity
       underlayColor={'#212121'}
       style={footButtonStyles.postFooterButton}
       onPress={() => setShowCommentSection(true)}>
@@ -1028,7 +1597,7 @@ const CommentButton = ({setShowCommentSection}) => {
           <Text style={footButtonStyles.text}>Comment  </Text>
         </View>
       </View>
-    </TouchableHighlight>
+    </TouchableOpacity>
   )
 }
 
@@ -1071,7 +1640,12 @@ const textStyles = StyleSheet.create({
     marginLeft : 10,
     marginRight : 5,
     flex : 1
-  }
+  },
+  chatText : {
+    color : '#FFFFFF',
+    fontSize : 16,
+    fontWeight: "bold"
+  },
 });
 
 const commentSectionStyles = StyleSheet.create({
@@ -1117,11 +1691,10 @@ const commentSectionStyles = StyleSheet.create({
     fontSize : 16
   },
   blueText:{
-    color: '#6c6cd9',
+    color: '#5555dd',
     fontSize : 16,
     padding : 3
   }
-
 });
 
 const postFooterStyles = StyleSheet.create({
@@ -1130,7 +1703,6 @@ const postFooterStyles = StyleSheet.create({
     justifyContent : 'space-between',
     marginVertical : 9,
     marginHorizontal : 15
-
   },
   likeCommentText : {
     color : '#afafaf',
@@ -1147,22 +1719,13 @@ const postFooterStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   feedView : {
-      backgroundColor : '#494949',
-      height : '100%',
-  },
-  newPostView : {
-    marginTop : 10,
-    marginBottom : 10,
-    backgroundColor : 'powderblue'
-  },
-  postSection : {
+    backgroundColor : '#494949',
+    flex: 1
   },
   post : {
     backgroundColor : '#2D2D2D',
-    marginTop : 10,
-    marginBottom : 10,
+    marginBottom : 15,
   },
-
   postHeader : {
     margin : 5
   },
@@ -1170,8 +1733,6 @@ const styles = StyleSheet.create({
     flexDirection : 'row',
     alignItems : 'center',
     margin : 5
-  },
-  postImageView : {
   },
   postImage : {
     width : Dimensions.get('window').width,
@@ -1187,8 +1748,6 @@ const styles = StyleSheet.create({
     marginLeft : 18,
     marginVertical : 30,
     flex : 1
-  },
-  commentSection : {
   },
   orginalPosterText : {
     color : '#FFFFFF',

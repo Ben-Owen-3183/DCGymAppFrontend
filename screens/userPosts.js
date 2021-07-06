@@ -15,12 +15,11 @@ import {GlobalColors, globalStyles} from '../styles/dcstyles';
 import CustomAvatar from '../shared/customAvatar';
 import {PrimaryButton} from '../shared/basicComponents';
 import Settings from '../shared/settings';
+import Feed from './feed';
 
-const UserPosts = ({}) => {
+const UserPosts = ({userData, navigation}) => {
   return(
-    <View>
-      <Text>Hello</Text>
-    </View>
+    <Feed userData={userData} navigation={navigation} userFeed={true}/>
   )
 }
 

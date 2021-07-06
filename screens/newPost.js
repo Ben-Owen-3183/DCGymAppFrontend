@@ -21,6 +21,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 function createFormData(image, postText, adminOptions){
   let imageData = null;
   if(image){
+    console.log('we have image')
     imageData = {
       name: 'image.jpg',
       type: image.mime,
@@ -29,15 +30,19 @@ function createFormData(image, postText, adminOptions){
   }
 
   var data = new FormData();
-  if(imageData !== null) data.append('image', imageData);
+  if(imageData !== null){
+    data.append('image', imageData);
+  }
   data.append('post_text', postText);
-  data.append('admin_options', adminOptions);
+  // data.append('admin_options', objectToFormData(adminOptions));
+  for (const key in adminOptions) {
+    data.append(key, adminOptions[key]);
+  }
   data.append('image', imageData);
   return data;
 };
 
-
-async function submitPost(image, postText, adminOptions, userData){
+async function submitPost(image, postText, adminOptions, userData, navigation){
   if(postText === '') return;
 
   try {
@@ -45,19 +50,24 @@ async function submitPost(image, postText, adminOptions, userData){
         method: "POST",
         enctype: "multipart/form-data",
         headers: {
-          "Authorization": "Token " + userData.token
+          "Authorization": "Token " + userData.token,
         },
         body: createFormData(image, postText, adminOptions)
       })
 
-    let data = response.json();
-    console.log(JSON.stringify(data));
+    let data = await response.json();
+    if(data.success){
+      navigation.navigate('UserPosts');
+    }
+    else{
+      throw data.errors;
+    }
   } catch (e) {
     console.log(`Create New Post Error: ${e}`);
   }
 }
 
-const NewPost = ({userData}) => {
+const NewPost = ({userData, navigation}) => {
   const [postText, setPostText] = React.useState('');
   const [notify, setNotify] = React.useState(true);
   const [pinPost, setPinPost] = React.useState(true);
@@ -94,15 +104,16 @@ const NewPost = ({userData}) => {
   const confirmPostButtons = [
     {
       primary: true,
-      onClick: () => {
-        submitPost(newImage, postText, adminOptions, userData);
+      useLoading: true,
+      onPress: () => {
+        submitPost(newImage, postText, adminOptions, userData, navigation);
         setModalVisible(!modalVisible);
       },
       text: 'Confirm'
     },
     {
       primary: false,
-      onClick: () => setModalVisible(!modalVisible),
+      onPress: () => setModalVisible(!modalVisible),
       text: 'Cancel'
     }
   ]

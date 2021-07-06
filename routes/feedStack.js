@@ -21,7 +21,7 @@ export default function FeedStack({ userData, chats, navigation }) {
           headerTitle: () => <Header chats={chats} navigation={navigation} title='Feed'/>
         }}
         name="Feed">
-        {props => <Feed userData={userData} navigation={navigation} {...props}/>}
+        {props => <Feed userData={userData} navigation={navigation} userFeed={false} {...props}/>}
       </Stack.Screen>
 
       <Stack.Screen
@@ -39,7 +39,6 @@ export default function FeedStack({ userData, chats, navigation }) {
         name="UserPosts">
         {props => <UserPosts userData={userData} navigation={navigation} {...props}/>}
       </Stack.Screen>
-
     </Stack.Navigator>
   );
 }

@@ -13,10 +13,63 @@ import {Icon, Avatar} from 'react-native-elements';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import Image from 'react-native-scalable-image';
 
-
 export const Popup = ({buttons, text, setModalVisible, modalVisible}) => {
+  const [confirmTitle, setConfirmTitle] = React.useState(null);
+  const [toggleConfirm, setToggleConfirm] = React.useState(false);
+  const [confirmOnPress, setConfirmOnPress] = React.useState(null);
+  const [useLoading, setUseLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const ButtonsComponent = ({buttons, setModalVisible, modalVisible}) => {
+
+    function confirm(button){
+      setToggleConfirm(true);
+      setConfirmOnPress(() => button.onPress);
+      setConfirmTitle(button.confirm);
+      setUseLoading(button.useLoading);
+    }
+
+    async function asyncOnPress(func){
+      setIsLoading(true);
+      try {
+        await func();
+      } catch (e) {
+        console.log('asyncOnPress ' + e)
+      }
+      setIsLoading(false);
+    }
+
+
+    if(toggleConfirm){
+      return(
+        <View>
+          <PrimaryButton
+            text={'Confirm'}
+            onPress={() =>{
+              if(useLoading)
+                asyncOnPress(() => {
+                  confirmOnPress();
+                  setToggleConfirm(false);
+                });
+              else
+                confirmOnPress();
+            }}
+          />
+          <View style={{marginVertical: 7}}></View>
+          <SecondaryButton
+            text={'Cancel'}
+            onPress={() => {
+              setToggleConfirm(false);
+              setConfirmTitle(null);
+              setConfirmOnPress(null);
+            }}
+          />
+          <View style={{marginVertical: 7}}></View>
+
+        </View>
+      )
+    }
+
     return buttons.map((button, i) => {
       return(
         <View key={i}>
@@ -24,12 +77,32 @@ export const Popup = ({buttons, text, setModalVisible, modalVisible}) => {
             button.primary ? (
               <PrimaryButton
                 text={button.text}
-                onPress={button.onClick}
+                onPress={(
+                  button.confirm ?
+                  () => confirm(button)
+                  :
+                  () => {
+                    if(button.useLoading)
+                      asyncOnPress(() => button.onPress());
+                    else
+                      button.onPress();
+                  }
+                )}
               />
             ) : (
               <SecondaryButton
                 text={button.text}
-                onPress={button.onClick}
+                onPress={(
+                  button.confirm ?
+                  () => confirm(button)
+                  :
+                  () => {
+                    if(button.useLoading)
+                      asyncOnPress(() => button.onPress);
+                    else
+                      button.onPress();
+                  }
+                )}
               />
             )
           }
@@ -57,11 +130,28 @@ export const Popup = ({buttons, text, setModalVisible, modalVisible}) => {
               backgroundColor: GlobalColors.dcLightGrey
               }}>
             <Text style={{color: 'white', textAlign: 'center', marginBottom: 15, fontSize: 20}}>
-            {text}
+            {
+              (confirmTitle ? confirmTitle : text)
+            }
             </Text>
-
-            <ButtonsComponent buttons={buttons} setModalVisible={setModalVisible} modalVisible={modalVisible}/>
-
+            {
+              buttons ?
+              <ButtonsComponent
+                buttons={buttons}
+                setModalVisible={setModalVisible}
+                modalVisible={modalVisible}
+              />
+              :
+              null
+            }
+            {
+              isLoading ?
+              <ActivityIndicator
+                color={GlobalColors.dcYellow}
+                size={40} />
+              :
+              null
+            }
           </View>
           <View style={{flex: 1}}></View>
         </View>
@@ -78,7 +168,7 @@ export const PrimaryButton = ({text, onPress, isLoading, square = false}) => {
   return(
     <TouchableHighlight
       underlayColor={'#dba400'}
-      onPress={onPress}
+      onPress={isLoading ? null : onPress}
       style={[styles.button, extraStyles]}>
       <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
         {isLoading ? <View style={{flex: 1}}></View> : null}
@@ -146,7 +236,7 @@ export const SecondaryButtonWithIcon = ({text, onPress, iconType, iconName}) => 
 export const SecondaryButton = ({text, onPress, isLoading}) => {
   return(
     <TouchableHighlight
-      onPress={onPress}
+      onPress={isLoading ? null : onPress}
       style={styles.secondaryButtonbutton}>
       <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
         {isLoading ? <View style={{flex: 1}}></View> : null}
@@ -177,7 +267,7 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style, 
           <Text style={[{
               color: 'white',
               fontSize: (fontSize ? fontSize : defaultFontSize),
-              fontFamily : 'BebasNeue Bold'
+              fontFamily : (defaultFont ? '' : 'BebasNeue Bold')
             }, style]}>
             {`${fName} ${sName}`}
           </Text>
@@ -187,15 +277,6 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style, 
     </View>
   );
 }
-
-/*
-<View style={{ marginLeft: 10}}>
-  <Image
-    width={Dimensions.get('window').width*0.045}
-    source={require('../assets/images/DC-icon.png')}/>
-</View>
-
-*/
 
 export const LoadingView = ({text, useBackground}) => {
   return(
@@ -241,7 +322,6 @@ export const SearchInput = ({placeholder, onPress, onChangeText, value}) => {
 
   );
 }
-
 
 const styles = StyleSheet.create({
   searchView: {
