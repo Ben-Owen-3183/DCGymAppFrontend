@@ -8,65 +8,68 @@ import {
 } from 'react-native';
 import {GlobalStyles} from '../styles/dcstyles';
 import {PrimaryButton} from '../shared/basicComponents'
+import { useFocusEffect } from '@react-navigation/native';
+import Storage from '../shared/storage';
+import Settings from '../shared/settings';
+import {LoadingView} from '../shared/basicComponents';
+import moment from 'moment'
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
-function Day(name){
-  this.name = name;
-}
+async function fetchTimetable(userData){
 
-function FitnessClass(time, name, instructor){
-  this.time = time;
-  this.name = name;
-  this.instructor = instructor;
-}
+  try {
+    let response = await fetch(Settings.siteUrl + '/timetable/get/', {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "Authorization": "Token " + userData.token,
+      },
+    })
 
-function RandomPerson(){
-  var list = ['LEE', 'DAVE', 'WILL', 'JACOB', 'JOANE', 'RYAN'];
-  var rnd = (Math.floor(Math.random() * list.length))
-  return list[rnd];
-}
+    let data = await response.json();
 
-function RandomClasss(){
-  var list = ['EARLY BURN', 'YOGA', 'LIVE STRONG', 'LIFT', 'STRETCH & RELAX', 'TOTAL FITNESS'];
-  var rnd = (Math.floor(Math.random() * list.length))
-  return list[rnd];
-}
-
-function RandomTime(){
-  var list = ['7.00AM-8.00AM', '12.00AM-1.00PM', '10.00AM-11.00AM'];
-  var rnd = (Math.floor(Math.random() * list.length))
-  return list[rnd];
-}
-
-function GenerateData (){
-  var timetableData = [
-    new Day('MONDAY'),
-    new Day('TUESDAY'),
-    new Day('WEDNESDAY'),
-    new Day('THURSDAY'),
-    new Day('FRIDAY'),
-    new Day('SATURDAY'),
-    new Day('SUNDAY')
-  ];
-
-  for(let i = 0; i < timetableData.length; i++){
-    timetableData[i].classes = Array();
-    var rnd = (Math.random() * Math.floor(6)) + 2;
-    for(let j = 0; j < rnd; j++){
-      var fitnessClass = new FitnessClass(RandomTime(), RandomClasss(), RandomPerson())
-      var liveRnd =  (Math.floor(Math.random() * 10));
-      fitnessClass.live = liveRnd < 3
-      timetableData[i].classes.push(fitnessClass);
+    if(data.timetable){
+      return data.timetable;
     }
+    else{
+      throw data.errors;
+    }
+  } catch (e) {
+    console.log(`Fetch Timetable: ${e}`);
   }
-
-  return timetableData;
+  return null;
 }
 
-const TimeTable = ({navigation}) => {
+const TimeTable = ({navigation, userData}) => {
+  const [timetable, setTimetable] = React.useState([]);
 
-  const timetableData = GenerateData();
+
+  useFocusEffect(
+    React.useCallback(() => {
+
+      async function load(){
+        try {
+          if(!timetable || timetable.length === 0){
+            let cached_timetable = await Storage.get('timetable');
+            setTimetable(cached_timetable);
+          }
+          let timetable_data = await fetchTimetable(userData);
+          setTimetable(timetable_data);
+          Storage.set('timetable', timetable_data);
+        } catch (e) {
+          console.log(`Timetable useFocusEffect: ${e}`);
+        }
+      }
+
+      load();
+
+    }, [])
+  );
+
+  if(!timetable || timetable.length === 0){
+    return <LoadingView text={'Fetching Timetable'} useBackground={true}/>
+  }
 
   return (
     <View style={GlobalStyles.container}>
@@ -75,12 +78,11 @@ const TimeTable = ({navigation}) => {
 
           <View style={styles.timetableContainer}>
             <View>
-
               <Text style={styles.titleText}>CLASS{"\n"}TIMETABLE </Text>
               <View style={{marginVertical: 10, marginLeft: -10, width: 160}}>
                 <PrimaryButton text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
               </View>
-              <DayView/>
+              <DayView timetable={timetable}/>
               <View style={{marginBottom: 30, marginTop: -10, width: 160}}>
                 <PrimaryButton text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
               </View>
@@ -92,20 +94,24 @@ const TimeTable = ({navigation}) => {
   );
 }
 
-const DayView = () => {
-    return GenerateData().map( (day, i) => {
+const DayView = ({timetable, dayName}) => {
+    return timetable.map( (day, i) => {
       return(
+        day.classes.length > 0
+        ?
+        (
         <View key={i} style={styles.dayView}>
           <View style={styles.line}></View>
-
           <Text style={styles.dayText}>{day.name} </Text>
-
           <View style={styles.classesView}>
-              <TimeView day={day}/>
-              <ClassView day={day}/>
-              <InstructorView day={day}/>
+            <TimeView day={day.classes}/>
+            <ClassView day={day.classes}/>
+            <InstructorView day={day.classes}/>
           </View>
         </View>
+      ) : (
+        null
+      )
     )
     })
 }
@@ -114,27 +120,34 @@ const TimeView = ({day}) => {
   return(
     <View style={styles.timeView}>
       {
-        day.classes.map( (fitnessClass, i) => {
-            if(fitnessClass.live){
-              return(
-                <View key={i} style={styles.rowStyle}>
-                  <View style={styles.liveView}>
-                    <Text style={[styles.liveText, styles.isLiveStyle]}>LIVE</Text>
-                    <Text style={[styles.classText, {backgroundColor : styles.isLiveStyle.backgroundColor}]}>
-                      {fitnessClass.time}
-                    </Text>
-                  </View>
+        day.map( (fitnessClass, i) => {
+          let time_from = moment(fitnessClass.time_from, "HH:mm:ss").format("h:mmA");
+          let time_to = moment(fitnessClass.time_to, "HH:mm:ss").format("h:mmA");
+          console.log(`"${time_from}-${time_to}"`)
+          if(fitnessClass.live){
+            return(
+              <View key={i} style={styles.rowStyle}>
+
+                <View style={styles.liveTextView}>
+                  <Text style={[styles.liveText, styles.isLiveStyle]}>LIVE</Text>
                 </View>
-              )
-            }
-            else
-            {
-              return(
-                <View key={i} style={styles.rowStyle}>
-                  <Text style={styles.classText} >{fitnessClass.time}</Text>
+
+                <View style={styles.liveView}>
+                  <Text style={[styles.classText, {backgroundColor : styles.isLiveStyle.backgroundColor}]}>
+                  {`${time_from}-${time_to}`}
+                  </Text>
                 </View>
-              )
-            }
+              </View>
+            )
+          }
+          else
+          {
+            return(
+              <View key={i} style={styles.rowStyle}>
+                <Text style={styles.classText}>{`${time_from}-${time_to}`}</Text>
+              </View>
+            )
+          }
         })
       }
     </View>
@@ -145,10 +158,10 @@ const ClassView = ({day}) => {
   return (
     <View style={styles.classView}>
       {
-        day.classes.map( (fitnessClass, i) => {
+        day.map( (fitnessClass, i) => {
           return(
             <View key={i} style={styles.rowStyle}>
-              <Text style={styles.classText} >{fitnessClass.name}</Text>
+              <Text style={styles.classText}>{fitnessClass.excercise}</Text>
             </View>
           )
         })
@@ -161,7 +174,7 @@ const InstructorView = ({day}) => {
   return(
     <View style={styles.instructorView}>
       {
-        day.classes.map( (fitnessClass, i) => {
+        day.map( (fitnessClass, i) => {
           return(
             <View key={i} style={styles.rowStyle}>
               <Text style={styles.classTextRightSide} >{fitnessClass.instructor}</Text>
@@ -218,20 +231,19 @@ const styles = StyleSheet.create({
     fontSize : 22,
     fontFamily : 'BebasNeue Bold',
     marginRight : 8
-
   },
   classTextRightSide : {
     color : '#FFFFFF',
     textAlign : 'right',
-    marginLeft : 'auto',
-    fontSize : 20,
-    fontFamily : 'BebasNeue Regular'
+    fontSize : 22,
+    fontFamily : 'BebasNeue Regular',
   },
 
   // Views
   classesView : {
     flexDirection : 'row',
-    justifyContent : 'space-between'
+    justifyContent : 'space-between',
+    alignItems: 'center',
   },
   dayView : {
     marginBottom : 40,
@@ -248,15 +260,22 @@ const styles = StyleSheet.create({
   },
   liveView : {
     backgroundColor : '#d2232a',
-    flexDirection : 'row',
-    borderColor: '#d2232a',
-    borderRightWidth : 6,
-    borderLeftWidth : 6,
-    right : 40,
-    marginRight : -40,
-    borderRadius: 30,
+    paddingVertical: 1,
+    paddingRight: 10,
+    borderTopRightRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  liveTextView: {
+    backgroundColor : '#d2232a',
+    position: 'absolute',
+    right: 100,
+    paddingVertical: 1,
+    borderTopLeftRadius: 30,
+    borderBottomLeftRadius: 30,
+    paddingLeft: 10,
+    paddingRight: 20,
   },
   rowStyle : {
-      marginBottom : 4,
+    marginBottom : 4,
   }
 });

@@ -450,7 +450,7 @@ export default Navigator = ({navigation}) => {
             drawerContent={props => <DrawerContent chats={chats} userData={state.userData} {...props}/>}>
 
             <Drawer.Screen name="TimeTable">
-              {props => <TimeTableStack chats={chats} {...props}/>}
+              {props => <TimeTableStack chats={chats} userData={state.userData} {...props}/>}
             </Drawer.Screen>
 
             <Drawer.Screen name="Feed">
