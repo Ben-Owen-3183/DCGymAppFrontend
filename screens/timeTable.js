@@ -63,8 +63,11 @@ const TimeTable = ({navigation, userData}) => {
             setTimetable(cached_timetable);
           }
           let timetable_data = await fetchTimetable(userData);
-          setTimetable(timetable_data);
-          Storage.set('timetable', timetable_data);
+          if(timetable_data !== null){
+            setTimetable(timetable_data);
+            Storage.set('timetable', timetable_data);
+          }
+
         } catch (e) {
           console.log(`Timetable useFocusEffect: ${e}`);
         }
