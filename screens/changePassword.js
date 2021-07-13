@@ -10,8 +10,10 @@ import {
 } from 'react-native';
 import Settings from '../shared/settings'
 import {retrieveUserData} from '../shared/storage';
+import {AuthContext} from '../routes/drawer';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
+let signOutHook;
 
 const Errors = ({ errors }) => {
   return(
@@ -37,6 +39,8 @@ const Errors = ({ errors }) => {
 }
 
 const ChangePassword = ({ navigation }) => {
+  const { signOut } = React.useContext(AuthContext);
+  signOutHook = signOut;
   const [isLoading, setIsLoading] = React.useState(false);
   const [currentPassword, setCurrentPassword] = React.useState('');
   const [newPassword, setNewPassword] = React.useState('');
@@ -94,7 +98,13 @@ const ChangePassword = ({ navigation }) => {
           'newPasswordConf': newPasswordConf,
         })
       })
-      .then(response => response.json())
+      .then((response) => {
+        if(response.status == 401 || response.status == 403){
+        	signOutHook();
+        	return;
+        }
+        return response.json();
+      })
       .then(response => {onSuccess(response)})
       .catch(response => {onFailure(response)})
   }

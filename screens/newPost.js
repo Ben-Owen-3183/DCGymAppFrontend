@@ -16,7 +16,9 @@ import CustomAvatar from '../shared/customAvatar';
 import {Popup, PrimaryButton, SecondaryButton} from '../shared/basicComponents';
 import Settings from '../shared/settings';
 import ImagePicker from 'react-native-image-crop-picker';
+import {AuthContext} from '../routes/drawer';
 
+let signOutHook;
 
 function createFormData(image, postText, adminOptions){
   let imageData = null;
@@ -47,15 +49,21 @@ async function submitPost(image, postText, adminOptions, userData, navigation){
 
   try {
     let response = await fetch(Settings.siteUrl + '/feed/new_post/', {
-        method: "POST",
-        enctype: "multipart/form-data",
-        headers: {
-          "Authorization": "Token " + userData.token,
-        },
-        body: createFormData(image, postText, adminOptions)
-      })
+      method: "POST",
+      enctype: "multipart/form-data",
+      headers: {
+        "Authorization": "Token " + userData.token,
+      },
+      body: createFormData(image, postText, adminOptions)
+    })
+
+    if(response.status == 401 || response.status == 403){
+    	signOutHook();
+    	return;
+    }
 
     let data = await response.json();
+
     if(data.success){
       navigation.navigate('UserPosts');
     }
@@ -68,6 +76,8 @@ async function submitPost(image, postText, adminOptions, userData, navigation){
 }
 
 const NewPost = ({userData, navigation}) => {
+  const { signOut } = React.useContext(AuthContext);
+  signOutHook = signOut;
   const [postText, setPostText] = React.useState('');
   const [notify, setNotify] = React.useState(true);
   const [pinPost, setPinPost] = React.useState(true);
@@ -122,7 +132,7 @@ const NewPost = ({userData, navigation}) => {
     <View>
       <Popup modalVisible={modalVisible} setModalVisible={setModalVisible} buttons={confirmPostButtons} text={'Confirm you want to upload your post'}/>
 
-      <ScrollView style={{height: '100%', backgroundColor: GlobalColors.dcGrey}}>
+      <ScrollView keyboardShouldPersistTaps={'handled'}  style={{height: '100%', backgroundColor: GlobalColors.dcGrey}}>
         <View style={newPostStyles.view}>
           <View style={{marginBottom: 10, flexDirection: 'row'}}>
             <Text style={newPostStyles.titleText}>

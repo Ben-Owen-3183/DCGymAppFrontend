@@ -17,8 +17,6 @@ const SignupStep1 = ({ navigation }) => {
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
       <View style={styles.mainContainer}>
 
-
-
         <View style={{flex: 1}}></View>
 
         <View style={{flex: 5}}>

@@ -14,9 +14,11 @@ import {storeUserData, retrieveUserData} from '../shared/storage';
 import Settings from '../shared/settings';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
-
+let signOutHook;
 
 const SetAvatar = ({ navigation }) => {
+  const { signOut } = React.useContext(AuthContext);
+  signOutHook = signOut;
   const { updateUserData } = React.useContext(AuthContext);
   const [userData, setUserData] = React.useState('')
   const [errors, setErrors] = React.useState('')
@@ -66,7 +68,14 @@ const SetAvatar = ({ navigation }) => {
         },
         body: createFormData(image)
       })
-      .then(response => response.json())
+      .then((response) => {
+        if(response.status == 401 || response.status == 403){
+        	signOutHook();
+        	return;
+        }
+
+        return response.json()
+      })
       .then(response => {onSuccess(response)})
       .catch(response => {onFailure(response)})
   }

@@ -13,8 +13,10 @@ import Storage from '../shared/storage';
 import Settings from '../shared/settings';
 import {LoadingView} from '../shared/basicComponents';
 import moment from 'moment'
+import {AuthContext} from '../routes/drawer';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
+let signOutHook;
 
 async function fetchTimetable(userData){
 
@@ -26,6 +28,11 @@ async function fetchTimetable(userData){
         "Authorization": "Token " + userData.token,
       },
     })
+
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
 
     let data = await response.json();
 
@@ -42,8 +49,9 @@ async function fetchTimetable(userData){
 }
 
 const TimeTable = ({navigation, userData}) => {
+  const { signOut } = React.useContext(AuthContext);
+  signOutHook = signOut;
   const [timetable, setTimetable] = React.useState([]);
-
 
   useFocusEffect(
     React.useCallback(() => {
@@ -123,7 +131,6 @@ const TimeView = ({day}) => {
         day.map( (fitnessClass, i) => {
           let time_from = moment(fitnessClass.time_from, "HH:mm:ss").format("h:mmA");
           let time_to = moment(fitnessClass.time_to, "HH:mm:ss").format("h:mmA");
-          console.log(`"${time_from}-${time_to}"`)
           if(fitnessClass.live){
             return(
               <View key={i} style={styles.rowStyle}>

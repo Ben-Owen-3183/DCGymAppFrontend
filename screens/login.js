@@ -78,6 +78,8 @@ const Login = ({navigation }) => {
           newErrors.push('The email field cannot be blank. Enter the correct email to sign in')
         if(response['password'])
           newErrors.push('The password field cannot be blank. Enter the correct password to sign in')
+        if(response['membership'])
+          newErrors.push('You are currently not an active member of David Corfields Gymnasium. Please join or rejoin the gym to access the app. If you have just signed up to the gym, please wait at least 5 minutes for your membership status to be processed and try again. If that also fails please get in contact so we can resolve this issue.')
 
         if(newErrors.length > 0)
           setErrors(newErrors)
@@ -104,7 +106,7 @@ const Login = ({navigation }) => {
 
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
-      <ScrollView style={{width: '100%'}}
+      <ScrollView keyboardShouldPersistTaps={'handled'} style={{width: '100%'}}
       contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
 
         <View>

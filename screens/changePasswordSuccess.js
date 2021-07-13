@@ -11,9 +11,8 @@ import {globalStyles} from '../styles/dcstyles';
 import Settings from '../shared/settings'
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
+
 const ChangePasswordSuccess = ({ navigation }) => {
-
-
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
       <View style={styles.mainContainer}>
@@ -43,12 +42,10 @@ const ChangePasswordSuccess = ({ navigation }) => {
 }
 export default ChangePasswordSuccess;
 
-
 const styles = StyleSheet.create({
   mainContainer: {
     height: '100%',
     width: '100%',
-    // backgroundColor : '#2D2D2D',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row'

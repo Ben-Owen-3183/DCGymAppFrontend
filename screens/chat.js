@@ -13,9 +13,10 @@ import {Icon} from 'react-native-elements';
 import {retrieveUserData} from '../shared/storage';
 import Settings from '../shared/settings'
 import { useFocusEffect } from '@react-navigation/native';
-
+import {AuthContext} from '../routes/drawer';
 
 var youToggle = null;
+let signOutHook;
 
 function ToggleSpace(toggle){
   if(youToggle === toggle){
@@ -32,6 +33,8 @@ function findChat(chats, id){
 }
 
 const Chat = ({navigation, route, websocket, userData, chats}) => {
+  const { signOut } = React.useContext(AuthContext);
+  signOutHook = signOut;
   const [initialScroll, setInitialScroll] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
@@ -39,8 +42,6 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
   const [chatHistory, setChatHistory] = React.useState([]);
   const scrollViewRef = useRef(null);
   const chat = findChat(chats, route.params.chat_id);
-
-  // console.log(`Chat History ${JSON.stringify(chat)}`);
 
   async function setChatToRead(){
     try{
@@ -120,6 +121,11 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
           body: JSON.stringify(payload)
         });
 
+      if(response.status == 401 || response.status == 403){
+        signOutHook();
+        return;
+      }
+
       let data = await response.json();
       // console.log(`Chat History ${JSON.stringify(data)}`);
 
@@ -172,6 +178,7 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
           chat && chat.messages.length > 0 && userData ? (
             <View style={{flex: 1}}>
               <FlatList
+                keyboardShouldPersistTaps={'handled'} 
                 inverted
                 onEndReached={onScrollEndReached}
                 onEndReachedThreshold={0.5}

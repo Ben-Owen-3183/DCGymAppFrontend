@@ -15,7 +15,6 @@ import {retrieveChats} from '../shared/storage';
 import moment from 'moment'
 import Moment from 'react-moment';
 
-
 const Messenger = (props) => {
 
   return (

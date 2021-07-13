@@ -10,9 +10,8 @@ import {
 import {globalStyles} from '../styles/dcstyles';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
+
 const VerifyEmail = ({ navigation }) => {
-
-
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
       <View style={styles.mainContainer}>

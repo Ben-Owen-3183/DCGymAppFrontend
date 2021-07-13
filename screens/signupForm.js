@@ -77,7 +77,7 @@ const SignupForm = ({ navigation }) => {
 
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
-      <ScrollView style={{width : '100%'}}>
+      <ScrollView keyboardShouldPersistTaps={'handled'}  style={{width : '100%'}}>
         <View style={{padding: 14}}></View>
         <View style={{alignItems: 'center'}}>
           <Image

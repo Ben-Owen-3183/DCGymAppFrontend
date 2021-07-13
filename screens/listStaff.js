@@ -12,10 +12,15 @@ import {GlobalColors} from '../styles/dcstyles';
 import Settings from '../shared/settings';
 import CustomAvatar from '../shared/customAvatar';
 import Storage from '../shared/storage';
+import {AuthContext} from '../routes/drawer';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
+let signOutHook;
 
 const ListStaff = ({userData, navigation, websocket}) => {
+  const { signOut } = React.useContext(AuthContext);
+  signOutHook = signOut;
+
   const [staffList, setStaffList] = React.useState(null);
   const [isLoadingStaff, setIsLoadingStaff] = React.useState(false);
   const [isLoadingChat, setIsLoadingChat] = React.useState(false);
@@ -42,12 +47,18 @@ const ListStaff = ({userData, navigation, websocket}) => {
       await fetchStorageStaffData();
 
       let response = await fetch(Settings.siteUrl + '/user/list_staff/', {
-          method: "GET",
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "Authorization": "Token " + userData.token
-          },
-        });
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "Authorization": "Token " + userData.token
+        },
+      });
+
+      if(response.status == 401 || response.status == 403){
+        signOutHook();
+        return;
+      }
+
       let data = await response.json();
 
       if(data['staff_list']){
@@ -78,6 +89,11 @@ const ListStaff = ({userData, navigation, websocket}) => {
           },
           body: JSON.stringify({ 'otherUser': user_id })
       });
+
+      if(response.status == 401 || response.status == 403){
+        signOutHook();
+        return;
+      }
 
       let data = await response.json();
 
@@ -152,7 +168,7 @@ const ListStaff = ({userData, navigation, websocket}) => {
       <View style={styles.mainContainer}>
         <View style={{flex: 1}}></View>
         <View style={{flex: 5}}>
-          <ScrollView>
+          <ScrollView keyboardShouldPersistTaps={'handled'} >
             <Text style={{
                 margin: 10,
                 color: GlobalColors.dcYellow,

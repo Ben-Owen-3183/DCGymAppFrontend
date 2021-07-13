@@ -11,14 +11,16 @@ import {GlobalColors} from '../styles/dcstyles';
 import Settings from '../shared/settings';
 import CustomAvatar from '../shared/customAvatar';
 import {retrieveUserData} from '../shared/storage';
+import {AuthContext} from '../routes/drawer';
+
+let signOutHook;
 
 const SearchUser = ({userData, websocket, navigation}) => {
+  const { signOut } = React.useContext(AuthContext);
+  signOutHook = signOut;
   const [searchText, setSearchText] = React.useState('');
   const [userList, setUserList] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
-  // const [userData, setUserData] = React.useState('');
-
-
 
   async function submit(user_id, name){
     if(isLoading)
@@ -35,6 +37,11 @@ const SearchUser = ({userData, websocket, navigation}) => {
           },
           body: JSON.stringify({ 'otherUser': user_id })
       });
+
+      if(response.status == 401 || response.status == 403){
+        signOutHook();
+        return;
+      }
 
       let data = await response.json();
 
@@ -89,7 +96,14 @@ const SearchUser = ({userData, websocket, navigation}) => {
         },
         body: JSON.stringify({'text': value})
       })
-      .then(response => response.json())
+      .then((response) => {
+        if(response.status == 401 || response.status == 403){
+          signOutHook();
+          return;
+        }
+
+        return response.json();
+      })
       .then(response => {onSuccess(response)})
       .catch(response => {onFailure(response)})
 
@@ -109,7 +123,7 @@ const SearchUser = ({userData, websocket, navigation}) => {
         placeholder={'Search for member'}
         onChangeText={textChange}
       />
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps={'handled'} >
         {
           userList ?
           ( <View style={{flexDirection: 'row'}}>

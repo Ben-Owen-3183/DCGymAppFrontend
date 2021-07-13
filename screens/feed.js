@@ -22,105 +22,13 @@ import Storage from '../shared/storage';
 import { useFocusEffect } from '@react-navigation/native';
 import Image from 'react-native-scalable-image';
 import moment from 'moment'
+import {AuthContext} from '../routes/drawer';
 
 const windowWidth = Dimensions.get('window').width;
 const hideCommentsValue = 3;
 const hideRepliesValue = 0;
 
-// post generater
-/*
-var loremIpsum = require('lorem-ipsum-react-native');
-
-const imageList = [
-  require('../assets/images/1.jpg'),
-  require('../assets/images/2.jpg'),
-  require('../assets/images/3.jpg'),
-  require('../assets/images/4.jpg')
-];
-
-const names = [
-  'Jane Doe',
-  'Joe Blogs',
-  'Sarah Smith',
-  'Greg Smith',
-  'Will Jones',
-  'Sarah Jones'
-];
-
-function PostObject(name, text, image, comments){
-  this.name = name;
-  this.staff = RandomNumber(10) < 2;
-  this.initials = GetInitials(name);
-  this.text = text;
-  this.image = image;
-  this.comments = comments;
-  this.likes = RandomNumber(12);
-}
-
-function GetInitials(name){
-  return name.split(" ")[0].split("")[0] + name.split(" ")[1].split("")[0];
-}
-
-function CommentObject(name, text){
-  this.name = name;
-  this.staff = RandomNumber(10) < 2;
-  this.initials = GetInitials(name);
-  this.text = text;
-  this.likes = RandomNumber(2) == 1 ? RandomNumber(12) : 0;
-  this.replies = Array();
-}
-
-
-
-function RandomName(){
-  return(names[RandomNumber(names.length)]);
-}
-
-function GenerateComments(){
-  var comments = Array();
-
-  for(let i = 0; i < RandomNumber(7) + 1; i++){
-    //var comment = new CommentObject(RandomName(), 'i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i a i i i i i i i i i a i i i i i i i i i i i i i i i i i a i i i i i i i i i i a i i i i i i i a i i i i i i i i i i i a i i i i i i i  '); //GenerateCommentText()
-    //var comment = new CommentObject(RandomName(), 'hello');//GenerateCommentText());
-    var comment = new CommentObject(RandomName(), GenerateCommentText());
-    if(true){
-      for(let j = 0; j < RandomNumber(7) + 1; j++){
-        //comment.replies.push(new CommentObject(RandomName(),'i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i  ' )); //GenerateCommentText()
-        comment.replies.push(new CommentObject(RandomName(), GenerateCommentText()));
-      }
-    }
-    comments.push(comment);
-  }
-  return comments;
-}
-
-
-
-function GenerateCommentText(){
-  return loremIpsum({
-    count : RandomNumber(7) + 1,
-    units : 'sentences',
-    format : 'plain',
-    sentenceLowerBound: 8,
-    sentenceUpperBound: 15
-  })
-}
-
-function GeneratePosts(){
-  var posts = Array();
-  for(let i = 0; i < 1; i++){
-    posts.push(
-      new PostObject(
-        RandomName(),
-        loremIpsum({count : RandomNumber(11) + 1, units : 'sentences', format : 'plain'}),
-        RandomNumber(3) > 1 == -1 ? imageList[RandomNumber(imageList.length)] : null,
-        GenerateComments()
-    ));
-  }
-  return posts;
-}
-
-*/
+let signOutHook;
 
 async function likePostElement(userData, likeType, id, posts, setPosts, userFeed){
 
@@ -139,6 +47,11 @@ async function likePostElement(userData, likeType, id, posts, setPosts, userFeed
       },
       body: JSON.stringify({id: id})
     })
+
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
 
     let data = await response.json()
 
@@ -230,6 +143,11 @@ async function fetchPosts(userData, userFeed){
       body: JSON.stringify({user_posts_only: userFeed})
     })
 
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
+
     let data = await response.json()
     return data;
   } catch (e) {
@@ -264,6 +182,11 @@ async function fetchPostsBefore(post, userData, userFeed){
       })
     })
 
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
+
     let data = await response.json()
     return data;
   } catch (e) {
@@ -284,6 +207,11 @@ async function uploadComment(userData, commentText, post_id, posts, setPosts){
         text: commentText
       })
     })
+
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
 
     let data = await response.json()
     if(data.comment){
@@ -310,6 +238,11 @@ async function uploadReply(userData, replyText, post_id, comment_id, posts, setP
         text: replyText
       })
     })
+
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
 
     let data = await response.json()
     if(data.reply){
@@ -378,6 +311,11 @@ async function togglePinnedPost(userData, setPosts, posts, post_id, userFeed){
       })
     })
 
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
+
     let data = await response.json()
     if(data.post){
       let newPosts = [];
@@ -406,6 +344,11 @@ async function deletePost(userData, setPosts, posts, post_id, userFeed){
         post_id: post_id,
       })
     })
+
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
 
     let data = await response.json()
 
@@ -481,6 +424,8 @@ function mergeOldPosts(oldPosts, newPosts){
 }
 
 const Feed = ({userData, navigation, userFeed}) => {
+  const { signOut } = React.useContext(AuthContext);
+  signOutHook = signOut;
   const [viewHeight, setViewHeight] = React.useState(0);
   const [posts, setPosts] = React.useState([]);
   const [usingOldData, setUsingOldData] = React.useState(true);
@@ -826,6 +771,7 @@ const Posts = ({userData, posts, setPosts, userFeed, viewHeight}) => {
   return(
     <View>
       <FlatList
+        keyboardShouldPersistTaps={'handled'} 
         ref={flatlistRef}
         data={posts.concat([null])}
         onEndReached={() => onPostsEndReached()}

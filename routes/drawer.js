@@ -32,6 +32,8 @@ const backgroundImagePath = '../assets/images/timetable-background.png';
 const Drawer = createDrawerNavigator();
 const AuthContext = React.createContext();
 
+let signOutHook;
+
 function findChat(chats, chat_id){
   for (var i = 0; i < chats.length; i++)
     if(chats[i].id.toString() === chat_id.toString())
@@ -106,13 +108,19 @@ function mergeNewChatData(chats, setChats, data){
 async function syncChats(userData, chats, setChats){
   try {
     let response = await fetch(Settings.siteUrl + '/messenger/sync_chat/', {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          "Authorization": "Token " + userData.token
-        },
-        body: JSON.stringify(createSyncChatsPayload(chats))
-      })
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "Authorization": "Token " + userData.token
+      },
+      body: JSON.stringify(createSyncChatsPayload(chats))
+    })
+
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
+
     let data = await response.json();
     if(!data) throw 'empty response';
 
@@ -139,7 +147,13 @@ async function fetchAndAddChat(userData, chat_id, chats, setChats){
       })
     })
 
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
+
     let data = await response.json();
+
     if(!data || data['errors'] && data.other_user_data) throw 'no chat returned';
     // console.log(`Fetched Chat data:  ${JSON.stringify(data)}`);
     console.log(`Fetched Chat data`);
@@ -418,6 +432,9 @@ export default Navigator = ({navigation}) => {
     }),
     []
   );
+
+  const { signOut } = authContext;
+  signOutHook = signOut;
 
   if (state.isLoading) {
     return (
