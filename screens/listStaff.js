@@ -207,7 +207,16 @@ const Staff = ({staff}) => {
 
   return (
     <View style={styles.userView}>
-      <View style={{marginRight: 25}}>
+      <View style={{
+          marginTop: -1,
+          marginBottom: -3,
+          marginRight: 25,
+          borderWidth: 1,
+          borderTopWidth: 1,
+          borderLeftWidth: 1,
+          borderColor: GlobalColors.dcYellow,
+          borderRadius: 100,
+          borderWidth: 3}}>
         <CustomAvatar
           size={70}
           avatarURL={staff.avatarURL}
@@ -243,9 +252,9 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     alignItems: 'center',
     borderColor: GlobalColors.dcYellow,
-    borderWidth: 1,
-    backgroundColor: GlobalColors.dcGrey,
-    padding: 8,
+    borderWidth: 3,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
     borderRadius: 1000
   },
   backgroundImage : {

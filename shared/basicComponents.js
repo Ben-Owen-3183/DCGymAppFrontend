@@ -273,7 +273,6 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style, 
           </Text>
         )
       }
-
     </View>
   );
 }
@@ -281,7 +280,7 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style, 
 export const LoadingView = ({text, useBackground}) => {
   return(
       <View style={{
-          backgroundColor: (useBackground ? GlobalColors.dcGrey : '#00000000'),
+          backgroundColor: (useBackground ? GlobalColors.dcGrey : GlobalColors.dcGrey),
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center'
@@ -359,7 +358,6 @@ const styles = StyleSheet.create({
 
     backgroundColor: '#FFC300',
     alignItems : 'center',
-    // marginVertical: 10,
     paddingVertical: 10,
     borderColor: '#FFC300',
     borderWidth: 1,

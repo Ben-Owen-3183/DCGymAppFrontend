@@ -67,7 +67,6 @@ export default function MessengerStack({userData, websocket, chats, route, navig
       <Stack.Screen
         name="Chat"
         options={
-
           ({ route, props }) => ({
             title: route.params.title,
             headerRight: (props) => (
@@ -86,7 +85,6 @@ export default function MessengerStack({userData, websocket, chats, route, navig
                         containerStyle={{position: 'absolute', top: 2, right: 22 }}
                         badgeStyle={{borderWidth: 0}}
                         value={unreadChatsCount}
-
                       />
                     </TouchableOpacity>
                   ) : (null)

@@ -131,7 +131,7 @@ export function DrawerContent(props){
 
             <TouchableHighlight
               underlayColor={'#1c1c1c'}
-              onPress={() => props.navigation.navigate('Live Stream')}>
+              onPress={() => props.navigation.navigate('LiveStreams')}>
               <View style={[styles.buttonContainer]}>
                 <View style={{flex: 2}}>
                   <Icon
@@ -142,7 +142,7 @@ export function DrawerContent(props){
                 </View>
 
                 <Text style={[styles.labelStyle, {marginLeft: 25, flex: 7}]}>
-                  Live Stream
+                  Live Streams
                 </Text>
               </View>
             </TouchableHighlight>

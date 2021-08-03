@@ -2,7 +2,7 @@ import React from 'react';
 import {Avatar} from 'react-native-elements';
 import {StyleSheet} from 'react-native';
 import Settings from '../shared/settings';
-
+import {GlobalColors} from '../styles/dcstyles';
 
 function getInitials(name){
   if(!name) return '?'
@@ -34,6 +34,6 @@ export default CustomAvatar;
 
 const styles = StyleSheet.create({
   avatar : {
-    backgroundColor : '#a5a5a5',
+    backgroundColor : GlobalColors.dcLightGrey,
   },
 })

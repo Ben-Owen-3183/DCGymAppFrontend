@@ -19,7 +19,12 @@ import {
   removeChats,
 } from '../shared/storage';
 import {
-  View, Text, Dimensions, StyleSheet, ImageBackground, ActivityIndicator,
+  View,
+  Text,
+  Dimensions,
+  StyleSheet,
+  ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import {DrawerContent, DefaultDrawerContent} from '../shared/drawerContent'
 import Image from 'react-native-scalable-image';
@@ -190,7 +195,7 @@ async function addNewChatMessage(chats, setChats, userData, data){
       data.chat_data.push
       createNewChatWithNewMessages(data.chat_data, newMessage, chats, setChats);
     }
-      //fetchAndAddChat(userData, chat_id, chats, setChats);
+    // fetchAndAddChat(userData, chat_id, chats, setChats);
   }
 }
 
@@ -274,11 +279,6 @@ function reducer(prevState, action){
 
 export default Navigator = ({navigation}) => {
 
-  /*
-  removeChats();
-  return null;
-  */
-
   const initialState = {
     reRender: false,
     isLoading: true,
@@ -291,9 +291,6 @@ export default Navigator = ({navigation}) => {
   const [websocketInitialised, setWebsocketInitialised] = React.useState(false);
   const [chats, setChats] = React.useState([]);
 
-  // console.log(`CHATS: ${JSON.stringify(chats)}`)
-
-
   if(websocket === null)
     setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
 
@@ -302,7 +299,6 @@ export default Navigator = ({navigation}) => {
       setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
 
     console.log('sending websocket initialisation data.');
-    // console.log(websocket);
     try{
       websocket.send(JSON.stringify({
         'action': 'init',
@@ -334,18 +330,14 @@ export default Navigator = ({navigation}) => {
           console.log('web init called from *Initialise App*')
           initialiseWebsocket(userData);
         }
-
       }
       else{
         dispatch({ type: 'RESTORE_USER_DATA_FAILED'});
       }
-
-
     } catch (e) {
       console.log(e);
     }
   };
-
 
   // Web Socket Functions
   if(websocket){
@@ -423,6 +415,8 @@ export default Navigator = ({navigation}) => {
       signOut: () => {
         removeUserData();
         removeChats();
+        Storage.remove('user_posts');
+        Storage.remove('posts');
         setChats([]);
         if(websocket) websocket.close();
         dispatch({ type: 'SIGN_OUT' })
@@ -479,11 +473,11 @@ export default Navigator = ({navigation}) => {
             </Drawer.Screen>
 
             <Drawer.Screen name="Videos">
-              {props => <PastStreamStack chats={chats} {...props}/>}
+              {props => <PastStreamStack userData={state.userData}  chats={chats} {...props}/>}
             </Drawer.Screen>
 
-            <Drawer.Screen name="Live Stream">
-              {props => <LiveStreamStack chats={chats} {...props}/>}
+            <Drawer.Screen name="LiveStreams">
+              {props => <LiveStreamStack chats={chats} userData={state.userData} {...props}/>}
             </Drawer.Screen>
 
             <Drawer.Screen name="Settings">

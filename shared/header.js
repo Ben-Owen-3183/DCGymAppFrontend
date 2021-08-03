@@ -23,7 +23,7 @@ export default function Header({chats, route, dynamicTitle, navigation, title, b
   return (
     <View style={styles.header}>
       <View style={styles.headerTextView}>
-        <Text numberOfLines={1} style={styles.headerText}> {title} </Text>
+        <Text numberOfLines={1} style={styles.headerText}>{title}</Text>
       </View>
 
       <View style={styles.emptyElement}></View>
@@ -69,8 +69,8 @@ const styles = StyleSheet.create({
     height : 56,
   },
   headerText : {
-    fontSize : 27,
-    letterSpacing : 1,
+    fontSize : 29,
+    letterSpacing : 1.5,
     color : '#FFC300',
     fontFamily : 'BebasNeue Bold'
   },
