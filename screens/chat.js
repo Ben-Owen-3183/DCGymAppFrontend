@@ -61,6 +61,9 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
     React.useCallback(() => {
       return () => {
         try{
+          // ignore error. To fix error just add a condition that does not called
+          // this function pressing hardware back button on android
+          // or when pressing back on this chat screens header.
           navigation.popToTop();
         }
         catch(e){}
@@ -149,8 +152,11 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
     getHistory();
   }
 
+  // let allMessages = chat.messages.concat(chatHistory);
+
   const messageComponent = ({item}) => {
     const isUser = item.user_id.toString() === userData.user_id.toString();
+
     return (
       <View key={item.id}>
 
@@ -167,6 +173,7 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
         {
           ToggleSpace(isUser) ? <View style={{marginVertical : 5}}></View> : null
         }
+    
       </View>
     )
   }
@@ -176,9 +183,9 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
       <View style={{flex: 1}}>
         {
           chat && chat.messages.length > 0 && userData ? (
-            <View style={{flex: 1}}>
+            <View style={{flex: 0}}>
               <FlatList
-                keyboardShouldPersistTaps={'handled'} 
+                keyboardShouldPersistTaps={'handled'}
                 inverted
                 onEndReached={onScrollEndReached}
                 onEndReachedThreshold={0.5}

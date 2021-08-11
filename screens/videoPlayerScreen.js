@@ -6,26 +6,47 @@ import {
   Dimensions,
   ScrollView,
   BackHandler,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {GlobalColors, globalStyles} from '../styles/dcstyles';
-// import { Video, VideoFullscreenUpdateEvent } from 'expo-av';
 import { hideNavigationBar, showNavigationBar } from 'react-native-navigation-bar-color';
-// import VideoPlayer from 'expo-video-player'
-import VideoPlayer from 'react-native-video-controls';
 import * as ScreenOrientation from 'expo-screen-orientation'
 import { setStatusBarHidden } from 'expo-status-bar'
-// import Video from 'react-native-video';
+import { PrimaryButton, PrimaryButtonWithIcon } from '../shared/basicComponents'
+import { WebView } from 'react-native-webview';
 
 const VideoPlayerScreen = ({navigation, route, setShowHeader}) => {
-  const [inFullscreen, setInFullsreen] = React.useState(false)
-  const refVideo = React.useRef(null)
+  const [loading, setLoading] = React.useState(false);
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
+  const [showFullscreenButton, setShowFullscreenButton] = React.useState(true);
+
+  async function toggleFullscreen(){
+    if(!isFullscreen){
+      setShowHeader(false);
+      setIsFullscreen(true);
+      hideNavigationBar();
+      setStatusBarHidden(true, 'fade')
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
+
+      setShowFullscreenButton(true);
+      setTimeout(() => setShowFullscreenButton(false), 2000);
+    }
+    else{
+      setShowFullscreenButton(false);
+      setShowHeader(true);
+      setIsFullscreen(false);
+      showNavigationBar();
+      setStatusBarHidden(false, 'fade')
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
+    }
+  }
 
   React.useEffect(() => {
     const backAction = () => {
       showNavigationBar()
       setShowHeader(true);
       setStatusBarHidden(false, 'fade')
-      setInFullsreen(!inFullscreen)
+      setIsFullscreen(false);
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
       navigation.goBack()
       return true;
@@ -39,106 +60,61 @@ const VideoPlayerScreen = ({navigation, route, setShowHeader}) => {
     return () => backHandler.remove();
   }, []);
 
+  return(
+    <View style={{flex: 1, backgroundColor: GlobalColors.dcGrey}}>
+      <View style={{ flex: 1 }}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            if(isFullscreen && !showFullscreenButton){
+              setTimeout(() => setShowFullscreenButton(true), 650);
+              setTimeout(() => setShowFullscreenButton(false), 4900);
+            }
 
-
-  return (
-    <VideoPlayer
-      disableBack={true}
-      source={{uri: route.params.file}}
-      onEnterFullscreen={async () => {
-        hideNavigationBar()
-        setShowHeader(false);
-        setStatusBarHidden(true, 'fade')
-        setInFullsreen(!inFullscreen)
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
-      }}
-      onExitFullscreen={async () => {
-        showNavigationBar()
-        setShowHeader(true);
-        setStatusBarHidden(false, 'fade')
-        setInFullsreen(!inFullscreen)
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
-      }}
-      style={{backgroundColor: GlobalColors.dcGrey}}
-      seekColor={GlobalColors.dcYellow}
-      poster={route.params.thumbnail}
-    />
-  )
-
-  // console.log(refVideo)
-
-    /*
-  return (
-    <View style={{flex: 1, flexDirection: 'column', backgroundColor: GlobalColors.dcGrey}}>
-      <VideoPlayer
-        onReadyForDisplay={response => console.log(response)}
-        videoProps={{
-          shouldPlay: true,
-          resizeMode: Video.RESIZE_MODE_CONTAIN,
-          source: {
-            uri: route.params.file,
-          },
-          ref: refVideo,
-        }}
-
-        fullscreen={{
-          inFullscreen: inFullscreen,
-          enterFullscreen: async () => {
-            setShowHeader(false);
-            setStatusBarHidden(true, 'fade')
-            setInFullsreen(!inFullscreen)
-            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
-            refVideo.current.setStatusAsync({
-              shouldPlay: true,
-            })
-          },
-          exitFullscreen: async () => {
-            setShowHeader(true);
-            setStatusBarHidden(false, 'fade')
-            setInFullsreen(!inFullscreen)
-            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
-          },
-        }}
-        style={{
-          videoBackgroundColor: GlobalColors.dcGrey,
-          controlsBackgroundColor: GlobalColors.dcGrey,
-          height: inFullscreen ? Dimensions.get('window').height : 290,
-
-        }}
-      />
+            if(showFullscreenButton){
+              setShowFullscreenButton(false);
+            }
+          }}>
+          <WebView
+            style={{backgroundColor: 'black'}}
+            originWhitelist={['*']}
+            useWebKit={false}
+            scalesPageToFit={false}
+            bounces={false}
+            javaScriptEnabled
+            automaticallyAdjustContentInsets={false}
+            thirdPartyCookiesEnabledarrow_up={true}
+            source={
+              {
+                html: `
+                  <iframe
+                    src="https://player.vimeo.com/video/${route.params.id}"
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                  </iframe>
+                `
+              }
+            }
+          />
+        </TouchableWithoutFeedback>
+      </View>
+      {
+        !isFullscreen || showFullscreenButton? (
+          <View style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+          }}>
+            <PrimaryButton
+              text={isFullscreen ? '     Exit Fullscreen     ' : '     Enter Fullscreen     '}
+              onPress={() => toggleFullscreen()}
+            />
+          </View>
+        ) : (null)
+      }
     </View>
   )
-
-  return (
-    <VideoPlayer
-      fullscreen={true}
-      videoProps={{
-        shouldPlay: true,
-        resizeMode: Video.RESIZE_MODE_CONTAIN,
-        // source is required https://docs.expo.io/versions/latest/sdk/video/#props
-        source: {
-          uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-        },
-      }}
-    />
-  )
-
-
-  return (
-    <Video
-      ref={refVideo}
-      shouldPlay={true}
-      style={{height: 300, backgroundColor: GlobalColors.dcGrey}}
-      source={{
-        uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      }}
-      useNativeControls={true}
-      resizeMode="contain"
-      isLooping={true}
-    />
-  )
-  */
-
 }
 
 export default VideoPlayerScreen;

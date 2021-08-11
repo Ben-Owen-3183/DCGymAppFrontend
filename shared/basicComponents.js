@@ -13,6 +13,8 @@ import {Icon, Avatar} from 'react-native-elements';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import Image from 'react-native-scalable-image';
 
+const dcIcon = '../assets/images/DC-icon.png';
+
 export const Popup = ({buttons, text, setModalVisible, modalVisible}) => {
   const [confirmTitle, setConfirmTitle] = React.useState(null);
   const [toggleConfirm, setToggleConfirm] = React.useState(false);
@@ -247,14 +249,16 @@ export const SecondaryButton = ({text, onPress, isLoading}) => {
   )
 }
 
-export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style, defaultFont}) => {
+export const UsersName = ({isStaff, isSuperUser, fName, sName, iconSize, fontSize, style, defaultFont}) => {
   const defaultFontSize = 20;
+  const defaultIconSize = 20;
+
   return (
-    <View >
+    <View>
       {
         isStaff ?
         (
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{flexDirection: 'row', alignItems: 'flex-end', }}>
             <Text style={[{
                 color: GlobalColors.dcYellow,
                 fontSize: (fontSize ? fontSize : defaultFontSize),
@@ -262,6 +266,12 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style, 
               }, style]}>
               {`${fName} ${sName}`}
             </Text>
+            <View style={{marginHorizontal: 3}}></View>
+            <Avatar
+              imageProps={{transitionDuration: 0}}
+              source={require(dcIcon)}
+              size={(fontSize ? fontSize * 0.9 : defaultFontSize * 0.9)}
+            />
           </View>
         ) : (
           <Text style={[{
@@ -280,7 +290,7 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, fontSize, style, 
 export const LoadingView = ({text, useBackground}) => {
   return(
       <View style={{
-          backgroundColor: (useBackground ? GlobalColors.dcGrey : GlobalColors.dcGrey),
+          backgroundColor: (useBackground ? GlobalColors.dcGrey : '#FFFFFF00'),
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center'

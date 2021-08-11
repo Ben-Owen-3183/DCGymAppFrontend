@@ -80,7 +80,6 @@ const PastStreams = ({userData, navigation}) => {
 
   // Intial fetch of Page 1.
   async function fetchHistoricVideos(){
-
     try {
       let response = await fetch(Settings.siteUrl + '/video/videos/', {
         method: "POST",
@@ -166,7 +165,9 @@ const PastStreams = ({userData, navigation}) => {
 
   if(initialLoading) {
     return (
-      <LoadingView useBackground={false} text={'Loading Videos'}/>
+      <View style={{flex: 1, backgroundColor: GlobalColors.dcGrey}}>
+        <LoadingView useBackground={false} text={'Loading Videos'}/>
+      </View>
     )
   }
 
@@ -228,16 +229,16 @@ const PastStreams = ({userData, navigation}) => {
 }
 
 const VideoContainer = ({video, navigation}) => {
-  let datetime = moment(video.upload_date).format('LL');
   const [containerWidth, setContainerWidth] = React.useState(0);
   const viewRef = React.useRef();
+  let datetime = moment(video.upload_date).format('LL');
 
   return (
     <TouchableOpacity
       onPress={() => {
         navigation.navigate('Player', {
           title: video.name,
-          file: video.file,
+          id: video.id,
           thumbnail: video.thumbnail
         });
       }}
@@ -248,20 +249,24 @@ const VideoContainer = ({video, navigation}) => {
         overflow: 'hidden',
         flexDirection: 'column',
         backgroundColor: GlobalColors.dcLightGrey,
-        marginVertical: 10,
+        marginVertical: 15,
         borderColor: GlobalColors.dcYellow,
         marginHorizontal: 10,
         borderRadius: 15,
-        borderWidth: 2,
-        borderTopWidth: 1,
-        borderLeftWidth: 1,
+        borderTopWidth: 0,
+        borderLeftWidth: 0,
+        borderBottomWidth: 0,
+        borderRightWidth: 0,
       }}
       ref={viewRef}>
-      <View style={{flex: 1}}>
+      <View style={{
+        flex: 1,
+        borderBottomWidth: 3,
+        borderColor: GlobalColors.dcYellow,
+        }}>
         <Image
           width={containerWidth}
           source={{uri: video.thumbnail}}
-          style={styles.postImage}
         />
       </View>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -327,8 +332,3 @@ const LoadingSpinner = () => {
 }
 
 export default PastStreams;
-
-const styles = StyleSheet.create({
-  scrollView : {
-  }
-});

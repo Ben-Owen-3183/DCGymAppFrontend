@@ -108,7 +108,6 @@ const Login = ({navigation }) => {
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
       <ScrollView keyboardShouldPersistTaps={'handled'} style={{width: '100%'}}
       contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-
         <View>
           <View style={{flex: 1}}></View>
           <View style={styles.mainContainer}>

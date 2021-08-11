@@ -32,6 +32,7 @@ import SetAvatar from '../screens/setAvatar';
 import ChangePassword from '../screens/changePassword';
 import Settings from '../shared/settings'
 import moment from 'moment'
+import Storage from '../shared/storage';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 const Drawer = createDrawerNavigator();
@@ -255,13 +256,13 @@ function reducer(prevState, action){
     case 'SIGN_IN':
       return {
         ...prevState,
-        isSignout: false,
+        signedIn: true,
         userData: action.userData,
       };
     case 'SIGN_OUT':
       return {
         ...prevState,
-        isSignout: true,
+        signedIn: false,
         userData: null,
       };
     case 'UPDATE_USER_DATA':
@@ -282,7 +283,7 @@ export default Navigator = ({navigation}) => {
   const initialState = {
     reRender: false,
     isLoading: true,
-    isSignout: false,
+    signedIn: false,
     userData: null,
   }
 
@@ -291,15 +292,20 @@ export default Navigator = ({navigation}) => {
   const [websocketInitialised, setWebsocketInitialised] = React.useState(false);
   const [chats, setChats] = React.useState([]);
 
-  if(websocket === null)
-    setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
+  if(websocket !== null && (state.signedIn === false || state.userData === null)){
+    console.log('closing websocket...');
+    try {
+      websocket.close();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+
 
   function initialiseWebsocket(userData){
-    if(websocket === null)
-      setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
-
-    console.log('sending websocket initialisation data.');
     try{
+      console.log('sending websocket initialisation data.');
       websocket.send(JSON.stringify({
         'action': 'init',
         'data' : {'token': userData.token}
@@ -312,7 +318,7 @@ export default Navigator = ({navigation}) => {
     }
   }
 
-  const initialiseApp = async () => {
+  async function initialiseApp() {
     try {
       let userData = state.userData;
       if(!userData) userData = await retrieveUserData();
@@ -321,15 +327,24 @@ export default Navigator = ({navigation}) => {
       if(cachedChats.length > 0) setChats(cachedChats);
 
       if(userData){
+        // start websocket
+        console.log('Creating websocket connection');
+        setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
+
+
         dispatch({ type: 'RESTORE_USER_DATA', userData: userData });
 
         await syncChats(userData, cachedChats, setChats);
 
         sortChats(chats, setChats);
-        if(userData && !websocketInitialised){
-          console.log('web init called from *Initialise App*')
-          initialiseWebsocket(userData);
+
+        /*
+        if(!websocketInitialised){
+
+          // console.log('web init called from *Initialise App*')
+          // initialiseWebsocket(userData);
         }
+        */
       }
       else{
         dispatch({ type: 'RESTORE_USER_DATA_FAILED'});
@@ -343,15 +358,16 @@ export default Navigator = ({navigation}) => {
   if(websocket){
 
     websocket.onclose = function(){
-
       setWebsocketInitialised(false);
-      console.log('websocket connection has been closed.')
-      console.log('attempting to reconnect...')
+      if(state.signedIn){
+        console.log('websocket connection has been closed.')
+        console.log('attempting to reconnect...')
 
-      setTimeout(
-        () => setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/')),
-        2000
-      );
+        setTimeout(
+          () => setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/')),
+          2000
+        );
+      }
     }
 
     websocket.onopen = function(e){
@@ -403,23 +419,27 @@ export default Navigator = ({navigation}) => {
     initialiseApp();
   }, []);
 
+
   const authContext = React.useMemo(
     () => ({
       setUserData: async userData => {
-        initialiseApp();
         dispatch({ type: 'SIGN_IN', userData: userData });
+        state.userData = null; // <-- cos react native is shit
+        initialiseApp();
       },
       updateUserData: async userData => {
         dispatch({ type: 'UPDATE_USER_DATA', userData: userData });
       },
       signOut: () => {
+
+        setWebsocketInitialised(false);
         removeUserData();
         removeChats();
         Storage.remove('user_posts');
         Storage.remove('posts');
         setChats([]);
-        if(websocket) websocket.close();
         dispatch({ type: 'SIGN_OUT' })
+
       },
       getUserData: () => { return state.userData }
       // updateChat: (chat) => {setChat(chat)}

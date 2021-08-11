@@ -6,7 +6,7 @@ import {
   ScrollView,
   ImageBackground
 } from 'react-native';
-import {GlobalStyles} from '../styles/dcstyles';
+import {GlobalStyles, GlobalColors} from '../styles/dcstyles';
 import {PrimaryButton} from '../shared/basicComponents'
 import { useFocusEffect } from '@react-navigation/native';
 import Storage from '../shared/storage';
@@ -79,7 +79,11 @@ const TimeTable = ({navigation, userData}) => {
   );
 
   if(!timetable || timetable.length === 0){
-    return <LoadingView text={'Fetching Timetable'} useBackground={true}/>
+    return (
+      <View style={{flex: 1, backgroundColor: GlobalColors.dcGrey}}>
+        <LoadingView text={'Fetching Timetable'} useBackground={true}/>
+      </View>
+    )
   }
 
   return (

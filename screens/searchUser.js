@@ -81,6 +81,7 @@ const SearchUser = ({userData, websocket, navigation}) => {
     }
 
     const onSuccess = (response) => {
+      console.log(response);
       setUserList(response);
     };
 
@@ -112,7 +113,9 @@ const SearchUser = ({userData, websocket, navigation}) => {
 
   if(isLoading){
     return(
-      <LoadingView useBackground={true} text={'Loading new chat'}/>
+      <View style={{flex: 1, backgroundColor: GlobalColors.dcGrey}}>
+        <LoadingView useBackground={true} text={'Loading new chat'}/>
+      </View>
     )
   }
 
@@ -145,7 +148,6 @@ const SearchUser = ({userData, websocket, navigation}) => {
 const ListUsers = ({userList, submit}) => {
 
   if(!userList) return null;
-  console.log(userList);
 
   return userList.map((user, i) => {
     return (

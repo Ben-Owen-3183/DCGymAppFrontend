@@ -65,7 +65,9 @@ const LiveStreams = ({navigation, userData}) => {
 
   if(initialLoading) {
     return (
-      <LoadingView useBackground={false} text={'Loading Videos'}/>
+      <View style={{flex: 1, backgroundColor: GlobalColors.dcGrey}}>
+        <LoadingView useBackground={false} text={'Loading Videos'}/>
+      </View>
     )
   }
 

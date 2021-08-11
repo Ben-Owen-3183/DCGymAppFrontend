@@ -131,7 +131,9 @@ const ListStaff = ({userData, navigation, websocket}) => {
   if(isLoadingStaff || isLoadingChat){
     return(
       <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
-        <LoadingView text={isLoadingStaff ? 'Fetching staff' : 'Loading new chat'}/>
+        <LoadingView
+          useBackground={false}
+          text={isLoadingStaff ? 'Fetching staff' : 'Loading new chat'}/>
       </ImageBackground>
     )
   }
@@ -149,7 +151,7 @@ const ListStaff = ({userData, navigation, websocket}) => {
               </Text>
               <View style={{flexDirection: 'row', marginHorizontal: 80}}>
                 <PrimaryButton
-                  text={'refresh'}
+                  text={'       refresh       '}
                   onPress={() => {
                     setFailedToLoadStaff(false);
                   }}/>
@@ -204,33 +206,44 @@ const ListView = ({staffList, submit}) => {
 }
 
 const Staff = ({staff}) => {
+  const [avatarViewWidth, setAvatarViewWidth] = React.useState(null);
+
+  function onLayout(width){
+    console.log(width);
+    if(avatarViewWidth) return;
+    setAvatarViewWidth(width);
+  }
 
   return (
     <View style={styles.userView}>
-      <View style={{
-          marginTop: -1,
-          marginBottom: -3,
-          marginRight: 25,
-          borderWidth: 1,
-          borderTopWidth: 1,
-          borderLeftWidth: 1,
+      <View
+        onLayout={layout => onLayout(layout.nativeEvent.layout.width)}
+        style={{
+          marginVertical: -3,
+          marginLeft: -3,
+          borderWidth: 3,
           borderColor: GlobalColors.dcYellow,
           borderRadius: 100,
-          borderWidth: 3}}>
+        }}>
         <CustomAvatar
           size={70}
           avatarURL={staff.avatarURL}
           name={`${staff.fName} ${staff.sName}`}
         />
       </View>
-      <View style={{ flex: 1}}>
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        right: avatarViewWidth/3,
+      }}>
         <UsersName
-          style={{textAlign: 'center',}}
+          style={{textAlign: 'center', letterSpacing: 0, color: 'white'}}
           isStaff={staff.isStaff}
           isSuperUser={staff.isSuperUser}
           fName={staff.fName}
           sName={staff.sName}
-          fontSize={27}
+          fontSize={28}
         />
       </View>
     </View>
@@ -253,9 +266,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: GlobalColors.dcYellow,
     borderWidth: 3,
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-    borderRadius: 1000
+    borderRadius: 1000,
   },
   backgroundImage : {
     flex: 1,

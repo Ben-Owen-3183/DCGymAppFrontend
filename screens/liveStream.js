@@ -5,6 +5,8 @@ import {
   Text,
   BackHandler,
   TouchableWithoutFeedback,
+  ScrollView,
+  Dimensions
 } from 'react-native';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import { WebView } from 'react-native-webview';
@@ -15,6 +17,166 @@ import { setStatusBarHidden } from 'expo-status-bar'
 // import {AuthContext} from '../routes/drawer';
 
 
+
+
+
+const LiveStream = ({navigation, setShowHeader, route}) => {
+  const [loading, setLoading] = React.useState(false);
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
+  const [streamChatToggle, setStreamChatToggle]  = React.useState(true);
+  const [showFullscreenButton, setShowFullscreenButton] = React.useState(false);
+  const scrollRef = React.useRef();
+  // const { signOut } = React.useContext(AuthContext);
+  // signOutHook = signOut;
+
+  async function toggleFullscreen(){
+    if(!isFullscreen){
+      setShowHeader(false);
+      setIsFullscreen(true);
+      hideNavigationBar();
+      setStatusBarHidden(true, 'fade')
+      setShowFullscreenButton(true);
+      setTimeout(() => setShowFullscreenButton(false), 2000);
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+    }
+    else{
+      setShowFullscreenButton(false);
+      setShowHeader(true);
+      setIsFullscreen(false);
+      showNavigationBar();
+      setStatusBarHidden(false, 'fade')
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    }
+  }
+
+  React.useEffect(() => {
+    const backAction = () => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
+      showNavigationBar()
+      setShowHeader(true);
+      setStatusBarHidden(false, 'fade')
+      setIsFullscreen(false);
+      navigation.goBack()
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+
+  return(
+    <View style={{backgroundColor: 'black', flex: 1}}>
+      {
+        !isFullscreen ? (
+          <View style={{flexDirection: 'row', width: '100%'}}>
+            <View style={{flex: 2}}>
+              <PrimaryButton
+                text={streamChatToggle ? 'Show Chat' : 'Show Stream'}
+                square={true}
+                onPress={() => {
+                  setStreamChatToggle(!streamChatToggle)
+
+
+                }}
+              />
+            </View>
+            {streamChatToggle ? (<View style={{marginHorizontal: 3}}></View>) : (null)}
+            {
+              streamChatToggle ? (
+                <View style={{flex: 1}}>
+
+                  <PrimaryButton
+                    square={true}
+                    text={'Fullscreen'}
+                    onPress={() => toggleFullscreen()}
+                  />
+                </View>
+              ) : (null)
+            }
+
+          </View>
+        ) : (
+          null
+        )
+      }
+
+        <TouchableWithoutFeedback
+          style={{
+            flex: 1,
+          }}
+          onPress={() => {
+            if(isFullscreen && !showFullscreenButton){
+              setTimeout(() => setShowFullscreenButton(true), 650);
+              setTimeout(() => setShowFullscreenButton(false), 4900);
+            }
+
+            if(showFullscreenButton){
+              setShowFullscreenButton(false);
+            }
+          }}>
+          <WebView
+            style={{
+              backgroundColor: 'black',
+              width: '200%',
+              transform: [
+                { translateX: (!streamChatToggle ? -Dimensions.get('window').width : 0) }
+              ]
+            }}
+            originWhitelist={['*']}
+            useWebKit={true}
+            scalesPageToFit={true}
+            bounces={false}
+            javaScriptEnabled
+            automaticallyAdjustContentInsets={false}
+            thirdPartyCookiesEnabledarrow_up={true}
+            source={
+              {
+                html: `
+                  <div>
+                    <iframe
+                      style="position: absolute; top:0;left:50%;"
+                      src="${route.params.chat_url}"
+                      height="100%"
+                      width="50%"
+                      frameborder="0">
+                    </iframe>
+                    <iframe
+                      src="${route.params.stream_url}"
+                      frameborder="0"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen
+                      style="position:absolute;top:0;left:0%;width:50%;height:100%;"
+                    </iframe>
+                  </div>
+                `
+              }
+            }
+          />
+        </TouchableWithoutFeedback>
+      {
+        isFullscreen && showFullscreenButton? (
+          <View style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+          }}>
+            <PrimaryButton
+              text={'     Exit Fullscreen     '}
+              onPress={() => toggleFullscreen()}
+            />
+          </View>
+        ) : (null)
+      }
+    </View>
+  )
+}
+
+/*
 const LiveStream = ({navigation, setShowHeader, route}) => {
   const [loading, setLoading] = React.useState(false);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
@@ -112,19 +274,24 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
             }
           }}>
           <WebView
-            style={{backgroundColor: GlobalColors.dcGrey}}
+            style={{
+              backgroundColor: GlobalColors.dcGrey,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
             originWhitelist={['*']}
-            useWebKit={false}
+            useWebKit={true}
             scalesPageToFit={false}
             bounces={false}
             javaScriptEnabled
             automaticallyAdjustContentInsets={false}
             thirdPartyCookiesEnabledarrow_up={true}
-            androidHardwareAccelerationDisabled={true}
             source={
               {
                 html: `
-
                 <iframe
                   src="${route.params.stream_url}"
                   frameborder="0"
@@ -140,16 +307,17 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
       </View>
       <View style={{flex: !streamChatToggle ? 1 : 0}}>
         <WebView
-          style={{backgroundColor: GlobalColors.dcGrey}}
+          style={{
+            backgroundColor: GlobalColors.dcGrey,
+          }}
           thirdPartyCookiesEnabledarrow_up={true}
           sharedCookiesEnabled
           originWhitelist={['*']}
-          useWebKit={false}
+          useWebKit={true}
           scalesPageToFit={false}
           bounces={false}
           javaScriptEnabled
           automaticallyAdjustContentInsets={false}
-          androidHardwareAccelerationDisabled={true} 
           source={{
             html: `
               <iframe
@@ -181,6 +349,7 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
   )
 
 }
+*/
 
 export default LiveStream;
 

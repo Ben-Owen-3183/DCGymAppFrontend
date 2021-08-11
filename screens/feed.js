@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableHighlight,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Pressable,
   TextInput,
   Dimensions,
@@ -161,9 +162,7 @@ async function storePosts(posts, userFeed){
   for (var i = 0; i < loopRange; i++) {
     postsToStore[i] = posts[i]
   }
-  if(userFeed)
-    Storage.set('user_posts', postsToStore);
-  else
+  if(!userFeed)
     Storage.set('posts', postsToStore);
 }
 
@@ -317,6 +316,7 @@ async function togglePinnedPost(userData, setPosts, posts, post_id, userFeed){
     }
 
     let data = await response.json()
+
     if(data.post){
       let newPosts = [];
       Object.assign(newPosts, posts);
@@ -453,7 +453,8 @@ const Feed = ({userData, navigation, userFeed}) => {
           let old_posts_data;
 
           if(posts.length == 0){
-            old_posts_data = await Storage.get((userFeed ? 'user_posts' : 'posts'));
+            if(!userFeed)
+              old_posts_data = await Storage.get('posts');
             if(old_posts_data) setPosts(old_posts_data);
           }
 
@@ -486,6 +487,7 @@ const Feed = ({userData, navigation, userFeed}) => {
       style={{backgroundColor: GlobalColors.dcLightGrey, flex: 1}}
       onLayout={event => setViewHeight(event.nativeEvent.layout.height)}>
       <Posts
+        navigation={navigation}
         userFeed={userFeed}
         posts={posts}
         setPosts={setPosts}
@@ -712,7 +714,7 @@ const FeedMenu = ({mainViewHeight, navigation, posts, setPosts}) => {
   );
 }
 
-const Posts = ({userData, posts, setPosts, userFeed, viewHeight}) => {
+const Posts = ({userData, posts, setPosts, userFeed, viewHeight, navigation}) => {
   const [loadingHistory, setLoadingHistory] = React.useState(false);
   const [newContentLoaded, setNewContentLoaded] = React.useState(false);
   const [postLengths, setPostLengths] = React.useState({prev: 0, now: 0, item: null});
@@ -762,7 +764,7 @@ const Posts = ({userData, posts, setPosts, userFeed, viewHeight}) => {
   const renderItem = ({ item }) => {
     return (
       item ?
-      <Post posts={posts} setPosts={setPosts} userData={userData} post={item} userFeed={userFeed}/>
+      <Post navigation={navigation} posts={posts} setPosts={setPosts} userData={userData} post={item} userFeed={userFeed}/>
       :
       <View style={{marginVertical: 100}}></View>
     );
@@ -771,7 +773,7 @@ const Posts = ({userData, posts, setPosts, userFeed, viewHeight}) => {
   return(
     <View>
       <FlatList
-        keyboardShouldPersistTaps={'handled'} 
+        keyboardShouldPersistTaps={'handled'}
         ref={flatlistRef}
         data={posts.concat([null])}
         onEndReached={() => onPostsEndReached()}
@@ -861,12 +863,16 @@ const PostMenu = ({userData, post, postMenuToggle, setPostMenuToggle, posts, set
   )
 }
 
-const Post = ({userData, post, posts, setPosts, userFeed}) => {
+const Post = ({userData, post, posts, setPosts, userFeed, navigation}) => {
   const defaultMaxNumberOfLine = 6;
   const [numberOfLines, setNumberOfLines] = React.useState(null);
   const [maxNumberOfLines, setMaxNumberOfLines] = React.useState(defaultMaxNumberOfLine);
   const [showCommentSection, setShowCommentSection] = React.useState(post.comments.length > 0);
   const [postMenuToggle, setPostMenuToggle] = React.useState(false);
+  const [imageViewWidth, setImageViewWidth] = React.useState(0);
+  const [imageViewHeight, setImageViewHeight] = React.useState(0);
+  const [iconWidth, setIconWidth] = React.useState(0);
+  const [iconHeight, setIconHeight] = React.useState(0);
 
   let datetimeText = moment(post.timestamp).fromNow();
   // moment keeps printing 'in a few seconds' when it should be 'a few seconds ago'.
@@ -885,6 +891,22 @@ const Post = ({userData, post, posts, setPosts, userFeed}) => {
 
   function showLess(){
     setMaxNumberOfLines(defaultMaxNumberOfLine);
+  }
+
+  function setImageWidthHeight(layout){
+    if(imageViewWidth || imageViewHeight) return;
+    let viewSize = layout.nativeEvent.layout;
+    console.log("viewSize " + viewSize)
+    setImageViewWidth(viewSize.width);
+    setImageViewHeight(viewSize.height);
+  }
+
+  function setIconWidthHeight(layout){
+    if(iconWidth || iconHeight) return;
+    let iconSize = layout.nativeEvent.layout;
+    console.log("iconSize " + iconSize)
+    setIconWidth(iconSize.width);
+    setIconHeight(iconSize.height);
   }
 
   const name = `${post.user.fName} ${post.user.sName}`;
@@ -974,13 +996,51 @@ const Post = ({userData, post, posts, setPosts, userFeed}) => {
       </View>
       <View style={styles.postImageView}>
         {
-          post.image_url ?
+          post.image_url?
             <Image
               width={Dimensions.get('window').width}
               source={{uri: Settings.siteUrl + post.image_url}}
               style={styles.postImage}/>
             :
             null
+        }
+        {
+          post.thumbnail_link ? (
+            <TouchableWithoutFeedback onPress={() => {
+              navigation.navigate('Player', {
+                title: 'Video',
+                id: post.video_id,
+                thumbnail: post.thumbnail_link
+              });
+            }}>
+              <View>
+                <Image
+                  onLayout={layout => setImageWidthHeight(layout)}
+                  width={Dimensions.get('window').width}
+                  source={{uri: post.thumbnail_link}}
+                  style={styles.postImage}
+                />
+                <View
+                  onLayout={layout => setIconWidthHeight(layout)}
+                   style={{
+                    borderRadius: 15,
+                    position: 'absolute',
+                    right: (imageViewWidth / 2) - (iconWidth / 2),
+                    bottom: (imageViewHeight / 2 ) - (iconHeight / 2),
+                    backgroundColor: '#000000AA',
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                }}>
+                  <Icon
+                    size={40}
+                    name='play'
+                    type='font-awesome-5'
+                    color={GlobalColors.dcYellow}
+                  />
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          ) : (null)
         }
       </View>
       <PostFooter
