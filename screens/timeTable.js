@@ -90,16 +90,15 @@ const TimeTable = ({navigation, userData}) => {
     <View style={GlobalStyles.container}>
       <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
         <ScrollView style={styles.scrollView}>
-
           <View style={styles.timetableContainer}>
             <View>
               <Text style={styles.titleText}>CLASS{"\n"}TIMETABLE </Text>
-              <View style={{marginVertical: 10, marginLeft: -10, width: 160}}>
-                <PrimaryButton text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
+              <View style={{marginVertical: 10, marginLeft: 0, width: 160}}>
+                <PrimaryButton square text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
               </View>
               <DayView timetable={timetable}/>
               <View style={{marginBottom: 30, marginTop: -10, width: 160}}>
-                <PrimaryButton text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
+                <PrimaryButton square text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
               </View>
             </View>
           </View>
@@ -210,7 +209,6 @@ const styles = StyleSheet.create({
   },
   titleText : {
     color : '#FFC300',
-    margin : 'auto',
     marginTop : 20,
     marginBottom : 20,
     fontSize : 60,
@@ -230,26 +228,26 @@ const styles = StyleSheet.create({
   dayText : {
     color : '#FFC300',
     marginBottom : 10,
-    fontSize : 30,
+    fontSize : 45,
     fontFamily : 'BebasNeue Regular'
   },
   classText : {
     color : '#FFFFFF',
     textAlign : 'left',
-    fontSize : 22,
+    fontSize : 21,
     fontFamily : 'BebasNeue Regular',
   },
   liveText : {
     color : '#FFFFFF',
     textAlign : 'left',
-    fontSize : 22,
+    fontSize : 21,
     fontFamily : 'BebasNeue Bold',
-    marginRight : 8
+    marginRight : -10
   },
   classTextRightSide : {
     color : '#FFFFFF',
     textAlign : 'right',
-    fontSize : 22,
+    fontSize : 21,
     fontFamily : 'BebasNeue Regular',
   },
 
@@ -263,7 +261,7 @@ const styles = StyleSheet.create({
     marginBottom : 40,
   },
   timeView : {
-    marginRight : 10,
+    marginRight : 5,
   },
   classView : {
   },
@@ -274,22 +272,22 @@ const styles = StyleSheet.create({
   },
   liveView : {
     backgroundColor : '#d2232a',
-    paddingVertical: 1,
-    paddingRight: 10,
-    borderTopRightRadius: 30,
-    borderBottomRightRadius: 30,
+    paddingVertical: 0,
+    paddingRight: 5,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
   },
   liveTextView: {
     backgroundColor : '#d2232a',
     position: 'absolute',
     right: 100,
-    paddingVertical: 1,
-    borderTopLeftRadius: 30,
-    borderBottomLeftRadius: 30,
+    paddingVertical: 0,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
     paddingLeft: 10,
     paddingRight: 20,
   },
   rowStyle : {
-    marginBottom : 4,
+    marginBottom : 7,
   }
 });

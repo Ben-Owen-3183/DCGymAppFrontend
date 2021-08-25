@@ -4,7 +4,8 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableHighlight
+  TouchableHighlight,
+  ImageBackground
 } from 'react-native';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import CustomAvatar from '../shared/customAvatar';
@@ -15,54 +16,61 @@ import {retrieveChats} from '../shared/storage';
 import moment from 'moment'
 import Moment from 'react-moment';
 
+const backgroundImagePath = '../assets/images/timetable-background.png';
+
 const Messenger = (props) => {
 
   return (
-    <ScrollView style={styles.mainContainer}>
-      <View style={{flex: 1, flexDirection: 'row', marginBottom: 10}}>
-        <View style={{flex: 3}}>
-          <PrimaryButtonWithIcon
-            onPress={() => props.navigation.navigate('SearchUser')}
-            square={true}
-            text="Find Member"
-            iconType={'font-awesome-5'}
-            iconName={'search'}/>
-        </View>
-        <View style={{marginHorizontal: 3}}></View>
-        <View style={{flex: 2}}>
-          <PrimaryButton
-            square={true}
-            onPress={() => props.navigation.navigate('ListStaff')}
-            text={"List Staff"}/>
-        </View>
-      </View>
-      {
-        props.chats && props.chats.length > 0 ?
-        (
-          <Chats chats={props.chats} navigation={props.navigation}/>
-        ) : (
-          <View style={{flexDirection: 'row', marginTop: 40, flex: 1}}>
-            <View style={{flex: 1}}></View>
-            <View style={{
-                alignItems: 'center',
-                marginTop: 20,
-                flex: 4,
-                paddingHorizontal: 30,
-                paddingVertical: 20,
-                backgroundColor: GlobalColors.dcLightGrey,
-                borderRadius: 30,
-              }}>
-              <Text style={styles.text}>You are currently not chatting with anyone</Text>
-              <View style={{margin: 15}}></View>
-              <Text style={styles.text}>Press <Text style={styles.primaryText}>Find Member</Text> to find a gym member to chat with</Text>
-              <Text style={[styles.primaryText, {marginVertical: 8}]}>OR</Text>
-              <Text style={styles.text}>Press <Text style={styles.primaryText}>List Staff</Text> to see all active members of staff</Text>
-            </View>
-            <View style={{flex: 1}}></View>
+    <ImageBackground source={require(backgroundImagePath)} style={{
+        flex: 1,
+        resizeMode: "cover",
+      }}>
+      <ScrollView style={styles.mainContainer}>
+        <View style={{flex: 1, flexDirection: 'row', marginBottom: 10}}>
+          <View style={{flex: 3}}>
+            <PrimaryButtonWithIcon
+              onPress={() => props.navigation.navigate('SearchUser')}
+              square={true}
+              text="Find Member"
+              iconType={'font-awesome-5'}
+              iconName={'search'}/>
           </View>
-        )
-      }
-    </ScrollView>
+          <View style={{marginHorizontal: 3}}></View>
+          <View style={{flex: 2}}>
+            <PrimaryButton
+              square={true}
+              onPress={() => props.navigation.navigate('ListStaff')}
+              text={"List Staff"}/>
+          </View>
+        </View>
+        {
+          props.chats && props.chats.length > 0 ?
+          (
+            <Chats chats={props.chats} navigation={props.navigation}/>
+          ) : (
+            <View style={{flexDirection: 'row', marginTop: 40, flex: 1}}>
+              <View style={{flex: 1}}></View>
+              <View style={{
+                  alignItems: 'center',
+                  marginTop: 20,
+                  flex: 4,
+                  paddingHorizontal: 30,
+                  paddingVertical: 20,
+                  backgroundColor: GlobalColors.dcLightGrey,
+                  borderRadius: 30,
+                }}>
+                <Text style={styles.text}>You are currently not chatting with anyone</Text>
+                <View style={{margin: 15}}></View>
+                <Text style={styles.text}>Press <Text style={styles.primaryText}>Find Member</Text> to find a gym member to chat with</Text>
+                <Text style={[styles.primaryText, {marginVertical: 8}]}>OR</Text>
+                <Text style={styles.text}>Press <Text style={styles.primaryText}>List Staff</Text> to see all active members of staff</Text>
+              </View>
+              <View style={{flex: 1}}></View>
+            </View>
+          )
+        }
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
@@ -92,6 +100,7 @@ const Chats = ({chats, navigation}) => {
         }}>
         <View style={[styles.chatRow, {backgroundColor : (!chat.read ? '#458145' : null)} ]}>
           <CustomAvatar
+            lightColour
             name={name}
             size={55}
             avatarURL={chat.other_user_data.avatarURL} />
@@ -138,7 +147,7 @@ export default Messenger;
 
 const styles = StyleSheet.create({
   mainContainer : {
-    backgroundColor : '#2D2D2D',
+    backgroundColor : GlobalColors.dcGrey,
     flex: 1,
   },
   text: {

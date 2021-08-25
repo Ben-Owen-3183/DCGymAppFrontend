@@ -128,7 +128,7 @@ const ChangePassword = ({ navigation }) => {
           <View style={{marginVertical: 10}}></View>
 
           <Text style={styles.text}>
-            Enter you current password and confirm your new one. The password change will take place immediately and will be required on the next login attempt.
+            Enter your current password and confirm your new one. The password change will take place immediately and will be required on the next login attempt.
           </Text>
 
           <View style={{marginVertical: 10}}></View>

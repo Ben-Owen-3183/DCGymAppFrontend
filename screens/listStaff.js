@@ -168,11 +168,13 @@ const ListStaff = ({userData, navigation, websocket}) => {
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
       <View style={styles.mainContainer}>
-        <View style={{flex: 1}}></View>
-        <View style={{flex: 5}}>
-          <ScrollView keyboardShouldPersistTaps={'handled'} >
+        <ScrollView
+          style={{
+            paddingTop: 50,
+          }}
+          keyboardShouldPersistTaps={'handled'} >
+          <View style={{marginHorizontal: 40}}>
             <Text style={{
-                margin: 10,
                 color: GlobalColors.dcYellow,
                 fontSize: 50,
                 fontFamily : 'BebasNeue Bold',
@@ -182,9 +184,9 @@ const ListStaff = ({userData, navigation, websocket}) => {
             </Text>
             <View style={{marginVertical: 10}}></View>
             <ListView staffList={staffList} submit={submit}/>
-          </ScrollView>
-        </View>
-        <View style={{flex: 1}}></View>
+            <View style={{marginVertical: 100}}></View>
+          </View>
+        </ScrollView>
       </View>
     </ImageBackground>
   );
@@ -199,17 +201,16 @@ const ListView = ({staffList, submit}) => {
         underlayColor={'#00000050'}
         onPress={() => submit(staff.id, `${staff.fName} ${staff.sName}`)}
         key={staff.id}>
-        <Staff staff={staff}/>
+        <Staff staff={staff} filled={i % 2 === 0}/>
       </TouchableHighlight>
     )
   })
 }
 
-const Staff = ({staff}) => {
+const Staff = ({staff, filled}) => {
   const [avatarViewWidth, setAvatarViewWidth] = React.useState(null);
 
   function onLayout(width){
-    console.log(width);
     if(avatarViewWidth) return;
     setAvatarViewWidth(width);
   }
@@ -219,14 +220,14 @@ const Staff = ({staff}) => {
       <View
         onLayout={layout => onLayout(layout.nativeEvent.layout.width)}
         style={{
-          marginVertical: -3,
-          marginLeft: -3,
-          borderWidth: 3,
+          marginVertical: -2,
+          marginLeft: -2,
+          borderWidth: 2,
           borderColor: GlobalColors.dcYellow,
           borderRadius: 100,
         }}>
         <CustomAvatar
-          size={70}
+          size={55}
           avatarURL={staff.avatarURL}
           name={`${staff.fName} ${staff.sName}`}
         />
@@ -238,34 +239,32 @@ const Staff = ({staff}) => {
         right: avatarViewWidth/3,
       }}>
         <UsersName
-          style={{textAlign: 'center', letterSpacing: 0, color: 'white'}}
+          style={{textAlign: 'center', letterSpacing: 0, color: staff.isSuperUser ? GlobalColors.dcYellow : 'white'}}
           isStaff={staff.isStaff}
           isSuperUser={staff.isSuperUser}
           fName={staff.fName}
           sName={staff.sName}
-          fontSize={28}
+          fontSize={25}
         />
       </View>
     </View>
   );
 }
 
-
 export default ListStaff;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    paddingTop: 50,
     flexDirection: 'row',
     width: '100%',
     height: '100%',
   },
   userView: {
     flexDirection: 'row',
-    marginVertical: 15,
+    marginVertical: 9,
     alignItems: 'center',
     borderColor: GlobalColors.dcYellow,
-    borderWidth: 3,
+    borderWidth: 2,
     borderRadius: 1000,
   },
   backgroundImage : {

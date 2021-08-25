@@ -81,7 +81,6 @@ const SearchUser = ({userData, websocket, navigation}) => {
     }
 
     const onSuccess = (response) => {
-      console.log(response);
       setUserList(response);
     };
 
@@ -148,7 +147,6 @@ const SearchUser = ({userData, websocket, navigation}) => {
 const ListUsers = ({userList, submit}) => {
 
   if(!userList) return null;
-
   return userList.map((user, i) => {
     return (
       <TouchableHighlight
@@ -168,6 +166,7 @@ const User = ({user}) => {
     <View style={styles.userView}>
       <View style={{marginRight: 20}}>
         <CustomAvatar
+          lightColour
           size={50}
           avatarURL={user.avatarURL}
           name={`${user.fName} ${user.sName}`}

@@ -9,6 +9,7 @@ import {
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import { LoadingView, PrimaryButton }  from '../shared/basicComponents';
 import Settings from '../shared/settings';
+import { useFocusEffect } from '@react-navigation/native';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
@@ -56,12 +57,20 @@ const LiveStreams = ({navigation, userData}) => {
     return null
   }
 
+  /*
   React.useEffect(() => {
     if(streamsByDay === null){
-      console.log('fetching streams...');
       fetchLiveStreams();
     }
   })
+  */
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchLiveStreams();
+    }, [])
+  );
+
 
   if(initialLoading) {
     return (
@@ -109,11 +118,18 @@ const LiveStreams = ({navigation, userData}) => {
       }}>
 
       <ScrollView style={{paddingTop: 30, height: '100%'}}>
-        <View style={{flexDirection: 'row', flex: 1, justifyContent: 'center', margin: 40,}}>
+        <View style={{
+          borderRadius: 15,
+          paddingRight: 10,
+          alignSelf: 'center',
+          flexDirection: 'row',
+          margin: 40,
+          backgroundColor: GlobalColors.dcGrey}}>
           <View style={{
             alignItems: 'center',
             backgroundColor: '#d2232a',
-            borderRadius: 15,
+            borderTopLeftRadius: 15,
+            borderBottomLeftRadius: 15,
             paddingHorizontal: 15,
             paddingVertical: 1,
             flexDirection: 'row'
@@ -126,17 +142,18 @@ const LiveStreams = ({navigation, userData}) => {
               borderColor: 'white',
               borderWidth: 5}}></View>
             <Text style={{
-              color: 'white',
-              fontSize: 60,
-              fontFamily: 'BebasNeue Bold',
-              letterSpacing: 1,
-            }}>
-            Live
+                color: 'white',
+                fontSize: 60,
+                fontFamily: 'BebasNeue Bold',
+                letterSpacing: 1,
+              }}>
+              Live
             </Text>
           </View>
 
           <Text style={{
-            paddingHorizontal: 5,
+            paddingRight: 5,
+            paddingLeft: 15,
             paddingVertical: 1,
             color: 'white',
             fontSize: 60,

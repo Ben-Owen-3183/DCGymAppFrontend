@@ -292,7 +292,7 @@ export default Navigator = ({navigation}) => {
   const [websocketInitialised, setWebsocketInitialised] = React.useState(false);
   const [chats, setChats] = React.useState([]);
 
-  if(websocket !== null && (state.signedIn === false || state.userData === null)){
+  if(websocket !== null && state.signedIn === false && state.userData === null){
     console.log('closing websocket...');
     try {
       websocket.close();
@@ -329,6 +329,7 @@ export default Navigator = ({navigation}) => {
       if(userData){
         // start websocket
         console.log('Creating websocket connection');
+        state.signedIn = true;
         setWebsocket(new WebSocket(Settings.ws_siteURL + 'messenger/'));
 
 

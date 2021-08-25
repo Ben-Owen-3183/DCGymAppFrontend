@@ -61,7 +61,7 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
     React.useCallback(() => {
       return () => {
         try{
-          // ignore error. To fix error just add a condition that does not called
+          // ignore error. To fix error just add a condition that does not call
           // this function pressing hardware back button on android
           // or when pressing back on this chat screens header.
           navigation.popToTop();
@@ -101,7 +101,6 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
 
   async function getHistory(){
     try {
-      console.log("getting history");
 
       let payload = {}
       if(chatHistory.length === 0){
@@ -143,7 +142,6 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
 
   const onScrollEndReached = () => {
 
-    console.log('scrolled to end called');
     if(!firstScrollToEndCalled){
       setFirstScrollToEndCalled(true);
       return;
@@ -154,12 +152,16 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
 
   // let allMessages = chat.messages.concat(chatHistory);
 
-  const messageComponent = ({item}) => {
+  const messageComponent = ({item, index}) => {
     const isUser = item.user_id.toString() === userData.user_id.toString();
 
     return (
       <View key={item.id}>
-
+        {
+          index == (chat.messages.concat(chatHistory)).length - 1 ?  (
+            <View style={{marginTop: 20}}></View>
+          ) : (null)
+        }
         <View style={[
             {flexDirection : 'row'},
             (isUser ? {justifyContent : 'flex-end'} : {justifyContent : 'flex-start'})
@@ -173,7 +175,7 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
         {
           ToggleSpace(isUser) ? <View style={{marginVertical : 5}}></View> : null
         }
-    
+
       </View>
     )
   }

@@ -7,6 +7,7 @@ import Header from '../shared/header';
 import SetAvatar from '../screens/setAvatar';
 import ChangePassword from '../screens/changePassword';
 import ChangePasswordSuccess from '../screens/changePasswordSuccess';
+import ResetCache from '../screens/resetCache';
 
 const Stack = createStackNavigator();
 
@@ -20,7 +21,7 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats}navigation={navigation} title='Set Avatar'/>,
+          headerTitle: () => <Header chats={chats} navigation={navigation} title='Set Avatar'/>,
           headerLeft: () => {
             return null;
           },
@@ -31,7 +32,18 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats}navigation={navigation} title='Change Password'/>,
+          headerTitle: () => <Header chats={chats} navigation={navigation} title='Reset Cache'/>,
+          headerLeft: () => {
+            return null;
+          },
+        }}
+        name="ResetCache"
+        component={ResetCache}
+      />
+
+      <Stack.Screen
+        options={{
+          headerTitle: () => <Header chats={chats} navigation={navigation} title='Change Password'/>,
           headerLeft: () => {
             return null;
           },
@@ -42,7 +54,7 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats}navigation={navigation} title='Success'/>,
+          headerTitle: () => <Header chats={chats} navigation={navigation} title='Success'/>,
           headerLeft: () => {
             return null;
           },

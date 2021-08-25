@@ -13,6 +13,7 @@
     "@react-navigation/drawer": "^5.12.5",
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.4",
+    "@stream-io/flat-list-mvcp": "^0.10.1",
     "expo-av": "^9.2.3",
     "expo-constants": "^11.0.1",
     "expo-screen-orientation": "^3.2.1",

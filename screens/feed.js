@@ -896,7 +896,6 @@ const Post = ({userData, post, posts, setPosts, userFeed, navigation}) => {
   function setImageWidthHeight(layout){
     if(imageViewWidth || imageViewHeight) return;
     let viewSize = layout.nativeEvent.layout;
-    console.log("viewSize " + viewSize)
     setImageViewWidth(viewSize.width);
     setImageViewHeight(viewSize.height);
   }
@@ -904,7 +903,6 @@ const Post = ({userData, post, posts, setPosts, userFeed, navigation}) => {
   function setIconWidthHeight(layout){
     if(iconWidth || iconHeight) return;
     let iconSize = layout.nativeEvent.layout;
-    console.log("iconSize " + iconSize)
     setIconWidth(iconSize.width);
     setIconHeight(iconSize.height);
   }

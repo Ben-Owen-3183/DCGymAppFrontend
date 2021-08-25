@@ -1,6 +1,6 @@
 import React from 'react';
 import {Avatar} from 'react-native-elements';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import Settings from '../shared/settings';
 import {GlobalColors} from '../styles/dcstyles';
 
@@ -9,7 +9,7 @@ function getInitials(name){
   return name.split(" ")[0].split("")[0] + name.split(" ")[1].split("")[0];
 }
 
-const CustomAvatar = ({name, style, size, avatarURL}) => {
+const CustomAvatar = ({name, style, size, avatarURL, lightColour}) => {
 
   let source = null;
   if(avatarURL){
@@ -26,14 +26,10 @@ const CustomAvatar = ({name, style, size, avatarURL}) => {
       size={(size ? size : 38)}
       icon={{name: 'user', type: 'font-awesome'}}
       title={getInitials(name)}
-      containerStyle={[styles.avatar, style]}/>
+      containerStyle={[{
+        backgroundColor : lightColour ? GlobalColors.dcLightGrey : GlobalColors.dcGrey,
+      }, style]}/>
   );
 }
 
 export default CustomAvatar;
-
-const styles = StyleSheet.create({
-  avatar : {
-    backgroundColor : GlobalColors.dcLightGrey,
-  },
-})

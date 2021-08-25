@@ -258,7 +258,7 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, iconSize, fontSiz
       {
         isStaff ?
         (
-          <View style={{flexDirection: 'row', alignItems: 'flex-end', }}>
+          <View style={{flexDirection: 'row', alignItems: 'center', }}>
             <Text style={[{
                 color: GlobalColors.dcYellow,
                 fontSize: (fontSize ? fontSize : defaultFontSize),
@@ -267,11 +267,13 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, iconSize, fontSiz
               {`${fName} ${sName}`}
             </Text>
             <View style={{marginHorizontal: 3}}></View>
-            <Avatar
-              imageProps={{transitionDuration: 0}}
-              source={require(dcIcon)}
-              size={(fontSize ? fontSize * 0.9 : defaultFontSize * 0.9)}
-            />
+            <View style={{paddingTop: 3}}>
+              <Avatar
+                imageProps={{transitionDuration: 0}}
+                source={require(dcIcon)}
+                size={(fontSize ? fontSize * 0.9 : defaultFontSize * 0.9)}
+              />
+            </View>
           </View>
         ) : (
           <Text style={[{

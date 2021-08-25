@@ -28,6 +28,17 @@ const Storage = {
     } catch (error) {
       console.log(`Storage.delete: ${error}`)
     }
+  },
+  clearCache: async () => {
+    try {
+      await EncryptedStorage.removeItem("timetable");
+      await EncryptedStorage.removeItem("chats");
+      await EncryptedStorage.removeItem("videos");
+      await EncryptedStorage.removeItem("livestreams");
+      await EncryptedStorage.removeItem("posts");
+    } catch (error) {
+      console.log(`Storage.clearCache: ${error}`)
+    }
   }
 }
 

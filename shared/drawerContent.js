@@ -5,6 +5,7 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import {AuthContext} from '../routes/drawer';
 import CustomAvatar from './customAvatar';
 import {retrieveUserData} from '../shared/storage';
+import {GlobalColors} from '../styles/dcstyles';
 
 const fontSize = 16;
 
@@ -80,33 +81,34 @@ export function DrawerContent(props){
 
   return (
     <View style={styles.drawer}>
+      <View style={styles.headerView}>
+        <CustomAvatar
+          avatarURL={props.userData.avatarURL}
+          size={100}
+          name={`${props.userData.first_name} ${props.userData.last_name}`}
+          />
+        <View style={{marginTop: 15}}></View>
+        <View style={styles.avatarText}>
+          <Text style={{fontSize: fontSize, color: 'white'}}
+            numberOfLines={2}>
+            {props.userData.first_name + ' ' + props.userData.last_name}
+          </Text>
+        </View>
+        <View style={styles.avatarText}>
+          <Text style={{fontSize: fontSize, color: 'white'}}
+            numberOfLines={1}>
+            {props.userData.email}
+          </Text>
+        </View>
+      </View>
+      <View style={{marginBottom: 20, marginLeft: 20}}></View>
+      <View style={styles.line}></View>
       <DrawerContentScrollView { ... props }>
         <View>
-          <View style={styles.headerView}>
-            <CustomAvatar
-              avatarURL={props.userData.avatarURL}
-              size={100}
-              name={`${props.userData.first_name} ${props.userData.last_name}`}
-              />
-            <View style={{marginTop: 15}}></View>
-            <View style={styles.avatarText}>
-              <Text style={{fontSize: fontSize, color: 'white'}}
-                numberOfLines={2}>
-                {props.userData.first_name + ' ' + props.userData.last_name}
-              </Text>
-            </View>
-            <View style={styles.avatarText}>
-              <Text style={{fontSize: fontSize, color: 'white'}}
-                numberOfLines={1}>
-                {props.userData.email}
-              </Text>
-            </View>
-          </View>
-          <View style={{marginBottom: 20, marginLeft: 20}}>
 
-          </View>
 
-          <View style={styles.line}></View>
+
+
 
           <View style={{marginTop: 10}}>
 
@@ -273,6 +275,20 @@ export function DrawerContent(props){
                     <View style={[styles.buttonContainer]}>
                       <Text style={[styles.labelStyle, {marginLeft: 25, flex: 7}]}>
                         Set Avatar
+                      </Text>
+                    </View>
+                  </TouchableHighlight>
+
+                  <TouchableHighlight
+                    underlayColor={'#1c1c1c'}
+                    onPress={() => {
+                        setSettingsToggle();
+                        props.navigation.navigate('Settings', { screen: 'ResetCache' })
+                      }
+                    }>
+                    <View style={[styles.buttonContainer]}>
+                      <Text style={[styles.labelStyle, {marginLeft: 25, flex: 7}]}>
+                        Reset Cache
                       </Text>
                     </View>
                   </TouchableHighlight>
