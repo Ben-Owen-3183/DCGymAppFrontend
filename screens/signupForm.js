@@ -447,6 +447,7 @@ const styles = StyleSheet.create({
     marginBottom : 7,
     marginHorizontal: 10,
     fontSize : 25,
-    fontFamily : 'BebasNeue Bold'
+    fontFamily: 'BebasNeue',
+    fontWeight: 'bold',
   },
 });

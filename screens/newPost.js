@@ -334,7 +334,8 @@ const newPostStyles = StyleSheet.create({
   titleText: {
     flex: 1,
     textAlign: 'center',
-    fontFamily : 'BebasNeue Bold',
+    fontFamily: 'BebasNeue',
+    fontWeight: 'bold',
     color: GlobalColors.dcYellow,
     fontSize: 40,
     marginBottom: 10,

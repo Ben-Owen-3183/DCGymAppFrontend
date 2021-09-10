@@ -177,7 +177,8 @@ const ListStaff = ({userData, navigation, websocket}) => {
             <Text style={{
                 color: GlobalColors.dcYellow,
                 fontSize: 50,
-                fontFamily : 'BebasNeue Bold',
+                fontFamily : 'BebasNeue',
+                fontWeight: 'bold',
                 textAlign: 'center',
               }}>
               {'Staff'}

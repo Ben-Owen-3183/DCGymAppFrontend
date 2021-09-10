@@ -144,7 +144,8 @@ const LiveStreams = ({navigation, userData}) => {
             <Text style={{
                 color: 'white',
                 fontSize: 60,
-                fontFamily: 'BebasNeue Bold',
+                fontFamily: 'BebasNeue',
+                fontWeight: 'bold',
                 letterSpacing: 1,
               }}>
               Live
@@ -157,7 +158,8 @@ const LiveStreams = ({navigation, userData}) => {
             paddingVertical: 1,
             color: 'white',
             fontSize: 60,
-            fontFamily: 'BebasNeue Bold',
+            fontFamily: 'BebasNeue',
+            fontWeight: 'bold',
             letterSpacing: 1,
           }}>
           Streams
@@ -188,7 +190,8 @@ const StreamDays = ({streamsByDay, navigation}) => {
             textAlign: 'center',
             color: GlobalColors.dcYellow,
             fontSize: 45,
-            fontFamily: 'BebasNeue Bold',
+            fontFamily: 'BebasNeue',
+            fontWeight: 'bold',
             letterSpacing: 1,
             marginTop: 20
           }}>
@@ -232,7 +235,8 @@ const ListStreams = ({streams, navigation}) => {
             style={{
               color: 'white',
               fontSize: 24,
-              fontFamily: 'BebasNeue Bold',
+              fontFamily: 'BebasNeue',
+              fontWeight: 'bold',
               letterSpacing: 1,
             }}>
             {stream.name}
@@ -249,7 +253,8 @@ const ListStreams = ({streams, navigation}) => {
             style={{
               color: 'white',
               fontSize: 24,
-              fontFamily: 'BebasNeue Bold',
+              fontFamily: 'BebasNeue',
+              fontWeight: 'bold',
               letterSpacing: 1,
             }}>
             {stream.time}

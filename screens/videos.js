@@ -288,12 +288,14 @@ const VideoContainer = ({video, navigation}) => {
               color: GlobalColors.dcYellow,
               marginBottom: 10,
               fontSize: 24,
-              fontFamily: 'BebasNeue Bold',
+              fontFamily: 'BebasNeue',
+              fontWeight: 'bold',
               letterSpacing: 1,
           }}>{video.name}</Text>
           <Text style={{
             color: 'white',
-            fontFamily: 'BebasNeue Bold',
+            fontFamily: 'BebasNeue',
+            fontWeight: 'bold',
             fontSize: 18,
             letterSpacing: 1,
           }}>{`${datetime.toString()}`}</Text>

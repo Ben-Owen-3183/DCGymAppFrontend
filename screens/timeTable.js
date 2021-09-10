@@ -212,7 +212,8 @@ const styles = StyleSheet.create({
     marginTop : 20,
     marginBottom : 20,
     fontSize : 60,
-    fontFamily : 'BebasNeue Bold'
+    fontFamily: 'BebasNeue',
+    fontWeight: 'bold',
   },
   timetableContainer : {
     alignItems : 'center',
@@ -229,26 +230,27 @@ const styles = StyleSheet.create({
     color : '#FFC300',
     marginBottom : 10,
     fontSize : 45,
-    fontFamily : 'BebasNeue Regular'
+    fontFamily: 'BebasNeue',
   },
   classText : {
     color : '#FFFFFF',
     textAlign : 'left',
     fontSize : 21,
-    fontFamily : 'BebasNeue Regular',
+    fontFamily: 'BebasNeue',
   },
   liveText : {
     color : '#FFFFFF',
     textAlign : 'left',
     fontSize : 21,
-    fontFamily : 'BebasNeue Bold',
+    fontFamily: 'BebasNeue',
+    fontWeight: 'bold',
     marginRight : -10
   },
   classTextRightSide : {
     color : '#FFFFFF',
     textAlign : 'right',
     fontSize : 21,
-    fontFamily : 'BebasNeue Regular',
+    fontFamily : 'BebasNeue',
   },
 
   // Views

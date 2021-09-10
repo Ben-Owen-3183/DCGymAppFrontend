@@ -119,7 +119,8 @@ const styles = StyleSheet.create({
     fontSize : 27,
     letterSpacing : 1,
     color : '#FFC300',
-    fontFamily : 'BebasNeue Bold'
+    fontFamily: 'BebasNeue',
+    fontWeight: 'bold',
   },
   icon : {
     color : '#FFC300',
