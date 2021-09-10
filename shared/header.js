@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     fontSize : 29,
     letterSpacing : 1.5,
     color : '#FFC300',
-    fontFamily : 'BebasNeue Bold'
+    fontFamily : 'BebasNeue'
   },
   icon : {
     color : '#FFC300',
