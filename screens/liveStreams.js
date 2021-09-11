@@ -152,6 +152,7 @@ const LiveStreams = ({navigation, userData}) => {
           </View>
 
           <Text style={{
+            transform: [{ translateY: 5 }],
             paddingRight: 5,
             paddingLeft: 15,
             color: 'white',
@@ -230,6 +231,9 @@ const ListStreams = ({streams, navigation}) => {
         }}>
           <Text
             style={{
+              transform: [{ translateY: 3 }],
+              textAlignVertical: 'center',
+              includeFontPadding: false,
               color: 'white',
               fontSize: 24,
               fontWeight: Platform.OS === 'android' ? null: 'bold',
@@ -248,6 +252,9 @@ const ListStreams = ({streams, navigation}) => {
           }}></View>
           <Text
             style={{
+              transform: [{ translateY: 3 }],
+              textAlignVertical: 'center',
+              includeFontPadding: false,
               color: 'white',
               fontSize: 24,
               fontWeight: Platform.OS === 'android' ? null: 'bold',
