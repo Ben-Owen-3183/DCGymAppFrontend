@@ -5,7 +5,8 @@ import {
   Text,
   ScrollView,
   TouchableHighlight,
-  ImageBackground
+  ImageBackground,
+  Platform,
 } from 'react-native';
 import {UsersName, LoadingView, PrimaryButton} from '../shared/basicComponents';
 import {GlobalColors} from '../styles/dcstyles';
@@ -177,8 +178,8 @@ const ListStaff = ({userData, navigation, websocket}) => {
             <Text style={{
                 color: GlobalColors.dcYellow,
                 fontSize: 50,
-                fontFamily : 'BebasNeue',
-                fontWeight: 'bold',
+                fontWeight: Platform.OS === 'android' ? null: 'bold',
+                fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
                 textAlign: 'center',
               }}>
               {'Staff'}

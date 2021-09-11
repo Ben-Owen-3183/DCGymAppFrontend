@@ -7,7 +7,8 @@ import {
   TouchableHighlight,
   TextInput,
   Dimensions,
-  Modal
+  Modal,
+  Platform,
 } from 'react-native';
 import {Icon, Avatar} from 'react-native-elements';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
@@ -262,7 +263,7 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, iconSize, fontSiz
             <Text style={[{
                 color: GlobalColors.dcYellow,
                 fontSize: (fontSize ? fontSize : defaultFontSize),
-                fontFamily : (defaultFont ? '' : 'BebasNeue')
+                fontFamily : (defaultFont ? '' : (Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue'))
               }, style]}>
               {`${fName} ${sName}`}
             </Text>
@@ -279,7 +280,7 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, iconSize, fontSiz
           <Text style={[{
               color: 'white',
               fontSize: (fontSize ? fontSize : defaultFontSize),
-              fontFamily : (defaultFont ? '' : 'BebasNeue')
+              fontFamily : (defaultFont ? '' : (Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue'))
             }, style]}>
             {`${fName} ${sName}`}
           </Text>

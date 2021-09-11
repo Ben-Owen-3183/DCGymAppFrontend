@@ -4,8 +4,6 @@ include ':react-native-webview-fullscreen'
 project(':react-native-webview-fullscreen').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webview-fullscreen/android')
 include ':react-native-webview'
 project(':react-native-webview').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webview/android')
-include ':react-native-vlc-media-player'
-project(':react-native-vlc-media-player').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vlc-media-player/android')
 include ':react-native-svg'
 project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
 include ':react-native-encrypted-storage'

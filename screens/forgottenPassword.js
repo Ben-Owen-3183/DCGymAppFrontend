@@ -6,7 +6,8 @@ import {
   ActivityIndicator,
   TextInput,
   TouchableHighlight,
-  ImageBackground
+  ImageBackground,
+  Platform,
 } from 'react-native';
 import Settings from '../shared/settings'
 import {retrieveUserData} from '../shared/storage';
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
     marginTop : 20,
     marginBottom : 20,
     fontSize : 40,
-    fontFamily : 'BebasNeue',
-    fontWeight: 'bold',
+    fontWeight: Platform.OS === 'android' ? null: 'bold',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
   },
 });

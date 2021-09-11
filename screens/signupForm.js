@@ -8,7 +8,8 @@ import {
   TouchableHighlight,
   ScrollView,
   Dimensions,
-  ImageBackground
+  ImageBackground,
+  Platform,
 } from 'react-native';
 import {globalStyles} from '../styles/dcstyles';
 import Image from 'react-native-scalable-image';
@@ -447,7 +448,7 @@ const styles = StyleSheet.create({
     marginBottom : 7,
     marginHorizontal: 10,
     fontSize : 25,
-    fontFamily: 'BebasNeue',
-    fontWeight: 'bold',
+    fontWeight: Platform.OS === 'android' ? null: 'bold',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
   },
 });

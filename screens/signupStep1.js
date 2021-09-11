@@ -6,7 +6,8 @@ import {
   ActivityIndicator,
   TextInput,
   TouchableHighlight,
-  ImageBackground
+  ImageBackground,
+  Platform,
 } from 'react-native';
 import {globalStyles} from '../styles/dcstyles';
 
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
     marginTop : 20,
     marginBottom : 20,
     fontSize : 60,
-    fontFamily: 'BebasNeue',
-    fontWeight: 'bold',
+    fontWeight: Platform.OS === 'android' ? null: 'bold',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
   },
 });

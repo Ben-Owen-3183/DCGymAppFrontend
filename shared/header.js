@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback, Platform } from 'react-native';
 import { Icon, Badge } from 'react-native-elements'
 
 export default function Header({chats, route, dynamicTitle, navigation, title, back }) {
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     fontSize : 29,
     letterSpacing : 1.5,
     color : '#FFC300',
-    fontFamily : 'BebasNeue',
-    fontWeight: 'bold'
+    fontWeight: Platform.OS === 'android' ? null: 'bold',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
   },
   icon : {
     color : '#FFC300',

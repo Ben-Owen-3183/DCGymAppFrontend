@@ -4,7 +4,8 @@ import {
   View,
   Text,
   ScrollView,
-  ImageBackground
+  ImageBackground,
+  Platform,
 } from 'react-native';
 import {GlobalStyles, GlobalColors} from '../styles/dcstyles';
 import {PrimaryButton} from '../shared/basicComponents'
@@ -212,8 +213,8 @@ const styles = StyleSheet.create({
     marginTop : 20,
     marginBottom : 20,
     fontSize : 60,
-    fontFamily: 'BebasNeue',
-    fontWeight: 'bold',
+    fontWeight: Platform.OS === 'android' ? null: 'bold',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
   },
   timetableContainer : {
     alignItems : 'center',
@@ -230,27 +231,27 @@ const styles = StyleSheet.create({
     color : '#FFC300',
     marginBottom : 10,
     fontSize : 45,
-    fontFamily: 'BebasNeue',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue',
   },
   classText : {
     color : '#FFFFFF',
     textAlign : 'left',
     fontSize : 21,
-    fontFamily: 'BebasNeue',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue',
   },
   liveText : {
     color : '#FFFFFF',
     textAlign : 'left',
     fontSize : 21,
-    fontFamily: 'BebasNeue',
-    fontWeight: 'bold',
+    fontWeight: Platform.OS === 'android' ? null: 'bold',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
     marginRight : -10
   },
   classTextRightSide : {
     color : '#FFFFFF',
     textAlign : 'right',
     fontSize : 21,
-    fontFamily : 'BebasNeue',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue',
   },
 
   // Views

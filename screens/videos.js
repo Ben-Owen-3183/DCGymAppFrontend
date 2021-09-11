@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import {GlobalColors, globalStyles} from '../styles/dcstyles';
 import {AuthContext} from '../routes/drawer';
@@ -288,14 +289,14 @@ const VideoContainer = ({video, navigation}) => {
               color: GlobalColors.dcYellow,
               marginBottom: 10,
               fontSize: 24,
-              fontFamily: 'BebasNeue',
-              fontWeight: 'bold',
+              fontWeight: Platform.OS === 'android' ? null: 'bold',
+              fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
               letterSpacing: 1,
           }}>{video.name}</Text>
           <Text style={{
             color: 'white',
-            fontFamily: 'BebasNeue',
-            fontWeight: 'bold',
+            fontWeight: Platform.OS === 'android' ? null: 'bold',
+            fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
             fontSize: 18,
             letterSpacing: 1,
           }}>{`${datetime.toString()}`}</Text>

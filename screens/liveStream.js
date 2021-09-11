@@ -6,7 +6,7 @@ import {
   BackHandler,
   TouchableWithoutFeedback,
   ScrollView,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import { WebView } from 'react-native-webview';

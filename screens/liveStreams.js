@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ImageBackground,
+  Platform
 } from 'react-native';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import { LoadingView, PrimaryButton }  from '../shared/basicComponents';
@@ -122,30 +123,28 @@ const LiveStreams = ({navigation, userData}) => {
           borderRadius: 15,
           paddingRight: 10,
           alignSelf: 'center',
+          alignItems: 'flex-end',
+          justifyContent: 'center',
           flexDirection: 'row',
           margin: 40,
           backgroundColor: GlobalColors.dcGrey}}>
           <View style={{
-            alignItems: 'center',
+            justifyContent: 'flex-end',
             backgroundColor: '#d2232a',
             borderTopLeftRadius: 15,
             borderBottomLeftRadius: 15,
             paddingHorizontal: 15,
-            paddingVertical: 1,
-            flexDirection: 'row'
           }}>
-            <View style={{
-              marginRight: 7,
-              height : 0,
-              width: 0,
-              borderRadius: 100,
-              borderColor: 'white',
-              borderWidth: 5}}></View>
             <Text style={{
+                textAlignVertical: 'center',
+                includeFontPadding: false,
+                textAlign: 'justify',
+                transform: [{ translateY: 5 }],
+                flex: 1,
                 color: 'white',
                 fontSize: 60,
-                fontFamily: 'BebasNeue',
-                fontWeight: 'bold',
+                fontWeight: Platform.OS === 'android' ? null: 'bold',
+                fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
                 letterSpacing: 1,
               }}>
               Live
@@ -155,11 +154,10 @@ const LiveStreams = ({navigation, userData}) => {
           <Text style={{
             paddingRight: 5,
             paddingLeft: 15,
-            paddingVertical: 1,
             color: 'white',
             fontSize: 60,
-            fontFamily: 'BebasNeue',
-            fontWeight: 'bold',
+            fontWeight: Platform.OS === 'android' ? null: 'bold',
+            fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
             letterSpacing: 1,
           }}>
           Streams
@@ -190,8 +188,8 @@ const StreamDays = ({streamsByDay, navigation}) => {
             textAlign: 'center',
             color: GlobalColors.dcYellow,
             fontSize: 45,
-            fontFamily: 'BebasNeue',
-            fontWeight: 'bold',
+            fontWeight: Platform.OS === 'android' ? null: 'bold',
+            fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
             letterSpacing: 1,
             marginTop: 20
           }}>
@@ -208,7 +206,6 @@ const ListStreams = ({streams, navigation}) => {
 
   return (
     streams.map((stream, i) => {
-    // missed this bad boy !
       return (
         <TouchableOpacity key={i}
           onPress={() => {
@@ -235,8 +232,8 @@ const ListStreams = ({streams, navigation}) => {
             style={{
               color: 'white',
               fontSize: 24,
-              fontFamily: 'BebasNeue',
-              fontWeight: 'bold',
+              fontWeight: Platform.OS === 'android' ? null: 'bold',
+              fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
               letterSpacing: 1,
             }}>
             {stream.name}
@@ -253,8 +250,8 @@ const ListStreams = ({streams, navigation}) => {
             style={{
               color: 'white',
               fontSize: 24,
-              fontFamily: 'BebasNeue',
-              fontWeight: 'bold',
+              fontWeight: Platform.OS === 'android' ? null: 'bold',
+              fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
               letterSpacing: 1,
             }}>
             {stream.time}

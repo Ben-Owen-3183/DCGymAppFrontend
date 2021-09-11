@@ -8,7 +8,8 @@ import {
   TextInput,
   Dimensions,
   Modal,
-  Alert
+  Alert,
+  Platform,
 } from 'react-native';
 import {Icon, Switch, SpeedDial} from 'react-native-elements';
 import {GlobalColors, globalStyles} from '../styles/dcstyles';
@@ -334,8 +335,8 @@ const newPostStyles = StyleSheet.create({
   titleText: {
     flex: 1,
     textAlign: 'center',
-    fontFamily: 'BebasNeue',
-    fontWeight: 'bold',
+    fontWeight: Platform.OS === 'android' ? null: 'bold',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
     color: GlobalColors.dcYellow,
     fontSize: 40,
     marginBottom: 10,
