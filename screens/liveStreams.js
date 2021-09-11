@@ -153,6 +153,9 @@ const LiveStreams = ({navigation, userData}) => {
 
           <Text style={{
             transform: [{ translateY: 5 }],
+            textAlign: 'justify',
+            textAlignVertical: 'center',
+            includeFontPadding: false,
             paddingRight: 5,
             paddingLeft: 15,
             color: 'white',
