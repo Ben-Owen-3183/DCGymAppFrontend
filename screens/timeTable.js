@@ -217,6 +217,7 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
   },
   timetableContainer : {
+    marginLeft: 30,
     alignItems : 'center',
   },
   scrollView : {
@@ -243,9 +244,8 @@ const styles = StyleSheet.create({
     color : '#FFFFFF',
     textAlign : 'left',
     fontSize : 21,
-    fontWeight: Platform.OS === 'android' ? null: 'bold',
     fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
-    marginRight : -10
+    marginRight : Platform.OS === 'android' ? -5 : 5
   },
   classTextRightSide : {
     color : '#FFFFFF',
@@ -257,19 +257,19 @@ const styles = StyleSheet.create({
   // Views
   classesView : {
     flexDirection : 'row',
-    justifyContent : 'space-between',
     alignItems: 'center',
   },
   dayView : {
     marginBottom : 40,
   },
   timeView : {
-    marginRight : 5,
+    marginRight : 1,
   },
   classView : {
+    marginHorizontal: 5
   },
   instructorView : {
-    marginLeft : 10,
+    marginLeft : 1,
   },
   isLiveStyle : {
   },
@@ -291,6 +291,6 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   rowStyle : {
-    marginBottom : 7,
+    marginBottom : 5,
   }
 });
