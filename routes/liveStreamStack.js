@@ -48,7 +48,7 @@ export default function LiveStreamStack({ chats, navigation, userData }) {
         options={{
           headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
-        name="LiveStreams">
+        name="Live Streams">
         {props => <LiveStreams userData={userData} navigation={navigation} {...props}/>}
       </Stack.Screen>
 
