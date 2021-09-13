@@ -3,7 +3,6 @@ import type {Node} from 'react';
 import {
   SafeAreaView,
   Text,
-  View,
   StatusBar,
 } from 'react-native';
 import Navigator from './routes/drawer';
@@ -16,11 +15,11 @@ const App: () => Node = () => {
   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
 
   return (
-    <View style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1}}>
       <StatusBar
         backgroundColor={GlobalColors.dcLightGrey}/>
       <Navigator/>
-    </View>
+    </SafeAreaView>
   );
 };
 

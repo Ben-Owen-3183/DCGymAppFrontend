@@ -6,11 +6,12 @@ import {AuthContext} from '../routes/drawer';
 import CustomAvatar from './customAvatar';
 import {retrieveUserData} from '../shared/storage';
 import {GlobalColors} from '../styles/dcstyles';
+import {BoxShadow} from 'react-native-shadow'
 
 const fontSize = 16;
 
-
 export function DefaultDrawerContent(props){
+
   return(
       <View style={[styles.drawer, {paddingTop: 24, maxHeight: 160, minHeight: 160}]}>
         <TouchableHighlight
@@ -58,7 +59,6 @@ export function DefaultDrawerContent(props){
 
 
 export function DrawerContent(props){
-
   const { signOut } = React.useContext(AuthContext);
   const [settingsToggle, setSettingsToggle] = useState(false);
 
@@ -105,13 +105,7 @@ export function DrawerContent(props){
       <View style={styles.line}></View>
       <DrawerContentScrollView { ... props }>
         <View>
-
-
-
-
-
           <View style={{marginTop: 10}}>
-
             <TouchableHighlight
               underlayColor={'#1c1c1c'}
               onPress={() => props.navigation.navigate('Feed')}>
@@ -304,8 +298,7 @@ export function DrawerContent(props){
           </View>
         </View>
       </DrawerContentScrollView>
-
-      <View>
+      <View style={{backgroundColor: GlobalColors.DCGrey}}>
         <View style={styles.line}></View>
         <DrawerItem
           icon={() =>
@@ -335,6 +328,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   drawer: {
+    overflow: 'hidden',
     flex: 1,
     borderWidth: 1,
     borderColor: '#755400',
@@ -358,7 +352,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   line: {
-    marginHorizontal: 10,
+    marginBottom: 10,
     borderBottomWidth: 1,
     borderColor: '#494949'
   },

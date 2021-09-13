@@ -42,7 +42,6 @@ export default function MessengerStack({userData, websocket, chats, route, navig
         },
         headerTintColor: '#FFC300',
         headerStyle: {backgroundColor: '#494949', shadowOpacity: 0,elevation: 0},
-        headerTitleStyle: styles.headerText
       }}>
 
       <Stack.Screen

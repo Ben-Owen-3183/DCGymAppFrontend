@@ -41,7 +41,7 @@ export default function SettingsStack({ chats, navigation }) {
             return null;
           },
         }}
-        name="ResetCache"
+        name="Reset Cache"
         component={ResetCache}
       />
 
@@ -52,7 +52,7 @@ export default function SettingsStack({ chats, navigation }) {
             return null;
           },
         }}
-        name="ChangePassword"
+        name="Change Password"
         component={ChangePassword}
       />
 
@@ -63,7 +63,7 @@ export default function SettingsStack({ chats, navigation }) {
             return null;
           },
         }}
-        name="ChangePasswordSuccess"
+        name="Change Password Success"
         component={ChangePasswordSuccess}
       />
 
