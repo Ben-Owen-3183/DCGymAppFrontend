@@ -155,7 +155,7 @@ const TimeView = ({day}) => {
                     alignItems: 'center',
                     backgroundColor : '#d2232a',
                     position: 'absolute',
-                    right: liveViewWidth,
+                    right: liveViewWidth * (Platform.OS === 'android' ? 1 : 2),
                     paddingVertical: 0,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
