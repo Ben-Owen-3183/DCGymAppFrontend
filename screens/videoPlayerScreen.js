@@ -101,7 +101,7 @@ const VideoPlayerScreen = ({navigation, route, setShowHeader}) => {
         </TouchableWithoutFeedback>
       </View>
       {
-        !isFullscreen || showFullscreenButton && Platform.OS === 'android' ? (
+        !isFullscreen && showFullscreenButton && Platform.OS === 'android' ? (
           <View style={{
             position: 'absolute',
             top: 10,
