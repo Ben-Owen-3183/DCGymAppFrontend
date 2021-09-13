@@ -25,7 +25,7 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
+          headerRight: (props) => <HeaderRight chats={chats} navigation={navigation} {...props}/>,
           headerLeft: () => {
             return null;
           },
@@ -36,7 +36,7 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
+          headerRight: (props) => <HeaderRight chats={chats} navigation={navigation} {...props}/>,
           headerLeft: () => {
             return null;
           },
@@ -47,7 +47,7 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
+          headerRight: (props) => <HeaderRight chats={chats} navigation={navigation} {...props}/>,
           headerLeft: () => {
             return null;
           },
@@ -58,7 +58,7 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>,
           headerLeft: () => {
             return null;
           },

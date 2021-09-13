@@ -44,7 +44,7 @@ export default function LoginStack({ chats, navigation, userData }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="PastStreams">
         {props => <PastStreams userData={userData} navigation={navigation} {...props}/>}
@@ -52,7 +52,7 @@ export default function LoginStack({ chats, navigation, userData }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="Video">
         {props => <VideoPlayerScreen userData={userData} navigation={navigation} {...props}/>}

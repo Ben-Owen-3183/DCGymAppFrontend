@@ -46,7 +46,7 @@ export default function FeedStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="Feed">
         {props => <Feed userData={userData} navigation={navigation} userFeed={false} {...props}/>}
@@ -54,7 +54,7 @@ export default function FeedStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="NewPost">
         {props => <NewPost userData={userData} navigation={navigation} {...props}/>}
@@ -62,7 +62,7 @@ export default function FeedStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="UserPosts">
         {props => <UserPosts userData={userData} navigation={navigation} {...props}/>}

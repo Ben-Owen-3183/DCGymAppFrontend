@@ -26,7 +26,7 @@ export default function LoginStack({ navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="Login"
         component={Login} />
@@ -35,14 +35,14 @@ export default function LoginStack({ navigation }) {
         name="SignupStep1"
         component={SignupStep1}
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
       }}/>
 
       <Stack.Screen
         name="SignupForm"
         component={SignupForm}
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>,
         }}
       />
 
@@ -50,7 +50,7 @@ export default function LoginStack({ navigation }) {
         name="VerifyEmail"
         component={VerifyEmail}
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>,
         }}
       />
 
@@ -58,7 +58,7 @@ export default function LoginStack({ navigation }) {
         name="ForgottenPassword"
         component={ForgottenPassword}
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>,
         }}
       />
     </Stack.Navigator>

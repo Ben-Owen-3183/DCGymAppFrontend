@@ -24,7 +24,7 @@ export default function TimeTableStack({ userData, chats, navigation }) {
       <Stack.Screen
         options={{
           title: 'TimeTable',
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="TimeTable">
         {props => <TimeTable userData={userData} navigation={navigation} {...props}/>}
@@ -32,7 +32,7 @@ export default function TimeTableStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="BookClass"
         component={BookClass} />
