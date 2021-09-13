@@ -1,0 +1,84 @@
+import React from 'react';
+import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback, Platform } from 'react-native';
+import { Icon, Badge } from 'react-native-elements'
+
+export default function HeaderRight({chats, route, navigation}) {
+
+  const openMenu = () => {
+    Keyboard.dismiss();
+    navigation.openDrawer();
+  }
+
+  function countUnreadChats(){
+    let count = 0;
+    for (var i = 0; i < chats.length; i++)
+      if(chats[i].read === false)
+        count++;
+    return count;
+  }
+
+  let unreadChatsCount = 0;
+  if(chats) unreadChatsCount = countUnreadChats();
+
+  return (
+    <View style={{flexDirection: 'row', marginRight: 15}}>
+      {
+        unreadChatsCount > 0 ? (
+          <TouchableOpacity onPress={() => navigation.navigate('Messenger')} style={{padding : 10}}>
+            <Icon
+              name='bell'
+              type='simple-line-icon'
+              iconStyle={styles.icon}
+              size={25}
+            />
+            <Badge
+              status="primary"
+              containerStyle={{position: 'absolute', top: 2, right: 22 }}
+              badgeStyle={{borderWidth: 0}}
+              value={unreadChatsCount}
+            />
+          </TouchableOpacity>
+        ) : (null)
+      }
+      <View style={styles.iconView}>
+        <TouchableOpacity onPress={openMenu} style={{padding : 10}}>
+          <Icon
+            name='menu'
+            type='simple-line-icon'
+            iconStyle={styles.icon}
+            size={25}
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  header : {
+    flex : 1,
+    flexDirection : 'row',
+    alignItems : 'center',
+    justifyContent : 'center',
+    height : 56,
+  },
+  headerText : {
+    fontSize : 29,
+    letterSpacing : 1.5,
+    color : '#FFC300',
+    fontWeight: Platform.OS === 'android' ? null: 'bold',
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
+  },
+  icon : {
+    color : '#FFC300',
+  },
+  headerTextView : {
+  },
+  iconView : {
+    flexDirection : 'row',
+    justifyContent : 'flex-end',
+  },
+  emptyElement : {
+    flex: 1,
+  }
+});

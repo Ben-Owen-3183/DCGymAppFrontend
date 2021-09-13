@@ -2,8 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import Header from '../shared/header';
-
-
+import HeaderRight from '../shared/headerRight';
 import SetAvatar from '../screens/setAvatar';
 import ChangePassword from '../screens/changePassword';
 import ChangePasswordSuccess from '../screens/changePasswordSuccess';
@@ -15,13 +14,18 @@ export default function SettingsStack({ chats, navigation }) {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleStyle: {
+          fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
+          fontSize : 29,
+          letterSpacing : 1.5,
+        },
         headerTintColor: '#FFC300',
         headerStyle: {backgroundColor: '#494949', shadowOpacity: 0,elevation: 0}
       }}>
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Set Avatar'/>,
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
           headerLeft: () => {
             return null;
           },
@@ -32,7 +36,7 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Reset Cache'/>,
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
           headerLeft: () => {
             return null;
           },
@@ -43,7 +47,7 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Change Password'/>,
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
           headerLeft: () => {
             return null;
           },
@@ -54,7 +58,7 @@ export default function SettingsStack({ chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Success'/>,
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
           headerLeft: () => {
             return null;
           },

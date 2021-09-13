@@ -5,6 +5,7 @@ import NewPost from '../screens/newPost';
 import UserPosts from '../screens/userPosts';
 import React from 'react';
 import Header from '../shared/header';
+import HeaderRight from '../shared/headerRight';
 import { Icon, Badge } from 'react-native-elements'
 import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import VideoPlayerScreen from '../screens/videoPlayerScreen';
@@ -33,6 +34,11 @@ export default function FeedStack({ userData, chats, navigation }) {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleStyle: {
+          fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
+          fontSize : 29,
+          letterSpacing : 1.5,
+        },
         headerShown: showHeader,
         headerTintColor: '#FFC300',
         headerStyle: {backgroundColor: '#494949', shadowOpacity: 0,elevation: 0}
@@ -40,7 +46,7 @@ export default function FeedStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Feed'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="Feed">
         {props => <Feed userData={userData} navigation={navigation} userFeed={false} {...props}/>}
@@ -48,7 +54,7 @@ export default function FeedStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Create New Post'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="NewPost">
         {props => <NewPost userData={userData} navigation={navigation} {...props}/>}
@@ -56,7 +62,7 @@ export default function FeedStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Your Posts'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="UserPosts">
         {props => <UserPosts userData={userData} navigation={navigation} {...props}/>}
@@ -69,6 +75,7 @@ export default function FeedStack({ userData, chats, navigation }) {
         options={
           ({ route, props }) => ({
             title: route.params.title,
+            headerBackTitleVisible: false,
             headerRight: (props) => {
               if(!showHeader) return null;
               return(

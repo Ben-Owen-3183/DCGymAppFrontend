@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { Icon, Badge } from 'react-native-elements'
+import HeaderRight from '../shared/headerRight';
 
 // Screens
 import Header from '../shared/header';
@@ -34,6 +35,11 @@ export default function MessengerStack({userData, websocket, chats, route, navig
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleStyle: {
+          fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
+          fontSize : 29,
+          letterSpacing : 1.5,
+        },
         headerTintColor: '#FFC300',
         headerStyle: {backgroundColor: '#494949', shadowOpacity: 0,elevation: 0},
         headerTitleStyle: styles.headerText
@@ -41,7 +47,7 @@ export default function MessengerStack({userData, websocket, chats, route, navig
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats}navigation={navigation} title='Messenger'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="Messenger">
           {props => <Messenger navigation={navigation} chats={chats} {...props}/>}
@@ -49,7 +55,7 @@ export default function MessengerStack({userData, websocket, chats, route, navig
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats}navigation={navigation} title='User Search'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="SearchUser">
         {props => <SearchUser navigation={navigation} chats={chats} websocket={websocket} userData={userData} {...props}/>}
@@ -57,7 +63,7 @@ export default function MessengerStack({userData, websocket, chats, route, navig
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats}navigation={navigation} title='David Corfield Staff'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="ListStaff">
         {props => <ListStaff websocket={websocket} userData={userData} navigation={navigation} {...props}/>}
@@ -68,6 +74,12 @@ export default function MessengerStack({userData, websocket, chats, route, navig
         name="Chat"
         options={
           ({ route, props }) => ({
+            headerTitleStyle: {
+              fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
+              fontSize : 29,
+              letterSpacing : 1.5,
+            },
+            headerBackTitleVisible: false,
             title: route.params.title,
             headerRight: (props) => (
               <View style={{flexDirection: 'row', marginRight: 15}}>

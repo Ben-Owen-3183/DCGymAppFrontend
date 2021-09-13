@@ -4,6 +4,7 @@ import LiveStream from '../screens/liveStream';
 import LiveStreams from '../screens/liveStreams';
 import React from 'react';
 import Header from '../shared/header';
+import HeaderRight from '../shared/headerRight';
 import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { Icon, Badge } from 'react-native-elements'
 
@@ -33,6 +34,11 @@ export default function LiveStreamStack({ chats, navigation, userData }) {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleStyle: {
+          fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
+          fontSize : 29,
+          letterSpacing : 1.5,
+        },
         headerShown: showHeader,
         headerTintColor: '#FFC300',
         headerStyle: {backgroundColor: '#494949', shadowOpacity: 0,elevation: 0}
@@ -40,7 +46,7 @@ export default function LiveStreamStack({ chats, navigation, userData }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Live Streams'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="LiveStreams">
         {props => <LiveStreams userData={userData} navigation={navigation} {...props}/>}
@@ -51,6 +57,7 @@ export default function LiveStreamStack({ chats, navigation, userData }) {
         options={
           ({ route, props }) => ({
             title: route.params.title,
+            headerBackTitleVisible: false,
             headerRight: (props) => {
               if(!showHeader) return null;
               return(

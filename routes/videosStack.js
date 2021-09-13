@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import PastStreams from '../screens/videos';
 import VideoPlayerScreen from '../screens/videoPlayerScreen';
 import Header from '../shared/header';
+import HeaderRight from '../shared/headerRight';
 import { StyleSheet, Keyboard, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { Icon, Badge } from 'react-native-elements'
 
@@ -31,6 +32,11 @@ export default function LoginStack({ chats, navigation, userData }) {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleStyle: {
+          fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
+          fontSize : 29,
+          letterSpacing : 1.5,
+        },
         headerShown: showHeader,
         headerTintColor: '#FFC300',
         headerStyle: {backgroundColor: '#494949', shadowOpacity: 0, elevation: 0}
@@ -38,7 +44,7 @@ export default function LoginStack({ chats, navigation, userData }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Videos'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="PastStreams">
         {props => <PastStreams userData={userData} navigation={navigation} {...props}/>}
@@ -46,7 +52,7 @@ export default function LoginStack({ chats, navigation, userData }) {
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header chats={chats} navigation={navigation} title='Videos'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="Video">
         {props => <VideoPlayerScreen userData={userData} navigation={navigation} {...props}/>}
@@ -57,6 +63,7 @@ export default function LoginStack({ chats, navigation, userData }) {
         options={
           ({ route, props }) => ({
             title: route.params.title,
+            headerBackTitleVisible: false,
             headerRight: (props) => {
               if(!showHeader) return null;
               return(

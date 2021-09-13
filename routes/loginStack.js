@@ -7,6 +7,7 @@ import SignupForm from '../screens/signupForm';
 import VerifyEmail from '../screens/verifyEmail';
 import ForgottenPassword from '../screens/forgottenPassword';
 import Header from '../shared/header';
+import HeaderRight from '../shared/headerRight';
 
 const Stack = createStackNavigator();
 
@@ -14,13 +15,18 @@ export default function LoginStack({ navigation }) {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleStyle: {
+          fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
+          fontSize : 29,
+          letterSpacing : 1.5,
+        },
         headerTintColor: '#FFC300',
         headerStyle: {backgroundColor: '#494949', shadowOpacity: 0,elevation: 0}
       }}>
 
       <Stack.Screen
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Login'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="Login"
         component={Login} />
@@ -29,14 +35,14 @@ export default function LoginStack({ navigation }) {
         name="SignupStep1"
         component={SignupStep1}
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Sign up'/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
       }}/>
 
       <Stack.Screen
         name="SignupForm"
         component={SignupForm}
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Sign up'/>,
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
         }}
       />
 
@@ -44,7 +50,7 @@ export default function LoginStack({ navigation }) {
         name="VerifyEmail"
         component={VerifyEmail}
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Verify Email'/>,
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
         }}
       />
 
@@ -52,7 +58,7 @@ export default function LoginStack({ navigation }) {
         name="ForgottenPassword"
         component={ForgottenPassword}
         options={{
-          headerTitle: () => <Header navigation={navigation} title='Password Reset'/>,
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>,
         }}
       />
     </Stack.Navigator>
