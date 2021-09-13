@@ -152,14 +152,15 @@ const TimeView = ({day}) => {
 
                 <View onLayout={(layoutEvent) => liveViewOnLayout(layoutEvent)}
                   style={{
+                    alignItems: 'center',
                     backgroundColor : '#d2232a',
                     position: 'absolute',
-                    right: liveViewWidth * 2,
+                    right: liveViewWidth,
                     paddingVertical: 0,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
                     paddingLeft: 10,
-                    paddingRight: 20,
+                    paddingRight: 12,
                   }}>
                   <Text style={[styles.liveText, styles.isLiveStyle]}>LIVE</Text>
                 </View>
