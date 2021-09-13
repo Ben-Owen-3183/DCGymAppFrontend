@@ -138,7 +138,7 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
             source={
               {
                 html: `
-                  <div>
+                  <div style="background-color:black; width:200%; height: 200%; margin: -20;">
                     <iframe
                       style="position: absolute; top:0;left:50%;"
                       src="${route.params.chat_url}"
