@@ -7,6 +7,7 @@ import {
   ScrollView,
   BackHandler,
   TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 import {GlobalColors, globalStyles} from '../styles/dcstyles';
 import { hideNavigationBar, showNavigationBar } from 'react-native-navigation-bar-color';
@@ -100,7 +101,7 @@ const VideoPlayerScreen = ({navigation, route, setShowHeader}) => {
         </TouchableWithoutFeedback>
       </View>
       {
-        !isFullscreen || showFullscreenButton? (
+        !isFullscreen || showFullscreenButton && Platform.OS === 'android' ? (
           <View style={{
             position: 'absolute',
             top: 10,

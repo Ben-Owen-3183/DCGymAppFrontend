@@ -160,7 +160,7 @@ const TimeView = ({day}) => {
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
                     paddingLeft: 10,
-                    paddingRight: 12,
+                    paddingRight: 20,
                   }}>
                   <Text style={[styles.liveText, styles.isLiveStyle]}>LIVE</Text>
                 </View>

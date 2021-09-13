@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Dimensions,
+  Platform,
 } from 'react-native';
 import {globalStyles, GlobalColors} from '../styles/dcstyles';
 import { WebView } from 'react-native-webview';
@@ -85,9 +86,9 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
                 }}
               />
             </View>
-            {streamChatToggle ? (<View style={{marginHorizontal: 3}}></View>) : (null)}
+            {streamChatToggle && Platform.OS === 'android' ? (<View style={{marginHorizontal: 3}}></View>) : (null)}
             {
-              streamChatToggle ? (
+              streamChatToggle && Platform.OS === 'android' ? (
                 <View style={{flex: 1}}>
 
                   <PrimaryButton
