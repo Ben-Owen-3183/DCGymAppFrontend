@@ -33,7 +33,7 @@ export default function LoginStack({ chats, navigation, userData }) {
     <Stack.Navigator
       screenOptions={{
         headerTitleStyle: {
-          paddingTop: 7,
+          paddingTop: Platform.OS === 'android' ? 0 : 7,
           fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
           fontSize : 29,
           letterSpacing : 1.5,
@@ -111,6 +111,7 @@ export default function LoginStack({ chats, navigation, userData }) {
 
 const styles = StyleSheet.create({
   headerText : {
+    paddingTop: Platform.OS === 'android' ? 0 : 7,
     fontSize : 27,
     letterSpacing : 1,
     color : '#FFC300',

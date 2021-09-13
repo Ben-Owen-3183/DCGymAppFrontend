@@ -132,6 +132,14 @@ const DayView = ({timetable, dayName}) => {
 }
 
 const TimeView = ({day}) => {
+
+  const [liveViewWidth, setLiveViewWidth] = React.useState(0);
+
+  function liveViewOnLayout(layoutEvent){
+    if(liveViewWidth === 0)
+      setLiveViewWidth(layoutEvent.nativeEvent.layout.width);
+  }
+
   return(
     <View style={styles.timeView}>
       {
@@ -142,7 +150,17 @@ const TimeView = ({day}) => {
             return(
               <View key={i} style={styles.rowStyle}>
 
-                <View style={styles.liveTextView}>
+                <View onLayout={(layoutEvent) => liveViewOnLayout(layoutEvent)}
+                  style={{
+                    backgroundColor : '#d2232a',
+                    position: 'absolute',
+                    right: liveViewWidth * 2,
+                    paddingVertical: 0,
+                    borderTopLeftRadius: 5,
+                    borderBottomLeftRadius: 5,
+                    paddingLeft: 10,
+                    paddingRight: 20,
+                  }}>
                   <Text style={[styles.liveText, styles.isLiveStyle]}>LIVE</Text>
                 </View>
 
@@ -216,7 +234,7 @@ const styles = StyleSheet.create({
     fontWeight: Platform.OS === 'android' ? null: 'bold',
     fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
   },
-  timetableContainer : { 
+  timetableContainer : {
     marginLeft: 30,
     alignItems : 'center',
   },
@@ -279,16 +297,6 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
-  },
-  liveTextView: {
-    backgroundColor : '#d2232a',
-    position: 'absolute',
-    right: 100,
-    paddingVertical: 0,
-    borderTopLeftRadius: 5,
-    borderBottomLeftRadius: 5,
-    paddingLeft: 10,
-    paddingRight: 20,
   },
   rowStyle : {
     marginBottom : 5,

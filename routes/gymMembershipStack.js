@@ -12,7 +12,7 @@ export default function GymMembershipStack({ navigation }) {
     <Stack.Navigator
       screenOptions={{
         headerTitleStyle: {
-          paddingTop: 7,
+          paddingTop: Platform.OS === 'android' ? 0 : 7,
           fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
           fontSize : 29,
           letterSpacing : 1.5,
