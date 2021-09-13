@@ -263,7 +263,7 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, iconSize, fontSiz
             <Text style={[{
                 color: GlobalColors.dcYellow,
                 fontSize: (fontSize ? fontSize : defaultFontSize),
-                fontFamily : (defaultFont ? '' : (Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue'))
+                fontFamily : (defaultFont ? null : (Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue'))
               }, style]}>
               {`${fName} ${sName}`}
             </Text>
@@ -280,7 +280,7 @@ export const UsersName = ({isStaff, isSuperUser, fName, sName, iconSize, fontSiz
           <Text style={[{
               color: 'white',
               fontSize: (fontSize ? fontSize : defaultFontSize),
-              fontFamily : (defaultFont ? '' : (Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue'))
+              fontFamily : (defaultFont ? null : (Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue'))
             }, style]}>
             {`${fName} ${sName}`}
           </Text>
