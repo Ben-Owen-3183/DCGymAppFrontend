@@ -76,7 +76,6 @@ const VideoPlayerScreen = ({navigation, route, setShowHeader}) => {
             }
           }}>
           <WebView
-            style={{backgroundColor: 'black'}}
             originWhitelist={['*']}
             useWebKit={false}
             scalesPageToFit={false}
@@ -87,15 +86,26 @@ const VideoPlayerScreen = ({navigation, route, setShowHeader}) => {
             source={
               {
                 html: `
-                  <div style="background-color:black; width:200%; height: 200%; margin: -20;">
-                    <iframe
-                      src="https://player.vimeo.com/video/${route.params.id}"
-                      frameborder="0"
-                      allow="autoplay; fullscreen; picture-in-picture"
-                      allowfullscreen
-                      style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                    </iframe>
-                  </div>
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                  <style>
+                    body {
+                    background-color: black
+                    }
+                    </style>
+                  </head>
+                  <body>
+                  <iframe
+                    src="https://player.vimeo.com/video/${route.params.id}"
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                  </iframe>
+                  </body>
+                </html>
+
                 `
               }
             }

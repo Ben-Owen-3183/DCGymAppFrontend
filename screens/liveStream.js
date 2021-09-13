@@ -71,7 +71,7 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
 
 
   return(
-    <View style={{backgroundColor: 'black', flex: 1}}>
+    <View style={{flex: 1}}>
       {
         !isFullscreen ? (
           <View style={{flexDirection: 'row', width: '100%'}}>
@@ -122,7 +122,6 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
           }}>
           <WebView
             style={{
-              backgroundColor: 'black',
               width: '200%',
               transform: [
                 { translateX: (!streamChatToggle ? -Dimensions.get('window').width : 0) }
@@ -138,22 +137,33 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
             source={
               {
                 html: `
-                  <div style="background-color:black; width:200%; height: 200%; margin: -20;">
-                    <iframe
-                      style="position: absolute; top:0;left:50%;"
-                      src="${route.params.chat_url}"
-                      height="100%"
-                      width="50%"
-                      frameborder="0">
-                    </iframe>
-                    <iframe
-                      src="${route.params.stream_url}"
-                      frameborder="0"
-                      allow="autoplay; fullscreen; picture-in-picture"
-                      allowfullscreen
-                      style="position:absolute;top:0;left:0%;width:50%;height:100%;"
-                    </iframe>
-                  </div>
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                  <style>
+                    body {
+                    background-color: black
+                    }
+                    </style>
+                  </head>
+                  <body>
+                  <iframe
+                    style="position: absolute; top:0;left:50%;"
+                    src="${route.params.chat_url}"
+                    height="100%"
+                    width="50%"
+                    frameborder="0">
+                  </iframe>
+                  <iframe
+                    src="${route.params.stream_url}"
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen
+                    style="position:absolute;top:0;left:0%;width:50%;height:100%;"
+                  </iframe>
+                  </body>
+                </html>
+
                 `
               }
             }
