@@ -22,7 +22,7 @@ export default function GymMembershipStack({ navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
         }}
         name="GymMembership"
         component={GymMembership} />
