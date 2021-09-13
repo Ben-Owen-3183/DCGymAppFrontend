@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     fontWeight: Platform.OS === 'android' ? null: 'bold',
     fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
   },
-  timetableContainer : {
+  timetableContainer : { 
     marginLeft: 30,
     alignItems : 'center',
   },

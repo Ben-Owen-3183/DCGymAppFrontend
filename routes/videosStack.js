@@ -33,6 +33,7 @@ export default function LoginStack({ chats, navigation, userData }) {
     <Stack.Navigator
       screenOptions={{
         headerTitleStyle: {
+          paddingTop: 7,
           fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
           fontSize : 29,
           letterSpacing : 1.5,

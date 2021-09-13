@@ -114,7 +114,6 @@ const Login = ({navigation }) => {
             <View style={{flex: 1}}></View>
 
             <View style={{flex: 5}}>
-              <ActivityIndicator size="large" />
               <View style={{flex: 1}}></View>
               <View style={{alignItems: 'center', marginBottom: 20}}>
                 <Image

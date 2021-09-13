@@ -35,6 +35,7 @@ export default function FeedStack({ userData, chats, navigation }) {
     <Stack.Navigator
       screenOptions={{
         headerTitleStyle: {
+          paddingTop: 7,
           fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
           fontSize : 29,
           letterSpacing : 1.5,
