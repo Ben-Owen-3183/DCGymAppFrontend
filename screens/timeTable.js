@@ -148,19 +148,19 @@ const TimeView = ({day}) => {
           let time_to = moment(fitnessClass.time_to, "HH:mm:ss").format("h:mmA");
           if(fitnessClass.live){
             return(
-              <View key={i} style={styles.rowStyle}>
+              <View key={i} style={[styles.rowStyle, {flexDirection: 'row', 
+              right: liveViewWidth + 10,}]}>
 
                 <View onLayout={(layoutEvent) => liveViewOnLayout(layoutEvent)}
                   style={{
-                    alignItems: 'center',
+                    // alignItems: 'center',
                     backgroundColor : '#d2232a',
-                    position: 'absolute',
-                    right: liveViewWidth * (Platform.OS === 'android' ? 1 : 2),
-                    paddingVertical: 0,
+                    // position: 'relative',
+                    // paddingVertical: 0,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
                     paddingLeft: 10,
-                    paddingRight: 20,
+                    // paddingRight: 20,
                   }}>
                   <Text style={[styles.liveText, styles.isLiveStyle]}>LIVE</Text>
                 </View>
