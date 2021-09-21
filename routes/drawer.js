@@ -301,8 +301,6 @@ export default Navigator = ({navigation}) => {
     }
   }
 
-
-
   function initialiseWebsocket(userData){
     try{
       console.log('sending websocket initialisation data.');
