@@ -89,6 +89,7 @@ const VideoPlayerScreen = ({navigation, route, setShowHeader}) => {
                 <!DOCTYPE html>
                 <html>
                   <head>
+                  <meta name="viewport" content="width=device-width, initial-scale=1">
                   <style>
                     body {
                     background-color: black
@@ -105,7 +106,6 @@ const VideoPlayerScreen = ({navigation, route, setShowHeader}) => {
                   </iframe>
                   </body>
                 </html>
-
                 `
               }
             }
