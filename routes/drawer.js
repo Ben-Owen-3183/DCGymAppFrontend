@@ -131,7 +131,7 @@ async function syncChats(userData, chats, setChats){
     if(!data) throw 'empty response';
 
     // console.log(`sync response: ${JSON.stringify(data)}`);
-    if(data['new_chats'].length > 0 || data['new_chat_messages'].length > 0){
+    if((data['new_chats'] && data['new_chats'].length > 0) || (data['new_chat_messages'] && data['new_chat_messages'].length > 0)){
       mergeNewChatData(chats, setChats, data);
     }
 
@@ -278,6 +278,33 @@ function reducer(prevState, action){
   }
 }
 
+async function fetchUserdata(token){
+  try{
+    let response = await fetch(Settings.siteUrl + '/auth/user_data/', {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify({
+        token: token
+      })
+    })
+
+    if(response.status == 401 || response.status == 403){
+      signOutHook();
+      return;
+    }
+
+    let data = await response.json();
+    if(data['error']) throw data['error'];
+    return data;
+
+  }catch(e){
+    console.log(`Fetch User Data Error: ${e}`);
+  }
+  return null;
+}
+
 export default Navigator = ({navigation}) => {
 
   const initialState = {
@@ -319,7 +346,16 @@ export default Navigator = ({navigation}) => {
   async function initialiseApp() {
     try {
       let userData = state.userData;
-      if(!userData) userData = await retrieveUserData();
+      if(!userData){
+        userData = await retrieveUserData();
+        try {
+          if(userData) {
+            response = await fetchUserdata(userData.token);
+            if(!response && response['user_data']) userData = response['user_data'];
+          }
+        } catch (e) {}
+      }
+
 
       let cachedChats = await loadCachedChatData();
       if(cachedChats.length > 0) setChats(cachedChats);
