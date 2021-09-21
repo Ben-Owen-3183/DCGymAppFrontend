@@ -10,7 +10,7 @@ import ResetCache from '../screens/resetCache';
 
 const Stack = createStackNavigator();
 
-export default function SettingsStack({ chats, navigation }) {
+export default function SettingsStack({ chats, navigation, userData }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -30,6 +30,7 @@ export default function SettingsStack({ chats, navigation }) {
           headerLeft: () => {
             return null;
           },
+          title: 'Set Avatar'
         }}
         name="SetAvatar"
         component={SetAvatar}
@@ -41,19 +42,21 @@ export default function SettingsStack({ chats, navigation }) {
           headerLeft: () => {
             return null;
           },
+          title: 'Reset Cache'
         }}
-        name="Reset Cache"
+        name="ResetCache"
         component={ResetCache}
       />
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight chats={chats} navigation={navigation} {...props}/>,
+          headerRight: (props) => <HeaderRight title={'hello'} chats={chats} navigation={navigation} {...props}/>,
           headerLeft: () => {
             return null;
           },
+          title: 'Change Password'
         }}
-        name="Change Password"
+        name="ChangePassword"
         component={ChangePassword}
       />
 
@@ -63,8 +66,9 @@ export default function SettingsStack({ chats, navigation }) {
           headerLeft: () => {
             return null;
           },
+          title: 'Change Password Success'
         }}
-        name="Change Password Success"
+        name="ChangePasswordSuccess"
         component={ChangePasswordSuccess}
       />
 

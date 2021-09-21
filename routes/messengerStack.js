@@ -55,6 +55,7 @@ export default function MessengerStack({userData, websocket, chats, route, navig
 
       <Stack.Screen
         options={{
+          title: 'Search User',
           headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="SearchUser">
@@ -63,6 +64,7 @@ export default function MessengerStack({userData, websocket, chats, route, navig
 
       <Stack.Screen
         options={{
+          title: 'List Staff',
           headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="ListStaff">

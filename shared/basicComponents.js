@@ -325,7 +325,6 @@ export const SearchInput = ({placeholder, onPress, onChangeText, value}) => {
           placeholderTextColor={'#afafaf'}
       />
       <Icon
-        onPress={() => alert('icon pressed')}
         name='search'
         type='font-awesome-5'
         color={GlobalColors.dcYellow}

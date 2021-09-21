@@ -18,9 +18,6 @@ import { setStatusBarHidden } from 'expo-status-bar'
 // import {AuthContext} from '../routes/drawer';
 
 
-
-
-
 const LiveStream = ({navigation, setShowHeader, route}) => {
   const [loading, setLoading] = React.useState(false);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
@@ -71,7 +68,7 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
 
 
   return(
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: GlobalColors.dcGrey}}>
       {
         !isFullscreen ? (
           <View style={{flexDirection: 'row', width: '100%'}}>
@@ -129,7 +126,7 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
             }}
             originWhitelist={['*']}
             useWebKit={true}
-            scalesPageToFit={true}
+            scalesPageToFit={false}
             bounces={false}
             javaScriptEnabled
             automaticallyAdjustContentInsets={false}

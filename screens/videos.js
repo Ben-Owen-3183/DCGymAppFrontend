@@ -128,7 +128,6 @@ const PastStreams = ({userData, navigation}) => {
   })
 
 
-
   // Works, but have no idea why do not touch
   // Handles to scroll to new content on new content load
   /*

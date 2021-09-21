@@ -45,6 +45,7 @@ export default function LoginStack({ chats, navigation, userData }) {
 
       <Stack.Screen
         options={{
+          title: 'Past Streams and Uploads',
           headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="PastStreams">

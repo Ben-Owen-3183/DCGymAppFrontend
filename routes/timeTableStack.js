@@ -37,7 +37,8 @@ export default function TimeTableStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
-          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>,
+          title: 'Book Class'
         }}
         name="BookClass"
         component={BookClass} />

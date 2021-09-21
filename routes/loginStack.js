@@ -36,6 +36,7 @@ export default function LoginStack({ navigation }) {
         name="SignupStep1"
         component={SignupStep1}
         options={{
+          title: 'Signup',
           headerRight: (props) => <HeaderRight navigation={navigation} {...props}/>
       }}/>
 
@@ -43,6 +44,7 @@ export default function LoginStack({ navigation }) {
         name="SignupForm"
         component={SignupForm}
         options={{
+          title: 'Signup', 
           headerRight: (props) => <HeaderRight navigation={navigation} {...props}/>,
         }}
       />
@@ -51,6 +53,7 @@ export default function LoginStack({ navigation }) {
         name="VerifyEmail"
         component={VerifyEmail}
         options={{
+          title: 'Verify Email',
           headerRight: (props) => <HeaderRight navigation={navigation} {...props}/>,
         }}
       />
@@ -59,6 +62,7 @@ export default function LoginStack({ navigation }) {
         name="ForgottenPassword"
         component={ForgottenPassword}
         options={{
+          title: 'Forgotten Password',
           headerRight: (props) => <HeaderRight navigation={navigation} {...props}/>,
         }}
       />

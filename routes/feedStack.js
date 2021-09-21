@@ -55,6 +55,7 @@ export default function FeedStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
+          title: 'New Post',
           headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="NewPost">
@@ -63,6 +64,7 @@ export default function FeedStack({ userData, chats, navigation }) {
 
       <Stack.Screen
         options={{
+          title: 'User Posts',
           headerRight: (props) => <HeaderRight chats={chats} userData={userData} navigation={navigation} {...props}/>
         }}
         name="UserPosts">
