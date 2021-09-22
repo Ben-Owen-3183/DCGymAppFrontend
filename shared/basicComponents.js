@@ -354,6 +354,7 @@ const styles = StyleSheet.create({
     marginTop : 0,
     marginLeft : 10,
     paddingHorizontal : 15,
+    paddingVertical: Platform.OS === 'android' ? 0 : 5,
   },
   inputText:{
     flex: 1,

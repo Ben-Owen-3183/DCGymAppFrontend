@@ -24,7 +24,6 @@ let signOutHook;
 function createFormData(image, postText, adminOptions){
   let imageData = null;
   if(image){
-    console.log('we have image')
     imageData = {
       name: 'image.jpg',
       type: image.mime,
@@ -350,7 +349,7 @@ const newPostStyles = StyleSheet.create({
     backgroundColor: GlobalColors.dcLightGrey,
     marginTop: 10,
     paddingHorizontal: 15,
-    paddingVertical: 8,
+    paddingVertical: Platform.OS === 'android' ? 8 : 12,
     color: 'white',
     flex: 1,
   },
@@ -358,6 +357,7 @@ const newPostStyles = StyleSheet.create({
     backgroundColor: GlobalColors.dcLightGrey,
     paddingHorizontal: 15,
     paddingVertical: 4,
+
     color: 'white',
     flex: 1,
     borderRadius: 30

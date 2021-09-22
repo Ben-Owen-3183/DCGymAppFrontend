@@ -144,11 +144,9 @@ const Entry = ({entry}) => {
   const [liveViewWidth, setLiveViewWidth] = React.useState(0);
 
   function liveViewOnLayout(layoutEvent){
-    console.log(layoutEvent.nativeEvent.layout.width);
     if(liveViewWidth === 0)
       setLiveViewWidth(layoutEvent.nativeEvent.layout.width);
   }
-
 
   return(
     <View style={{flexDirection: 'row'}}>
