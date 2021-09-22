@@ -87,20 +87,21 @@ const TimeTable = ({navigation, userData}) => {
     )
   }
 
+
   return (
     <View style={GlobalStyles.container}>
       <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.timetableContainer}>
-            <View>
-              <Text style={styles.titleText}>CLASS{"\n"}TIMETABLE </Text>
-              <View style={{marginVertical: 10, marginLeft: 0, width: 160}}>
-                <PrimaryButton square text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
-              </View>
-              <DayView timetable={timetable}/>
-              <View style={{marginBottom: 30, marginTop: -10, width: 160}}>
-                <PrimaryButton square text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
-              </View>
+        <ScrollView
+          contentContainerStyle={{flexDirection: 'row', justifyContent: 'center'}}
+          style={{width: '100%'}}>
+          <View style={{flex: -1}}>
+            <Text style={styles.titleText}>CLASS{"\n"}TIMETABLE </Text>
+            <View style={{marginVertical: 10, marginLeft: 0, width: 160}}>
+              <PrimaryButton square text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
+            </View>
+            <TimetableDays timetable={timetable}/>
+            <View style={{marginBottom: 30, marginTop: -10, width: 160}}>
+              <PrimaryButton square text={'Book Now'} onPress={() => navigation.navigate("BookClass")}/>
             </View>
           </View>
         </ScrollView>
@@ -109,7 +110,8 @@ const TimeTable = ({navigation, userData}) => {
   );
 }
 
-const DayView = ({timetable, dayName}) => {
+
+const TimetableDays = ({timetable, dayName}) => {
     return timetable.map( (day, i) => {
       return(
         day.classes.length > 0
@@ -118,11 +120,7 @@ const DayView = ({timetable, dayName}) => {
         <View key={i} style={styles.dayView}>
           <View style={styles.line}></View>
           <Text style={styles.dayText}>{day.name} </Text>
-          <View style={styles.classesView}>
-            <TimeView day={day.classes}/>
-            <ClassView day={day.classes}/>
-            <InstructorView day={day.classes}/>
-          </View>
+          <TimetableEntrys day={day.classes}/>
         </View>
       ) : (
         null
@@ -131,6 +129,50 @@ const DayView = ({timetable, dayName}) => {
     })
 }
 
+
+const TimetableEntrys = ({day}) => {
+  return day.map((entry, i) => {
+    return (
+      <Entry key={i} entry={entry}/>
+    )
+  })
+}
+
+const Entry = ({entry}) => {
+  let time_from = moment(entry.time_from, "HH:mm:ss").format("h:mmA");
+  let time_to = moment(entry.time_to, "HH:mm:ss").format("h:mmA");
+  const [liveViewWidth, setLiveViewWidth] = React.useState(0);
+
+  function liveViewOnLayout(layoutEvent){
+    console.log(layoutEvent.nativeEvent.layout.width);
+    if(liveViewWidth === 0)
+      setLiveViewWidth(layoutEvent.nativeEvent.layout.width);
+  }
+
+
+  return(
+    <View style={{flexDirection: 'row'}}>
+      {
+        entry.live ? (
+          <View style={[styles.liveView, {right: liveViewWidth}]}>
+            <Text
+              onLayout={(layoutEvent) => liveViewOnLayout(layoutEvent)}
+              style={[styles.entryText, { paddingLeft: 5}]}>Live  </Text>
+            <Text style={styles.entryText}>{time_from} {time_to}</Text>
+          </View>
+        ) : (
+          <Text style={styles.entryText}>{time_from} {time_to}</Text>
+        )
+      }
+      <View style={{marginHorizontal: 5, flex: 1}}></View>
+      <Text style={styles.entryText}>{entry.excercise}</Text>
+      <View style={{marginHorizontal: 5, flex: 1}}></View>
+      <Text style={styles.entryText}>{entry.instructor}</Text>
+    </View>
+  )
+}
+
+/*
 const TimeView = ({day}) => {
 
   const [liveViewWidth, setLiveViewWidth] = React.useState(0);
@@ -148,7 +190,7 @@ const TimeView = ({day}) => {
           let time_to = moment(fitnessClass.time_to, "HH:mm:ss").format("h:mmA");
           if(fitnessClass.live){
             return(
-              <View key={i} style={[styles.rowStyle, {flexDirection: 'row', 
+              <View key={i} style={[styles.rowStyle, {flexDirection: 'row',
               right: liveViewWidth + 10,}]}>
 
                 <View onLayout={(layoutEvent) => liveViewOnLayout(layoutEvent)}
@@ -218,12 +260,12 @@ const InstructorView = ({day}) => {
     </View>
   )
 }
+*/
 
 export default TimeTable;
 
 const styles = StyleSheet.create({
   backgroundImage : {
-    flex: 1,
     resizeMode: "cover",
     alignItems : 'center',
   },
@@ -235,22 +277,15 @@ const styles = StyleSheet.create({
     fontWeight: Platform.OS === 'android' ? null: 'bold',
     fontFamily: Platform.OS === 'android' ? 'BebasNeue Bold': 'BebasNeue',
   },
-  timetableContainer : {
-    marginLeft: 30,
-    alignItems : 'center',
-  },
-  scrollView : {
-      width : '100%',
-  },
   line : {
     borderBottomColor : '#FFC300',
     borderBottomWidth: 1,
     marginBottom : 8,
   },
-  dayText : {
-    color : '#FFC300',
-    marginBottom : 10,
-    fontSize : 45,
+  entryText : {
+    color : '#FFFFFF',
+    textAlign : 'right',
+    fontSize : 21,
     fontFamily: Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue',
   },
   classText : {
@@ -272,7 +307,12 @@ const styles = StyleSheet.create({
     fontSize : 21,
     fontFamily: Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue',
   },
-
+  dayText : {
+    color : '#FFC300',
+    marginBottom : 10,
+    fontSize : 45,
+    fontFamily: Platform.OS === 'android' ? 'BebasNeue Regular': 'BebasNeue',
+  },
   // Views
   classesView : {
     flexDirection : 'row',
@@ -293,11 +333,11 @@ const styles = StyleSheet.create({
   isLiveStyle : {
   },
   liveView : {
+    flexDirection: 'row',
     backgroundColor : '#d2232a',
     paddingVertical: 0,
     paddingRight: 5,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
+    borderRadius: 5,
   },
   rowStyle : {
     marginBottom : 5,

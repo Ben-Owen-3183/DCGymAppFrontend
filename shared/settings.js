@@ -5,8 +5,8 @@
 const Settings = {
     siteUrl: 'http://192.168.43.167:8000',
     ws_siteURL: 'ws://192.168.43.167:8000/ws/',
-    // siteUrl: 'https://app.davidcorfield.co.uk',
-    // ws_siteURL: 'ws://app.davidcorfield.co.uk/ws/',
+    siteUrl: 'https://app.davidcorfield.co.uk',
+    ws_siteURL: 'ws://app.davidcorfield.co.uk/ws/',
     homePage: 'Feed',
     debug: true
 }

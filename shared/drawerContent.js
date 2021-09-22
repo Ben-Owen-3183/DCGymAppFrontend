@@ -83,6 +83,7 @@ export function DrawerContent(props){
     <View style={styles.drawer}>
       <View style={styles.headerView}>
         <CustomAvatar
+          lightColour={true}
           avatarURL={props.userData.avatarURL}
           size={100}
           name={`${props.userData.first_name} ${props.userData.last_name}`}
