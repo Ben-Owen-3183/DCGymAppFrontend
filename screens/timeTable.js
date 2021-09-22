@@ -157,7 +157,7 @@ const Entry = ({entry}) => {
           <View style={[styles.liveView, {right: liveViewWidth}]}>
             <Text
               onLayout={(layoutEvent) => liveViewOnLayout(layoutEvent)}
-              style={[styles.entryText, { paddingLeft: 5}]}>Live  </Text>
+              style={[styles.entryText, { paddingLeft: 5, paddingRight: 5}]}>Live</Text>
             <Text style={styles.entryText}>{time_from} {time_to}</Text>
           </View>
         ) : (
