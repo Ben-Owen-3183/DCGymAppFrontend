@@ -66,9 +66,6 @@ function createSyncChatsPayload(chats){
     chats_data: []
   };
   if(!chats || chats == undefined || chats == null) return payload;
-  // fill in payload.
-  // console.log(`create sync payload: ${JSON.stringify(chats)}`)
-  // console.log(`create sync payload: ${chats}`)
 
   for (var i = 0; i < chats.length; i++) {
     if(chats[i].messages.length > 0){
@@ -83,6 +80,29 @@ function createSyncChatsPayload(chats){
   return payload;
 }
 
+/* 
+Removes any duplicate messages that can arise
+*/
+function removeDuplicateMessagesFromNewChats(chat, newChat){
+  console.log('removing dupes!!!!!!!!!!');
+  var dupeSafeMessages = [];
+  for(var i = 0; i < newChat.messages.length; i++) {
+    var currentMsg = newChat.messages[i];
+    if(!messageAlreadyExistsInChat(currentMsg.id, chat))
+      dupeSafeMessages.push(currentMsg);
+  }
+  return dupeSafeMessages;
+}
+
+
+function messageAlreadyExistsInChat(id, chat){
+  for(var i = 0; i < chat.messages.length; i++)
+    if(chat.messages[i].id.toString() === id.toString())
+      return true;
+  return false;
+}
+
+
 // merges the synced chat data from the server with
 // the local chat data
 function mergeNewChatData(chats, setChats, data){
@@ -93,7 +113,8 @@ function mergeNewChatData(chats, setChats, data){
       let chat = findChat(chats, data.new_chat_messages[i].chat_id);
       if(chat){
         chat.read = false;
-        chat.messages = data.new_chat_messages[i].messages.concat(chat.messages);
+        var dupeSafeMessages = removeDuplicateMessagesFromNewChats(chat, data.new_chat_messages[i]);
+        chat.messages = dupeSafeMessages.concat(chat.messages);
       }
     }
   }
@@ -130,7 +151,6 @@ async function syncChats(userData, chats, setChats){
     let data = await response.json();
     if(!data) throw 'empty response';
 
-    // console.log(`sync response: ${JSON.stringify(data)}`);
     if((data['new_chats'] && data['new_chats'].length > 0) || (data['new_chat_messages'] && data['new_chat_messages'].length > 0)){
       mergeNewChatData(chats, setChats, data);
     }
@@ -179,10 +199,11 @@ async function addNewChatMessage(chats, setChats, userData, data){
   let chat_id = data.message.chat_id;
   let read = data.read[userData.user_id.toString()];
 
-  try{
 
+  try{
     let chat = findChat(chats, chat_id)
     if(!chat) throw 'NO_CHAT_FOUND';
+    if(messageAlreadyExistsInChat(newMessage.id, chat)) throw 'duplicate message found and not added to chat.'
     chat.read = read;
     chat.messages.unshift(newMessage);
     let newChats = []
@@ -421,7 +442,6 @@ export default Navigator = ({navigation}) => {
     websocket.onmessage = function(e){
       let recieved = JSON.parse(e.data)
       const name = state.userData.first_name + ' ' + state.userData.last_name;
-      // console.log(`${name} message recieved: ${JSON.stringify(recieved)}`)
 
       if(!recieved.data || !recieved.data.action)
         return;

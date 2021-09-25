@@ -1,0 +1,28 @@
+[1mdiff --git a/screens/newPost.js b/screens/newPost.js[m
+[1mindex b7faef2..c15c83c 100644[m
+[1m--- a/screens/newPost.js[m
+[1m+++ b/screens/newPost.js[m
+[36m@@ -23,6 +23,7 @@[m [mlet signOutHook;[m
+ [m
+ function createFormData(image, postText, adminOptions){[m
+   let imageData = null;[m
+[32m+[m
+   if(image){[m
+     imageData = {[m
+       name: 'image.jpg',[m
+[36m@@ -31,6 +32,7 @@[m [mfunction createFormData(image, postText, adminOptions){[m
+     };[m
+   }[m
+ [m
+[32m+[m
+   var data = new FormData();[m
+   if(imageData !== null){[m
+     data.append('image', imageData);[m
+[36m@@ -112,6 +114,7 @@[m [mconst NewPost = ({userData, navigation}) => {[m
+ [m
+   function selectImage(){[m
+     ImagePicker.openPicker({[m
+[32m+[m[32m      forceJpg: true,[m
+       width: 2000,[m
+       height: 2000,[m
+       cropping: false[m
