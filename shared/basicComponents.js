@@ -252,7 +252,6 @@ export const SecondaryButton = ({text, onPress, isLoading}) => {
 
 export const UsersName = ({isStaff, isSuperUser, fName, sName, iconSize, fontSize, style, defaultFont}) => {
   const defaultFontSize = 20;
-  const defaultIconSize = 20;
 
   return (
     <View>
@@ -316,7 +315,9 @@ export const SearchInput = ({placeholder, onPress, onChangeText, value}) => {
           numberOfLines={1}
           onPress={() => onPress}
           onChangeText={value => onChangeText(value)}
-          style={styles.inputText}
+          style={[styles.inputText, {
+            paddingVertical: Platform.OS === 'android' ? 0 : 15,
+          }]}
           placeholder={placeholder}
           placeholderTextColor={'lightgrey'}
           keyboardAppearance={'dark'}
@@ -354,7 +355,6 @@ const styles = StyleSheet.create({
     marginTop : 0,
     marginLeft : 10,
     paddingHorizontal : 15,
-    paddingVertical: Platform.OS === 'android' ? 0 : 5,
   },
   inputText:{
     flex: 1,

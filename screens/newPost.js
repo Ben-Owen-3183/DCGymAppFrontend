@@ -87,9 +87,9 @@ const NewPost = ({userData, navigation}) => {
       	signOutHook();
       	return;
       }
-
+      
       let data = await response.json();
-
+   
       if(data.success){
         setPostText('');
         setVimeoLink('');
