@@ -716,6 +716,7 @@ const FeedMenu = ({mainViewHeight, navigation, posts, setPosts}) => {
 
 const Posts = ({userData, posts, setPosts, userFeed, viewHeight, navigation}) => {
   const [loadingHistory, setLoadingHistory] = React.useState(false);
+  const [firstEndReachCall, setFirstEndReachCall] = React.useState(true);
   const [newContentLoaded, setNewContentLoaded] = React.useState(false);
   const [postLengths, setPostLengths] = React.useState({prev: 0, now: 0, item: null});
   const flatlistRef = React.useRef(null);
@@ -733,8 +734,12 @@ const Posts = ({userData, posts, setPosts, userFeed, viewHeight, navigation}) =>
   }, [posts]);
 
   async function onPostsEndReached(){
+  
     try {
-      if(posts.length === 0) return;
+      if(firstEndReachCall){
+        setFirstEndReachCall(false);
+        return;
+      }
 
       setLoadingHistory(true);
       let newPostsData = await fetchPostsBefore(posts[posts.length - 1], userData, userFeed);
@@ -894,7 +899,7 @@ const Post = ({userData, post, posts, setPosts, userFeed, navigation}) => {
   }
 
   function setImageWidthHeight(layout){
-    if(imageViewWidth || imageViewHeight) return;
+    // if(imageViewWidth || imageViewHeight) return;
     let viewSize = layout.nativeEvent.layout;
     setImageViewWidth(viewSize.width);
     setImageViewHeight(viewSize.height);
@@ -927,7 +932,7 @@ const Post = ({userData, post, posts, setPosts, userFeed, navigation}) => {
       }
       <View style={styles.postHeader}>
         <View style={styles.postUserHeader}>
-          <CustomAvatar name={name} avatarURL={post.user.avatarURL}/>
+          <CustomAvatar lightColour={true} name={name} avatarURL={post.user.avatarURL}/>
           <View style={{marginHorizontal: 5}}></View>
           <UsersName
             isStaff={post.user.isStaff}
@@ -1013,6 +1018,9 @@ const Post = ({userData, post, posts, setPosts, userFeed, navigation}) => {
             }}>
               <View>
                 <Image
+                  onLoadEnd={() => {
+                    
+                  }}
                   onLayout={layout => setImageWidthHeight(layout)}
                   width={Dimensions.get('window').width}
                   source={{uri: post.thumbnail_link}}
@@ -1169,7 +1177,7 @@ const CommentComponent = ({comments, userData, posts, setPosts, userFeed}) =>{
       <View key={comment.id} style={commentSectionStyles.commentView}>
         {/* OG commenter Avatar and line column*/}
         <View>
-          <CustomAvatar name={name} avatarURL={comment.user.avatarURL} style={{alignSelf : 'flex-start'}}/>
+          <CustomAvatar lightColour={true} name={name} avatarURL={comment.user.avatarURL} style={{alignSelf : 'flex-start'}}/>
           {
             comment.replies.length > 0 ?
               <View style={styles.yellowLineVertical}></View>
@@ -1341,7 +1349,7 @@ const CommentReplyComponent = ({replies, posts, setPosts, userFeed, userData}) =
 
         {/* marginRight : 0 to cancel out comment margin right to keep replies and comments the same size */}
         <View style={[commentSectionStyles.commentView, {marginRight : 0}]}>
-          <CustomAvatar name={name} avatarURL={reply.user.avatarURL} style={{alignSelf : 'flex-start'}}/>
+          <CustomAvatar lightColour={true} name={name} avatarURL={reply.user.avatarURL} style={{alignSelf : 'flex-start'}}/>
           <View style={{flex : 1, flexDirection : 'row'}}>
             <View style={{flex : 0}}>
               <Reply reply={reply}/>
@@ -1519,7 +1527,7 @@ const CommentInputText = ({placeholder, userData, onPress, setValue, value}) => 
   const name = `${userData.first_name} ${userData.last_name}`;
   return (
     <View style={{marginLeft: 10, flexDirection: 'row', alignItems: 'center'}}>
-      <CustomAvatar name={name} avatarURL={userData.avatarURL}/>
+      <CustomAvatar lightColour={true} name={name} avatarURL={userData.avatarURL}/>
       <View style={textStyles.postTextContainer}>
         <TextInput
             value={value}

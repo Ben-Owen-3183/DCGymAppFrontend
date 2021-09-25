@@ -149,7 +149,7 @@ const Entry = ({entry}) => {
   }
 
   return(
-    <View style={{flexDirection: 'row'}}>
+    <View style={{flexDirection: 'row', marginVertical: 1}}>
       {
         entry.live ? (
           <View style={[styles.liveView, {right: liveViewWidth}]}>
@@ -163,7 +163,7 @@ const Entry = ({entry}) => {
         )
       }
       <View style={{marginHorizontal: 5, flex: 1}}></View>
-      <Text style={styles.entryText}>{entry.excercise}</Text>
+      <Text style={[styles.entryText, {right: entry.live ? liveViewWidth - 15: 0}]}>{entry.excercise}</Text>
       <View style={{marginHorizontal: 5, flex: 1}}></View>
       <Text style={styles.entryText}>{entry.instructor}</Text>
     </View>
