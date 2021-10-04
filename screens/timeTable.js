@@ -15,12 +15,12 @@ import Settings from '../shared/settings';
 import {LoadingView} from '../shared/basicComponents';
 import moment from 'moment'
 import {AuthContext} from '../routes/drawer';
+import auth from '@react-native-firebase/auth';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 let signOutHook;
 
 async function fetchTimetable(userData){
-
   try {
     let response = await fetch(Settings.siteUrl + '/timetable/get/', {
       method: "GET",

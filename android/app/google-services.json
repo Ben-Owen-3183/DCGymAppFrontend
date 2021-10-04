@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:238755393209:android:59cc7b85e628a2ed38f568",
+        "mobilesdk_app_id": "1:238755393209:android:926e7ab3a17c529a38f568",
         "android_client_info": {
-          "package_name": "com.computeit.dcgymnasium"
+          "package_name": "com.dcgymappfrontend"
         }
       },
       "oauth_client": [

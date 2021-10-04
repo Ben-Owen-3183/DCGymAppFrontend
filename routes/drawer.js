@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import FeedStack from './feedStack';
 import GymMembershipStack from './gymMembershipStack';
 import TimeTableStack from './timeTableStack';
@@ -33,6 +33,7 @@ import ChangePassword from '../screens/changePassword';
 import Settings from '../shared/settings'
 import moment from 'moment'
 import Storage from '../shared/storage';
+import messaging from '@react-native-firebase/messaging';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 const Drawer = createDrawerNavigator();
@@ -94,14 +95,12 @@ function removeDuplicateMessagesFromNewChats(chat, newChat){
   return dupeSafeMessages;
 }
 
-
 function messageAlreadyExistsInChat(id, chat){
   for(var i = 0; i < chat.messages.length; i++)
     if(chat.messages[i].id.toString() === id.toString())
       return true;
   return false;
 }
-
 
 // merges the synced chat data from the server with
 // the local chat data
@@ -326,8 +325,7 @@ async function fetchUserdata(token){
   return null;
 }
 
-export default Navigator = ({navigation}) => {
-
+export default Navigator = () => {
   const initialState = {
     reRender: false,
     isLoading: true,
@@ -335,10 +333,46 @@ export default Navigator = ({navigation}) => {
     userData: null,
   }
 
+  const navigationRef = useNavigationContainerRef();
   const [state, dispatch] = React.useReducer(reducer, initialState);
   const [websocket, setWebsocket] = React.useState(null);
   const [websocketInitialised, setWebsocketInitialised] = React.useState(false);
   const [chats, setChats] = React.useState([]);
+  const [initialRoute, setInitialRoute] = React.useState(Settings.homePage);
+
+  console.log(authContext)
+
+  React.useEffect(() => {
+    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+
+    messaging().onNotificationOpenedApp(remoteMessage => {
+    
+
+      // console.log(remoteMessage);
+      // console.log(remoteMessage.data.type.message);
+      // navigation.navigate('Messenger')
+      try {
+        if(remoteMessage.data.type.message){
+          // navigationRef.navigate('Messenger');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    /*
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          // setInitialRoute(); // e.g. "Settings"
+          setInitialRoute('Messenger'); 
+        }
+        // setLoading(false);
+      });
+    */
+  }, []);
 
   if(websocket !== null && state.signedIn === false && state.userData === null){
     console.log('closing websocket...');
@@ -522,7 +556,7 @@ export default Navigator = ({navigation}) => {
 
   return (
     <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         {state.userData == null ? (
           <Drawer.Navigator
             drawerStyle={{ backgroundColor: ''}}
@@ -531,7 +565,7 @@ export default Navigator = ({navigation}) => {
             <Drawer.Screen name="Gym Membership" component={GymMembershipStack}/>
           </Drawer.Navigator>
         ) : (
-          <Drawer.Navigator
+          <Drawer.Navigator initialRouteName={initialRoute}
             drawerStyle={{ width: '75%', backgroundColor: ''}}
             drawerContent={props => <DrawerContent chats={chats} userData={state.userData} {...props}/>}>
 
