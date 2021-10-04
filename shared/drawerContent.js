@@ -7,8 +7,11 @@ import CustomAvatar from './customAvatar';
 import {retrieveUserData} from '../shared/storage';
 import {GlobalColors} from '../styles/dcstyles';
 import {BoxShadow} from 'react-native-shadow'
+import messaging from '@react-native-firebase/messaging';
 
 const fontSize = 16;
+
+
 
 export function DefaultDrawerContent(props){
 
@@ -61,6 +64,33 @@ export function DefaultDrawerContent(props){
 export function DrawerContent(props){
   const { signOut } = React.useContext(AuthContext);
   const [settingsToggle, setSettingsToggle] = useState(false);
+
+  React.useEffect(() => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+
+      try {
+        if(remoteMessage.data.type){
+          if(remoteMessage.data.type.toString() == 'message'){
+            props.navigation.navigate('Messenger')
+          }
+          else if(remoteMessage.data.type.toString() == 'feed'){
+            props.navigation.navigate('Feed');
+          }
+          else{
+            console.log("type '" + remoteMessage.data.type + "' not valid")
+          }
+        }
+        else{
+          console.log('no notifcation type set');
+        }
+
+     
+      } catch (error) {
+        console.log(error);
+      }
+
+    });
+  }, []);
 
   function toggleSettings(){
     if(settingsToggle)

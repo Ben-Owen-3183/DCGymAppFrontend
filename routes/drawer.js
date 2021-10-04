@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer} from '@react-navigation/native';
 import FeedStack from './feedStack';
 import GymMembershipStack from './gymMembershipStack';
 import TimeTableStack from './timeTableStack';
@@ -33,7 +33,6 @@ import ChangePassword from '../screens/changePassword';
 import Settings from '../shared/settings'
 import moment from 'moment'
 import Storage from '../shared/storage';
-import messaging from '@react-native-firebase/messaging';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 const Drawer = createDrawerNavigator();
@@ -325,7 +324,7 @@ async function fetchUserdata(token){
   return null;
 }
 
-export default Navigator = () => {
+export default Navigator = (props) => {
   const initialState = {
     reRender: false,
     isLoading: true,
@@ -333,46 +332,13 @@ export default Navigator = () => {
     userData: null,
   }
 
-  const navigationRef = useNavigationContainerRef();
   const [state, dispatch] = React.useReducer(reducer, initialState);
   const [websocket, setWebsocket] = React.useState(null);
   const [websocketInitialised, setWebsocketInitialised] = React.useState(false);
   const [chats, setChats] = React.useState([]);
   const [initialRoute, setInitialRoute] = React.useState(Settings.homePage);
 
-  console.log(authContext)
 
-  React.useEffect(() => {
-    // Assume a message-notification contains a "type" property in the data payload of the screen to open
-
-    messaging().onNotificationOpenedApp(remoteMessage => {
-    
-
-      // console.log(remoteMessage);
-      // console.log(remoteMessage.data.type.message);
-      // navigation.navigate('Messenger')
-      try {
-        if(remoteMessage.data.type.message){
-          // navigationRef.navigate('Messenger');
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    });
-
-    /*
-    // Check whether an initial notification is available
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          // setInitialRoute(); // e.g. "Settings"
-          setInitialRoute('Messenger'); 
-        }
-        // setLoading(false);
-      });
-    */
-  }, []);
 
   if(websocket !== null && state.signedIn === false && state.userData === null){
     console.log('closing websocket...');
@@ -556,7 +522,7 @@ export default Navigator = () => {
 
   return (
     <AuthContext.Provider value={authContext}>
-      <NavigationContainer ref={navigationRef}>
+      <NavigationContainer>
         {state.userData == null ? (
           <Drawer.Navigator
             drawerStyle={{ backgroundColor: ''}}
