@@ -19,11 +19,11 @@ import { AuthContext } from '../routes/drawer';
 import Settings from '../shared/settings';
 import { SecondaryButton, PrimaryButton } from '../shared/basicComponents'
 import DeviceInfo from 'react-native-device-info';
-import auth from '@react-native-firebase/auth';
-import messaging from '@react-native-firebase/messaging';
 import {GlobalStyles, GlobalColors} from '../styles/dcstyles';
 import {LoadingView} from '../shared/basicComponents';
 
+import auth from '@react-native-firebase/auth';
+import messaging from '@react-native-firebase/messaging';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
@@ -62,7 +62,7 @@ const Login = ({ navigation }) => {
 
   // Set an initializing state whilst Firebase connects
   const [initializingFirebase, setInitializingFirebase] = React.useState(true);
-  const [firebaseUser, setFirebaseUser] = React.useState(null);
+  // const [firebaseUser, setFirebaseUser] = React.useState(null);
   const [firebaseToken, setFirebaseToken] = React.useState('');
   const { setUserData } = React.useContext(AuthContext);
 
@@ -73,37 +73,43 @@ const Login = ({ navigation }) => {
 
 
   async function onAuthStateChanged(firebaseUser) {
-    setFirebaseUser(firebaseUser);
-    if(firebaseUser){
-      // var response = await firebaseUser.getIdToken();
-      messaging()
-      .getToken()
-      .then(token => {
-        console.log(token);
-        setFirebaseToken(token)
-      });
+    try {
+      // setFirebaseUser(firebaseUser);
+      if(firebaseUser){
+        // var response = await firebaseUser.getIdToken();
+        messaging()
+        .getToken()
+        .then(token => {
+          // console.log(token);
+          setFirebaseToken(token)
+        });
+      }
+      if (initializingFirebase) setInitializingFirebase(false);
+    } catch (error) {
+      console.log("onAuthStateChanged: " + error);
     }
-    if (initializingFirebase) setInitializingFirebase(false);
   }
 
-  auth()
-  .signInAnonymously()
-  .then(() => {
-    // console.log('User signed in anonymously');
-  })
-  .catch(error => {
-    if (error.code === 'auth/operation-not-allowed') {
-      console.log('Enable anonymous in your firebase console.');
-    }
-
+  try {
+    auth()
+    .signInAnonymously()
+    .then(() => {
+      // console.log('User signed in anonymously');
+    })
+    .catch(error => {
+      if (error.code === 'auth/operation-not-allowed') {
+        console.log('Enable anonymous in your firebase console.');
+      }
+      console.error(error);
+    });
+  } catch (error) {
     console.error(error);
-  });
+  }
 
 
 
   async function registerDevice(token) {
     try {
-
       let response = await fetch(Settings.siteUrl + '/user/devices/', {
         method: "POST",
         headers: {
