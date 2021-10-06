@@ -316,7 +316,7 @@ export const SearchInput = ({placeholder, onPress, onChangeText, value}) => {
           onPress={() => onPress}
           onChangeText={value => onChangeText(value)}
           style={[styles.inputText, {
-            paddingVertical: Platform.OS === 'android' ? 0 : 15,
+            paddingVertical: Platform.OS === 'android' ? 15 : 15,
           }]}
           placeholder={placeholder}
           placeholderTextColor={'lightgrey'}
