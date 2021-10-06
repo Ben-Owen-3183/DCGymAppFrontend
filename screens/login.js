@@ -71,6 +71,14 @@ const Login = ({ navigation }) => {
     return subscriber; // unsubscribe on unmount
   }, []);
 
+  async function requestUserPermission() {
+    const authorizationStatus = await messaging().requestPermission();
+  
+    if (authorizationStatus) {
+      console.log('Permission status:', authorizationStatus);
+    }
+  }
+  requestUserPermission();
 
   async function onAuthStateChanged(firebaseUser) {
     setFirebaseUser(firebaseUser);

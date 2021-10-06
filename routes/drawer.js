@@ -33,6 +33,7 @@ import ChangePassword from '../screens/changePassword';
 import Settings from '../shared/settings'
 import moment from 'moment'
 import Storage from '../shared/storage';
+import messaging from '@react-native-firebase/messaging';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 const Drawer = createDrawerNavigator();
@@ -338,7 +339,15 @@ export default Navigator = (props) => {
   const [chats, setChats] = React.useState([]);
   const [initialRoute, setInitialRoute] = React.useState(Settings.homePage);
 
+  async function requestUserPermission() {
+    const authorizationStatus = await messaging().requestPermission();
+  
+    if (authorizationStatus) {
+      console.log('Permission status:', authorizationStatus);
+    }
+  }
 
+  requestUserPermission();
 
   if(websocket !== null && state.signedIn === false && state.userData === null){
     console.log('closing websocket...');

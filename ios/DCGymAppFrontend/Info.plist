@@ -38,7 +38,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>To upload user avatars</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>To upload audio along with posted videos to feed</string>
 	<key>NSPhotoLibraryUsageDescription</key>
