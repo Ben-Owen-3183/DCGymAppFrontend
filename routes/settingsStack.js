@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import Header from '../shared/header';
 import HeaderRight from '../shared/headerRight';
+import Computeit from '../screens/compute-it';
 import SetAvatar from '../screens/setAvatar';
 import ChangePassword from '../screens/changePassword';
 import ChangePasswordSuccess from '../screens/changePasswordSuccess';
@@ -34,6 +35,18 @@ export default function SettingsStack({ chats, navigation, userData }) {
         }}
         name="SetAvatar"
         component={SetAvatar}
+      />
+
+      <Stack.Screen
+        options={{
+          headerRight: (props) => <HeaderRight navigation={navigation} {...props}/>,
+          headerLeft: () => {
+            return null;
+          },
+          title: 'Compute IT LTD'
+        }}
+        name="Computeit"
+        component={Computeit}
       />
 
       <Stack.Screen

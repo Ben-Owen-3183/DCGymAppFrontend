@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { View, TouchableHighlight, Text, StyleSheet } from 'react-native';
-import { Icon, Badge } from 'react-native-elements';
+import { Icon, Badge, Avatar } from 'react-native-elements';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import {AuthContext} from '../routes/drawer';
 import CustomAvatar from './customAvatar';
@@ -10,7 +10,7 @@ import {BoxShadow} from 'react-native-shadow'
 import messaging from '@react-native-firebase/messaging';
 
 const fontSize = 16;
-
+const computeitIconSmall = '../assets/images/cit_logo_simple.png';
 
 
 export function DefaultDrawerContent(props){
@@ -57,9 +57,6 @@ export function DefaultDrawerContent(props){
       </View>
   );
 }
-
-
-
 
 export function DrawerContent(props){
   const { signOut } = React.useContext(AuthContext);
@@ -248,6 +245,8 @@ export function DrawerContent(props){
             </TouchableHighlight>
 
 
+           
+            
 
             <TouchableHighlight
               underlayColor={'#1c1c1c'}
@@ -325,7 +324,29 @@ export function DrawerContent(props){
                 null
               )
             }
+            <TouchableHighlight
+              underlayColor={'#1c1c1c'}
+              onPress={() => {
+                props.navigation.navigate('Settings', { screen: 'Computeit' })
+              }}>
+              <View style={[styles.buttonContainer]}>
+                <View style={{
+                    flex: 2, 
+                    flexDirection: 'row',
+                    justifyContent: 'center'
+                  }}>
+                  <Avatar
+                    imageProps={{transitionDuration: 0}}
+                    source={require(computeitIconSmall)}
+                    size={33}
+                  />
+                </View>
 
+                <Text style={[styles.labelStyle, {marginLeft: 25, flex: 7}]}>
+                  Compute it
+                </Text>
+              </View>
+            </TouchableHighlight>
           </View>
         </View>
       </DrawerContentScrollView>
