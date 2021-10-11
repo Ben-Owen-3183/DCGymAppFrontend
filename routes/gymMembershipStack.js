@@ -24,7 +24,7 @@ export default function GymMembershipStack({ navigation }) {
       <Stack.Screen
         options={{
           title: 'Gym Membership',
-          headerRight: (props) => <HeaderRight userData={userData} navigation={navigation} {...props}/>
+          headerRight: (props) => <HeaderRight navigation={navigation} {...props}/>
         }}
         name="GymMembership"
         component={GymMembership} />
