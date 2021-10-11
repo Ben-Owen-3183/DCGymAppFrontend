@@ -98,7 +98,7 @@ const VideoPlayerScreen = ({navigation, route, setShowHeader}) => {
                   </head>
                   <body>
                   <iframe
-                    src="https://player.vimeo.com/video/${route.params.id}"
+                    src="https://player.vimeo.com/video/${route.params.id + "?" + new Date()}"
                     frameborder="0"
                     allow="autoplay; fullscreen; picture-in-picture"
                     allowfullscreen
