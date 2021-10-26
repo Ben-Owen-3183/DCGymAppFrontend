@@ -228,7 +228,14 @@ const PastStreams = ({userData, navigation}) => {
   )
 }
 
+var abc = true;
+
 const VideoContainer = ({video, navigation}) => {
+  if(abc){
+    console.log(video.thumbnail);
+    abc = false;
+  }
+
   const [containerWidth, setContainerWidth] = React.useState(0);
   const viewRef = React.useRef();
   let datetime = moment(video.upload_date).format('LL');
