@@ -182,12 +182,13 @@ const Email = (state) => {
         <View style={{marginBottom: 10, marginTop: 5, marginLeft : 3 }}>
           <Text style={styles.text}>
             Please ensure the email you use is the one
-            you used when intially signing up to David Corfields Gymnasium.
+            you used when intially signing up to David Corfield Gymnasium.
           </Text>
         </View>
 
         <TextInput
           value={email}
+          autoCapitalize="none"
           onChangeText={email => setEmail(email)}
           style={styles.inputText}
           placeholder="Email"
@@ -203,6 +204,7 @@ const Email = (state) => {
         <View style={{marginVertical: 8}}></View>
         <TextInput
           value={emailConf}
+          autoCapitalize="none"
           onChangeText={emailConf => setEmailConf(emailConf)}
           style={styles.inputText}
           placeholder="Confirm Email"

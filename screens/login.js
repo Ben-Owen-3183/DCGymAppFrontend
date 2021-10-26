@@ -221,6 +221,7 @@ const Login = ({ navigation }) => {
               <TextInput
                 value={username}
                 autoCompleteType={'email'}
+                autoCapitalize="none"
                 onChangeText={text => setUsername(text)}
                 style={styles.inputText}
                 placeholder="Email"

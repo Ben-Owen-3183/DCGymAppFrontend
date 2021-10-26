@@ -4,7 +4,8 @@ import {
   SafeAreaView,
   Text,
   StatusBar,
-  View
+  View,
+  KeyboardAvoidingView,
 } from 'react-native';
 import Navigator from './routes/drawer';
 import {GlobalColors} from './styles/dcstyles';
@@ -16,12 +17,15 @@ const App: () => Node = () => {
   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
 
   return (
-    <View style={{flex: 1, backgroundColor: GlobalColors.dcLightGrey}}>
+    <KeyboardAvoidingView 
+      enabled
+      behavior="padding"
+      style={{flex: 1, backgroundColor: GlobalColors.dcLightGrey}}>
       <StatusBar backgroundColor={GlobalColors.dcLightGrey}/>
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <Navigator/>
       </SafeAreaView>
-    </View>
+    </KeyboardAvoidingView>
     
   );
 };

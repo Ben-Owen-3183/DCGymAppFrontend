@@ -38,7 +38,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>To upload user avatars</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>To upload audio along with posted videos to feed</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -63,6 +63,11 @@
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
 		<string>BebasNeue Regular.otf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

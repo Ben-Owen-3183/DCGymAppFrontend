@@ -168,7 +168,7 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
           ]}>
             {isUser ? <View style={{marginHorizontal : 30}}></View> : null}
           <View style={[isUser ? styles.yourMessage : styles.otherMessage, styles.messageView]}>
-            <Text style={styles.text}>{item.message}</Text>
+            <Text selectable={true} style={styles.text}>{item.message}</Text>
           </View>
           {!isUser ? <View style={{marginHorizontal : 30}}></View> : null}
         </View>

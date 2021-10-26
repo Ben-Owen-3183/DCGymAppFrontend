@@ -60,6 +60,7 @@
 		98BEA98D62B5444F96318C4F /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		98CAA3FC26F2277B00B121EF /* DCGymAppFrontendRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = DCGymAppFrontendRelease.entitlements; path = DCGymAppFrontend/DCGymAppFrontendRelease.entitlements; sourceTree = "<group>"; };
 		98DD7765270B5FFC00355CFD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		98E3CBF527159D3C00D3011C /* DCGymAppFrontend.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = DCGymAppFrontend.entitlements; path = DCGymAppFrontend/DCGymAppFrontend.entitlements; sourceTree = "<group>"; };
 		9B08997AD88D49489BA61068 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		B118DA0B4A2B1A7EC3B685C4 /* Pods-DCGymAppFrontend.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DCGymAppFrontend.release.xcconfig"; path = "Target Support Files/Pods-DCGymAppFrontend/Pods-DCGymAppFrontend.release.xcconfig"; sourceTree = "<group>"; };
 		B6FE7C281BB44987894526E0 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
@@ -113,6 +114,7 @@
 		13B07FAE1A68108700A75B9A /* DCGymAppFrontend */ = {
 			isa = PBXGroup;
 			children = (
+				98E3CBF527159D3C00D3011C /* DCGymAppFrontend.entitlements */,
 				98CAA3FC26F2277B00B121EF /* DCGymAppFrontendRelease.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -561,9 +563,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = DCGymAppFrontend/DCGymAppFrontend.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 4N84GU3LM5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = DCGymAppFrontend/Info.plist;
@@ -596,7 +599,7 @@
 				CODE_SIGN_ENTITLEMENTS = DCGymAppFrontend/DCGymAppFrontendRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 4N84GU3LM5;
 				INFOPLIST_FILE = DCGymAppFrontend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

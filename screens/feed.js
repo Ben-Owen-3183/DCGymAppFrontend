@@ -974,6 +974,7 @@ const Post = ({userData, post, posts, setPosts, userFeed, navigation}) => {
 
         <View style={styles.postTextView}>
           <Text
+            selectable={true}
             onTextLayout={textLayoutEvent => onLayout(textLayoutEvent)}
             numberOfLines={maxNumberOfLines}
             ellipsizeMode={'tail'}
@@ -1258,6 +1259,7 @@ const Comment = ({comment}) => {
           defaultFont={true}
           fontSize={16}/>
         <Text
+          selectable={true}
           onTextLayout={textLayoutEvent => onLayout(textLayoutEvent)}
           numberOfLines={maxNumberOfLines}
           ellipsizeMode={'tail'}
@@ -1407,6 +1409,7 @@ const Reply = ({reply, userData}) => {
         defaultFont={true}
         fontSize={16}/>
       <Text
+        selectable={true}
         onTextLayout={textLayoutEvent => onLayout(textLayoutEvent)}
         numberOfLines={maxNumberOfLines}
         ellipsizeMode={'tail'}
