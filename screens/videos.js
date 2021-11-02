@@ -16,6 +16,7 @@ import Settings from '../shared/settings';
 import Image from 'react-native-scalable-image';
 import moment from 'moment'
 import { LoadingView, PrimaryButton }  from '../shared/basicComponents';
+import { useFocusEffect } from '@react-navigation/native';
 
 let signOutHook;
 
@@ -121,12 +122,21 @@ const PastStreams = ({userData, navigation}) => {
   }
 
   React.useEffect(() => {
+
     if(videos.length === 0){
       console.log('fetching videos...');
       fetchVideos();
     }
   })
 
+  useFocusEffect(
+    React.useCallback(() => {
+      try {
+        fetchVideos();
+      } catch (error) {
+      }
+    }, [])
+  );
 
   // Works, but have no idea why do not touch
   // Handles to scroll to new content on new content load
@@ -228,14 +238,10 @@ const PastStreams = ({userData, navigation}) => {
   )
 }
 
-var abc = true;
 
 const VideoContainer = ({video, navigation}) => {
-  if(abc){
-    console.log(video.thumbnail);
-    abc = false;
-  }
 
+  const [imageLoading, setImageLoading] = React.useState(false);
   const [containerWidth, setContainerWidth] = React.useState(0);
   const viewRef = React.useRef();
   let datetime = moment(video.upload_date).format('LL');
@@ -272,9 +278,22 @@ const VideoContainer = ({video, navigation}) => {
         borderColor: GlobalColors.dcYellow,
         }}>
         <Image
+          onLoadStart={() => setImageLoading(false)}
+          onLoadEnd={() => setImageLoading(false)}
           width={containerWidth}
           source={{uri: video.thumbnail}}
         />
+        {
+          imageLoading ? (
+            <ActivityIndicator
+              style={{
+                padding: 100,
+              }}
+              size={40}
+              color={GlobalColors.dcYellow}
+            />
+          ) : (null)
+        }
       </View>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <View style={{flex: 1}}>

@@ -778,6 +778,7 @@ const Posts = ({userData, posts, setPosts, userFeed, viewHeight, navigation}) =>
   return(
     <View>
       <FlatList
+        removeClippedSubviews={false}
         keyboardShouldPersistTaps={'handled'}
         ref={flatlistRef}
         data={posts.concat([null])}
@@ -974,7 +975,8 @@ const Post = ({userData, post, posts, setPosts, userFeed, navigation}) => {
 
         <View style={styles.postTextView}>
           <Text
-            selectable={true}
+            key={Math.random()}
+            selectable
             onTextLayout={textLayoutEvent => onLayout(textLayoutEvent)}
             numberOfLines={maxNumberOfLines}
             ellipsizeMode={'tail'}
@@ -1259,6 +1261,7 @@ const Comment = ({comment}) => {
           defaultFont={true}
           fontSize={16}/>
         <Text
+          key={Math.random()}
           selectable={true}
           onTextLayout={textLayoutEvent => onLayout(textLayoutEvent)}
           numberOfLines={maxNumberOfLines}
@@ -1409,6 +1412,7 @@ const Reply = ({reply, userData}) => {
         defaultFont={true}
         fontSize={16}/>
       <Text
+        key={Math.random()}
         selectable={true}
         onTextLayout={textLayoutEvent => onLayout(textLayoutEvent)}
         numberOfLines={maxNumberOfLines}

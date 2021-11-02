@@ -343,7 +343,7 @@ export default Navigator = (props) => {
     const authorizationStatus = await messaging().requestPermission();
   
     if (authorizationStatus) {
-      console.log('Permission status:', authorizationStatus);
+      // console.log('Permission status:', authorizationStatus);
     }
   }
 

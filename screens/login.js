@@ -67,8 +67,12 @@ const Login = ({ navigation }) => {
   const { setUserData } = React.useContext(AuthContext);
 
   React.useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
+    try {
+      const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+      return subscriber; // unsubscribe on unmount
+    } catch (error) {
+      
+    }
   }, []);
 
   async function requestUserPermission() {

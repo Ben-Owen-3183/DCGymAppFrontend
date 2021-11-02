@@ -168,7 +168,7 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
           ]}>
             {isUser ? <View style={{marginHorizontal : 30}}></View> : null}
           <View style={[isUser ? styles.yourMessage : styles.otherMessage, styles.messageView]}>
-            <Text selectable={true} style={styles.text}>{item.message}</Text>
+            <Text key={Math.random()} selectable={true} style={styles.text}>{item.message}</Text>
           </View>
           {!isUser ? <View style={{marginHorizontal : 30}}></View> : null}
         </View>
@@ -187,6 +187,7 @@ const Chat = ({navigation, route, websocket, userData, chats}) => {
           chat && chat.messages.length > 0 && userData ? (
             <View style={{flex: 0}}>
               <FlatList
+                removeClippedSubviews={false}
                 keyboardShouldPersistTaps={'handled'}
                 inverted
                 onEndReached={onScrollEndReached}

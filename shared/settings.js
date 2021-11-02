@@ -1,14 +1,15 @@
 
-////////////////ws_siteURL: 'ws://178.79.180.26:8001/ws/',
-////////////////siteUrl: 'http://178.79.180.26:8001',
+
+const DEBUG = false;
+
+var url = DEBUG ? 'http://192.168.43.167:8000' : 'https://app.davidcorfield.co.uk';
+var ws_url = DEBUG ? 'ws://192.168.43.167:8000/ws/' : 'wss://app.davidcorfield.co.uk/ws/';
 
 const Settings = {
-    // siteUrl: 'http://192.168.43.167:8000',
-    // ws_siteURL: 'ws://192.168.43.167:8000/ws/',
-    siteUrl: 'https://app.davidcorfield.co.uk',
-    ws_siteURL: 'wss://app.davidcorfield.co.uk/ws/',
+    siteUrl: url,
+    ws_siteURL: ws_url,
     homePage: 'Feed',
-    debug: true
+    debug: DEBUG
 }
 
 export default Settings;
