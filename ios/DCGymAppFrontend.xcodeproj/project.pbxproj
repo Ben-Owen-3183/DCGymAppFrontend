@@ -566,7 +566,7 @@
 				CODE_SIGN_ENTITLEMENTS = DCGymAppFrontend/DCGymAppFrontend.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = 4N84GU3LM5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = DCGymAppFrontend/Info.plist;
@@ -599,7 +599,7 @@
 				CODE_SIGN_ENTITLEMENTS = DCGymAppFrontend/DCGymAppFrontendRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = 4N84GU3LM5;
 				INFOPLIST_FILE = DCGymAppFrontend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
