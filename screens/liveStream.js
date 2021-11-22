@@ -147,13 +147,13 @@ const LiveStream = ({navigation, setShowHeader, route}) => {
                   <body>
                   <iframe
                     style="position: absolute; top:0;left:50%;"
-                    src="${route.params.chat_url + "?x=" + new Date()}"
+                    src="${route.params.chat_url}"
                     height="100%"
                     width="50%"
                     frameborder="0">
                   </iframe>
                   <iframe
-                    src="${route.params.stream_url + "?x=" + new Date()}"
+                    src="${route.params.stream_url}"
                     frameborder="0"
                     allow="autoplay; fullscreen; picture-in-picture"
                     allowfullscreen

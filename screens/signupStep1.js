@@ -8,7 +8,9 @@ import {
   TouchableHighlight,
   ImageBackground,
   Platform,
+  ScrollView,
 } from 'react-native';
+// import { ScrollView } from 'react-native-gesture-handler';
 import {globalStyles} from '../styles/dcstyles';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
@@ -16,7 +18,7 @@ const SignupStep1 = ({ navigation }) => {
 
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
-      <View style={styles.mainContainer}>
+      <ScrollView contentContainerStyle={styles.mainContainer}>
 
         <View style={{flex: 1}}></View>
 
@@ -61,7 +63,7 @@ const SignupStep1 = ({ navigation }) => {
         </View>
 
         <View style={{flex: 1}}></View>
-      </View>
+      </ScrollView>
     </ImageBackground>
   );
 }
@@ -70,7 +72,6 @@ export default SignupStep1;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    height: '100%',
     width: '100%',
     // backgroundColor : '#2D2D2D',
     justifyContent: 'center',
