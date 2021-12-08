@@ -11,7 +11,6 @@ import WebView from 'react-native-webview'
 const JAVASCRIPT = 'gcaptcha = document.querySelector(\'.g-recaptcha\');'
   + 'gcaptcha.style.marginLeft = 0;'
 
-// g-recaptcha
 
 
 const GymMembership = () => {

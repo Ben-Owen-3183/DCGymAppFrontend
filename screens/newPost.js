@@ -32,14 +32,17 @@ function createFormData(image, postText, adminOptions){
   }
 
   var data = new FormData();
+
   if(imageData !== null){
     data.append('image', imageData);
   }
+
   data.append('post_text', postText);
-  // data.append('admin_options', objectToFormData(adminOptions));
+
   for (const key in adminOptions) {
     data.append(key, adminOptions[key]);
   }
+
   data.append('image', imageData);
   return data;
 };
@@ -112,6 +115,9 @@ const NewPost = ({userData, navigation}) => {
 
   function selectImage(){
     ImagePicker.openPicker({
+      compressImageQuality: 0.8,
+      compressImageMaxHeight: 1000,
+      compressImageMaxWidth: 1000,
       width: 2000,
       height: 2000,
       cropping: false

@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
   ImageBackground,
   Platform,
+  ScrollView,
 } from 'react-native';
 import Settings from '../shared/settings'
 import {retrieveUserData} from '../shared/storage';
@@ -114,11 +115,11 @@ const ChangePassword = ({ navigation }) => {
 
   return (
     <ImageBackground source={require(backgroundImagePath)} style={styles.backgroundImage}>
-      <View style={styles.mainContainer}>
+      <ScrollView contentContainerStyle={styles.mainContainer}>
 
         <View style={{flex: 1}}></View>
 
-        <View style={{flex: 5}}>
+        <View style={{flex: 5, marginTop: 60}}>
 
           <View >
             <Text style={styles.titleText}>
@@ -197,7 +198,7 @@ const ChangePassword = ({ navigation }) => {
         </View>
 
         <View style={{flex: 1}}></View>
-      </View>
+      </ScrollView>
     </ImageBackground>
   );
 }
@@ -215,10 +216,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1
   },
   mainContainer: {
-    height: '100%',
     width: '100%',
-    // backgroundColor : '#2D2D2D',
-    justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row'
   },

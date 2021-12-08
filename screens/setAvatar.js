@@ -98,6 +98,9 @@ const SetAvatar = ({ navigation }) => {
 
   function selectImage(){
     ImagePicker.openPicker({
+      compressImageQuality: 0.8,
+      compressImageMaxHeight: 640,
+      compressImageMaxWidth: 640,
       width: 1000,
       height: 1000,
       cropping: true
@@ -112,6 +115,9 @@ const SetAvatar = ({ navigation }) => {
   function takePhoto(){
     ImagePicker.openCamera({
       useFrontCamera: true,
+      compressImageQuality: 0.8,
+      compressImageMaxHeight: 640,
+      compressImageMaxWidth: 640,
       width: 1000,
       height: 1000,
       cropping: true,
