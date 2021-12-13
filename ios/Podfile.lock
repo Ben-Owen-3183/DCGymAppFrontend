@@ -532,6 +532,8 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - Firebase/Analytics
+  - Firebase/Auth
+  - Firebase/Messaging
   - Flipper (~> 0.75.1)
   - Flipper-DoubleConversion (= 1.1.7)
   - Flipper-Folly (~> 2.5.3)
@@ -743,7 +745,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 2734852616127a6c1fc23012197890a6f3763dc7
   EXScreenOrientation: d94f791c7ade3639352f34fcf5353f7c554b7d69
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: 1006af49f1e54c7d170c040c0b7cfa81a30099ed
+  FBReactNativeSpec: d9ce5783248d0cfe6dd0d6e1827ae1c69820ee18
   Firebase: bc9325d5ee2041524bac78a5213d0e530c651309
   FirebaseAnalytics: 52768800c2add1d84b751420cb4caaf8195f2c41
   FirebaseAuth: 2e7d029977648c67a5d51a263d4cbab76d34cf12
@@ -813,6 +815,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 6517061828de96d46c4fa8decbcd56dc287d4497
+PODFILE CHECKSUM: 9c7cd3d67f7d214f4b25afbe38fe706b2adce8b2
 
-COCOAPODS: 1.11.0
+COCOAPODS: 1.11.2

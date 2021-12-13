@@ -10,7 +10,6 @@ use_unimodules!(modules_paths: ['../node_modules'])
 
 # add the Firebase pod for Google Analytics
 
-pod 'Firebase/Analytics'
 
 # or pod ‘Firebase/AnalyticsWithoutAdIdSupport’
 
@@ -40,6 +39,10 @@ target 'DCGymAppFrontend' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'Firebase/Analytics'
+  pod 'Firebase/Messaging'
+  pod 'Firebase/Auth'
+  
   # pod 'react-native-vlc-media-player', :path => '../node_modules/react-native-vlc-media-player'
 
   target 'DCGymAppFrontendTests' do
