@@ -21,7 +21,6 @@ import { useFocusEffect } from '@react-navigation/native';
 let signOutHook;
 
 const PastStreams = ({userData, navigation}) => {
-  const [videoPage, setVideoPage] = React.useState(1);
   const [videos, setVideos] = React.useState([]);
   const { signOut } = React.useContext(AuthContext);
   signOutHook = signOut;
@@ -33,28 +32,6 @@ const PastStreams = ({userData, navigation}) => {
   const pageLength = 20;
 
   console.log(videos.length);
-  /*
-  console.log(videos[0].id);
-  console.log(videos[1].id);
-  console.log(videos[2].id);
-  console.log('');
-  console.log('');
-  console.log('');
-  console.log('');
-  console.log('');
-
-  647752549
-  647680180
-
-  let some_list = []
-  for(let i = 0; i < videos.length; i++){
-    console.log('some id: ' + videos[i].id);
-    some_list.push(videos[i].id);
-  }
-  console.log(some_list);
-  
-
-  */
 
   async function fetchVideos(page){
     try {
@@ -103,8 +80,7 @@ const PastStreams = ({userData, navigation}) => {
   function remove_dupes(newVideos){
     function exists(db_id){
       for(let i = 0; i < videos.length; i++){
-        console.log(videos[i].db_id.toString() + " " + db_id.toString())
-        if(videos[i].db_id.toString() === db_id.toString)
+        if(videos[i].db_id.toString() === db_id.toString())
           return true;
       }
       return false;
@@ -115,6 +91,7 @@ const PastStreams = ({userData, navigation}) => {
     for(let i = 0; i < newVideos.length; i++){
       if(exists(newVideos[i].db_id) === false)
         dupeFreeList.push(newVideos[i])
+      console.log('dupe removed');
     }
 
     return dupeFreeList;
@@ -122,7 +99,8 @@ const PastStreams = ({userData, navigation}) => {
 
   // Intial fetch of Page 1.
   async function fetchHistoricVideos(){
-
+    let newPage = currentPageNumber + 1;
+    console.log('getting page ' + newPage);
     try {
       let response = await fetch(Settings.siteUrl + '/video/videos/', {
         method: "POST",
@@ -132,7 +110,7 @@ const PastStreams = ({userData, navigation}) => {
         },
         body: JSON.stringify({
           page_length: pageLength,
-          page_number: currentPageNumber + 1
+          page_number: newPage
         })
       })
 
@@ -149,7 +127,7 @@ const PastStreams = ({userData, navigation}) => {
           let newVideos = [];
           Object.assign(newVideos, concatVideos);
           setVideos(newVideos);
-          setCurrentPageNumber(currentPageNumber + 1);
+          setCurrentPageNumber(newPage);
         }
         return;
       }
