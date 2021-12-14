@@ -7,8 +7,7 @@ import {
   ScrollView,
   TextInput,
   Dimensions,
-  Modal,
-  Alert,
+  ActivityIndicator,
   Platform,
 } from 'react-native';
 import {Icon, Switch, SpeedDial} from 'react-native-elements';
@@ -63,6 +62,7 @@ const NewPost = ({userData, navigation}) => {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [vimeoLink, setVimeoLink] = React.useState('');
   const [errors, setErrors] = React.useState('');
+  const [posting, setPosting] = React.useState(false);
 
   const adminOptions = {
     'notify': notify,
@@ -74,6 +74,8 @@ const NewPost = ({userData, navigation}) => {
 
   async function submitPost(){
     if(postText === '') return;
+    setPosting(true);
+    
 
     try {
       setErrors('')
@@ -102,6 +104,7 @@ const NewPost = ({userData, navigation}) => {
         setPinPostDays(1);
         setPinPostTimeLimit(false);
         setNotify(false);
+        setPosting(false);
         navigation.navigate('UserPosts');
       }
       else{
@@ -111,6 +114,7 @@ const NewPost = ({userData, navigation}) => {
     } catch (e) {
       console.log(`Create New Post Error: ${e}`);
     }
+    setPosting(false);
   }
 
   function selectImage(){
@@ -307,6 +311,31 @@ const NewPost = ({userData, navigation}) => {
           }
         </View>
       </ScrollView>
+      {
+        posting ? (
+          <View style={{
+            position: 'absolute',
+            backgroundColor: '#00000090',
+            height: '100%',
+            width: '100%',
+            justifyContent: 'center',
+            alignContent: 'center'
+          }}>
+            <Text style={{fontSize: 25, marginTop: 30,marginBottom: 20, textAlign: 'center', color: '#FFC300'}} >
+              Uploading Post...
+            </Text>
+            <ActivityIndicator
+              style={{
+                width: '100%',
+              }}
+              size={60}
+              color={GlobalColors.dcYellow}
+            />
+            
+          </View>
+        ) : (null)
+      }
+
     </View>
   )
 }

@@ -4,10 +4,8 @@ import {
   View,
   Text,
   FlatList,
-  TouchableHighlight,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Pressable,
   TextInput,
   Dimensions,
   Keyboard,
@@ -716,15 +714,17 @@ const FeedMenu = ({mainViewHeight, navigation, posts, setPosts}) => {
 
 const Posts = ({userData, posts, setPosts, userFeed, viewHeight, navigation}) => {
   const [loadingHistory, setLoadingHistory] = React.useState(false);
-  const [firstEndReachCall, setFirstEndReachCall] = React.useState(true);
   const [newContentLoaded, setNewContentLoaded] = React.useState(false);
   const [postLengths, setPostLengths] = React.useState({prev: 0, now: 0, item: null});
   const flatlistRef = React.useRef(null);
+  const [firstEndReached, setFirstEndReached] = React.useState(false);
 
 
   // Works, but have no idea why do not touch
   // Handles to scroll to new content on new content load
   React.useEffect(() => {
+    return; // Sometimes calls earlier. Needs fix. Usually when going from newPost screen back to feed.
+
     if(newContentLoaded && postLengths.prev < postLengths.now && postLengths.item != null){
       let avg = flatlistRef.current._listRef._averageCellLength;
       let totalOffset = avg * postLengths.prev;
@@ -734,12 +734,8 @@ const Posts = ({userData, posts, setPosts, userFeed, viewHeight, navigation}) =>
   }, [posts]);
 
   async function onPostsEndReached(){
-  
+    
     try {
-      if(firstEndReachCall){
-        setFirstEndReachCall(false);
-        return;
-      }
 
       setLoadingHistory(true);
       let newPostsData = await fetchPostsBefore(posts[posts.length - 1], userData, userFeed);
@@ -783,7 +779,7 @@ const Posts = ({userData, posts, setPosts, userFeed, viewHeight, navigation}) =>
         ref={flatlistRef}
         data={posts.concat([null])}
         onEndReached={() => onPostsEndReached()}
-        onEndReachedThreshold={0.1}
+        onEndReachedThreshold={0.5}
         renderItem={renderItem}
         keyExtractor={
           (item) => {

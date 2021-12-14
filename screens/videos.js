@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { cloneElement } from 'react';
 import {
   StyleSheet,
   View,
@@ -29,12 +29,32 @@ const PastStreams = ({userData, navigation}) => {
   const [initialLoadSuccessful, setInitialLoadSuccessful] = React.useState(false);
   const [loadingMoreVideos, setLoadingMoreVideos] = React.useState(false);
   const [currentPageNumber, setCurrentPageNumber] = React.useState(1)
-  /*
-  const [newContentLoaded, setNewContentLoaded] = React.useState(false);
-  const [postLengths, setPostLengths] = React.useState({prev: 0, now: 0, item: null});
-  */
   const flatlistRef = React.useRef(null);
   const pageLength = 20;
+
+  console.log(videos.length);
+  /*
+  console.log(videos[0].id);
+  console.log(videos[1].id);
+  console.log(videos[2].id);
+  console.log('');
+  console.log('');
+  console.log('');
+  console.log('');
+  console.log('');
+
+  647752549
+  647680180
+
+  let some_list = []
+  for(let i = 0; i < videos.length; i++){
+    console.log('some id: ' + videos[i].id);
+    some_list.push(videos[i].id);
+  }
+  console.log(some_list);
+  
+
+  */
 
   async function fetchVideos(page){
     try {
@@ -80,8 +100,29 @@ const PastStreams = ({userData, navigation}) => {
     return null
   }
 
+  function remove_dupes(newVideos){
+    function exists(db_id){
+      for(let i = 0; i < videos.length; i++){
+        console.log(videos[i].db_id.toString() + " " + db_id.toString())
+        if(videos[i].db_id.toString() === db_id.toString)
+          return true;
+      }
+      return false;
+    }
+
+    let dupeFreeList = [];
+
+    for(let i = 0; i < newVideos.length; i++){
+      if(exists(newVideos[i].db_id) === false)
+        dupeFreeList.push(newVideos[i])
+    }
+
+    return dupeFreeList;
+  }
+
   // Intial fetch of Page 1.
   async function fetchHistoricVideos(){
+
     try {
       let response = await fetch(Settings.siteUrl + '/video/videos/', {
         method: "POST",
@@ -104,7 +145,7 @@ const PastStreams = ({userData, navigation}) => {
       let data = await response.json()
       if(data.videos){
         if(data.videos.length > 0){
-          let concatVideos = videos.concat(data.videos);
+          let concatVideos = videos.concat(remove_dupes(data.videos));
           let newVideos = [];
           Object.assign(newVideos, concatVideos);
           setVideos(newVideos);
@@ -138,24 +179,11 @@ const PastStreams = ({userData, navigation}) => {
     }, [])
   );
 
-  // Works, but have no idea why do not touch
-  // Handles to scroll to new content on new content load
-  /*
-  React.useEffect(() => {
-    if(newContentLoaded && postLengths.prev < postLengths.now && postLengths.item != null){
-      let avg = flatlistRef.current._listRef._averageCellLength;
-      let totalOffset = avg * postLengths.prev;
-      flatlistRef.current.scrollToOffset({offset: totalOffset})
-      setNewContentLoaded(false);
-    }
-  }, [posts]);
-  */
-
 
   async function onVideosEndReached(){
     if(loadingMoreVideos) return;
     setLoadingMoreVideos(true);
-    console.log('fetching videos');
+    console.log('fetching more videos');
     try {
       await fetchHistoricVideos();
     } catch (e) {
@@ -167,7 +195,7 @@ const PastStreams = ({userData, navigation}) => {
   const renderItem = ({ item }) => {
     return (
       item ?
-        <VideoContainer navigation={navigation} video={item}/>
+        <VideoContainer key={item.id.toString()} navigation={navigation} video={item}/>
         :
         <View style={{marginVertical: 100}}></View>
     );
@@ -215,6 +243,8 @@ const PastStreams = ({userData, navigation}) => {
   return(
     <View style={{height: '100%', backgroundColor: GlobalColors.dcGrey}}>
       <FlatList
+        disableVirtualization
+        removeClippedSubviews={false}
         keyboardShouldPersistTaps={'handled'}
         ref={flatlistRef}
         data={videos}
@@ -223,8 +253,8 @@ const PastStreams = ({userData, navigation}) => {
         renderItem={renderItem}
         keyExtractor={
           (item) => {
-            if(item) return item.id;
-            return -1;
+            if(item) return item.db_id.toString();
+            return Math.random().toString();
         }}
       />
       {
@@ -238,7 +268,6 @@ const PastStreams = ({userData, navigation}) => {
   )
 }
 
-
 const VideoContainer = ({video, navigation}) => {
 
   const [imageLoading, setImageLoading] = React.useState(false);
@@ -248,6 +277,7 @@ const VideoContainer = ({video, navigation}) => {
 
   return (
     <TouchableOpacity
+      delayPressIn={200}
       onPress={() => {
         navigation.navigate('Player', {
           title: video.name,
@@ -278,7 +308,7 @@ const VideoContainer = ({video, navigation}) => {
         borderColor: GlobalColors.dcYellow,
         }}>
         <Image
-          onLoadStart={() => setImageLoading(false)}
+          onLoadStart={() => (!imageLoading ?  setImageLoading(true) : null)}
           onLoadEnd={() => setImageLoading(false)}
           width={containerWidth}
           source={{uri: video.thumbnail}}
