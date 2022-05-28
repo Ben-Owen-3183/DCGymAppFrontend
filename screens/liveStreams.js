@@ -14,6 +14,8 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const backgroundImagePath = '../assets/images/timetable-background.png';
 
+let signOutHook;
+
 const LiveStreams = ({navigation, userData}) => {
   const [streamsByDay, setStreamsByDay] = React.useState(null);
   const [initialLoading, setInitialLoading] = React.useState(true);
@@ -27,7 +29,7 @@ const LiveStreams = ({navigation, userData}) => {
           "Authorization": "Token " + userData.token,
           "Content-type": "application/json; charset=UTF-8"
         }
-      })
+      });
 
       if(response.status == 401 || response.status == 403){
         signOutHook();

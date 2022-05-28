@@ -81,7 +81,7 @@ function createSyncChatsPayload(chats){
   return payload;
 }
 
-/* 
+/*
 Removes any duplicate messages that can arise
 */
 function removeDuplicateMessagesFromNewChats(chat, newChat){
@@ -341,7 +341,7 @@ export default Navigator = (props) => {
 
   async function requestUserPermission() {
     const authorizationStatus = await messaging().requestPermission();
-  
+
     if (authorizationStatus) {
       // console.log('Permission status:', authorizationStatus);
     }
@@ -529,6 +529,7 @@ export default Navigator = (props) => {
     );
   }
 
+
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
@@ -537,12 +538,15 @@ export default Navigator = (props) => {
             drawerStyle={{ backgroundColor: ''}}
             drawerContent={props => <DefaultDrawerContent {...props}/>}>
             <Drawer.Screen name="Login" component={LoginStack} />
-            <Drawer.Screen name="Gym Membership" component={GymMembershipStack}/>
           </Drawer.Navigator>
         ) : (
           <Drawer.Navigator initialRouteName={initialRoute}
             drawerStyle={{ width: '75%', backgroundColor: ''}}
             drawerContent={props => <DrawerContent chats={chats} userData={state.userData} {...props}/>}>
+
+            <Drawer.Screen name="Membership">
+              {props => <GymMembershipStack chats={chats} userData={state.userData} {...props}/>}
+            </Drawer.Screen>
 
             <Drawer.Screen name="TimeTable">
               {props => <TimeTableStack chats={chats} userData={state.userData} {...props}/>}

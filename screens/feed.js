@@ -734,7 +734,7 @@ const Posts = ({userData, posts, setPosts, userFeed, viewHeight, navigation}) =>
   }, [posts]);
 
   async function onPostsEndReached(){
-    
+
     try {
 
       setLoadingHistory(true);
@@ -1018,7 +1018,7 @@ const Post = ({userData, post, posts, setPosts, userFeed, navigation}) => {
               <View>
                 <Image
                   onLoadEnd={() => {
-                    
+
                   }}
                   onLayout={layout => setImageWidthHeight(layout)}
                   width={Dimensions.get('window').width}

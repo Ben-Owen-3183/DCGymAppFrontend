@@ -15,11 +15,13 @@ import * as ScreenOrientation from 'expo-screen-orientation'
 import settings from './shared/settings';
 
 const App: () => Node = () => {
+
+
   changeNavigationBarColor(GlobalColors.dcGrey, true);
   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       enabled
       behavior={Platform.OS == 'ios' ? "padding" : ""}
       style={{flex: 1, backgroundColor: GlobalColors.dcLightGrey}}>
@@ -39,7 +41,7 @@ const App: () => Node = () => {
         <Navigator/>
       </SafeAreaView>
     </KeyboardAvoidingView>
-    
+
   );
 };
 
