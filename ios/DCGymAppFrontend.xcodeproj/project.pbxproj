@@ -217,7 +217,6 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				50E0C70E5BF3B9702F364903 /* [CP] Embed Pods Frameworks */,
 				D8388F957743BB08C2620FCC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -240,7 +239,6 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				9C989EDD39B7142BF8DE6497 /* [CP] Embed Pods Frameworks */,
 				1F192931EF3DFA59F4DAFC61 /* [CP] Copy Pods Resources */,
 				0EE8368941D3B07578F34583 /* [CP-User] [RNFB] Core Configuration */,
 			);
@@ -357,40 +355,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DCGymAppFrontend/Pods-DCGymAppFrontend-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		50E0C70E5BF3B9702F364903 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DCGymAppFrontend-DCGymAppFrontendTests/Pods-DCGymAppFrontend-DCGymAppFrontendTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DCGymAppFrontend-DCGymAppFrontendTests/Pods-DCGymAppFrontend-DCGymAppFrontendTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DCGymAppFrontend-DCGymAppFrontendTests/Pods-DCGymAppFrontend-DCGymAppFrontendTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9C989EDD39B7142BF8DE6497 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DCGymAppFrontend/Pods-DCGymAppFrontend-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DCGymAppFrontend/Pods-DCGymAppFrontend-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DCGymAppFrontend/Pods-DCGymAppFrontend-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C84A4C08A57B02BC2910B427 /* [CP] Check Pods Manifest.lock */ = {
@@ -654,7 +618,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -719,7 +683,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
